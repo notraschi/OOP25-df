@@ -26,7 +26,7 @@ public final class EntryPoint extends Application {
     public void start(final Stage primaryStage) throws Exception {
         List.of(
             new JFXDrawNumberView(controller, new BoundingBox(0, 0, 0, 0)),
-            new JFXDrawNumberView(controller, null),
+            //new JFXDrawNumberView(controller, null),
             new PrintStreamView(System.out)
         ).forEach(controller::registerView);
         try {

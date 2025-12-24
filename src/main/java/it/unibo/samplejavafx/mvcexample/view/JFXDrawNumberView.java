@@ -15,8 +15,17 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundImage;
+import javafx.scene.layout.BackgroundPosition;
+import javafx.scene.layout.BackgroundRepeat;
+import javafx.scene.layout.BackgroundSize;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
+import javafx.scene.shape.Polygon;
 import javafx.stage.Stage;
 
 /**
@@ -25,12 +34,12 @@ import javafx.stage.Stage;
 @SuppressFBWarnings
 public final class JFXDrawNumberView implements DrawNumberView {
 
-    private static final String FRAME_NAME = "Draw Number App";
+    private static final String FRAME_NAME = "dot-fighting";
     private static final String QUIT = "Quit";
     private static final String RESET = "Reset";
     private static final String GO = "Go";
     private static final String NEW_GAME = ": a new game starts!";
-
+    private int chunk=0;
     private final DrawNumberController controller;
     private Stage frame;
     private Label message;
@@ -61,7 +70,7 @@ public final class JFXDrawNumberView implements DrawNumberView {
             frame.setX(initialBounds.getMinX());
             frame.setY(initialBounds.getMinY());
         }
-
+        /*
         final VBox vbox = new VBox();
         final HBox playControlsLayout = new HBox();
         final TextField theNumber = new TextField();
@@ -72,64 +81,73 @@ public final class JFXDrawNumberView implements DrawNumberView {
         final HBox gameControlsLayout = new HBox();
         final Button bReset = new Button(RESET);
         final Button bQuit = new Button(QUIT);
-        gameControlsLayout.getChildren().addAll(bReset, bQuit);
+        gameControlsLayout.getChildren().addAll(bReset, bQuit);*/
+        
 
-        final Label stateMessage = new Label();
-        stateMessage.textProperty()
-            .bind(new SimpleStringProperty("Min=")
-            .concat(min)
-            .concat("; Max=")
-            .concat(max)
-            .concat("; Remaining attempts=")
-            .concat(remaining)
-            .concat("\nLast guess:")
-            .concat(last)
-            .concat("; Last outcome:")
-            .concat(lastResult.map(DrawResult::drawResult).map(DrawResult.DrawOutcome::getDescription))
-        );
+        GridPane grid = new GridPane();
+        
+        grid.setHgap(0);
+        grid.setVgap(0);
+        for (int r = 0; r <= 6; r+=2) {
+            
+            for (int c = 0; c <= 6; c+=2) {
+                this.setChunk(); 
+                for (int i=0; i < 2; i++){
+                    for (int y=0; y < 2; y++){
+                        Image image = randImage(c+y,r+i);
+                        Button square = createButton((String.valueOf(r+i)+" , "+String.valueOf(c+y)), 30,image);
+                
+                
+                        square.setMinSize(150, 150);
 
-        vbox.getChildren().addAll(playControlsLayout, gameControlsLayout, stateMessage);
-
-        go.setOnAction(e -> {
-            try {
-                final var attempt = Integer.parseInt(theNumber.getText());
-                last.set(attempt);
-                controller.newAttempt(attempt);
-            } catch (final NumberFormatException exception) {
-                MessageDialog.showMessageDialog(frame, "Validation error",
-                        "You entered " + theNumber.getText() + ". Provide an integer please...");
+                        grid.add(square,c+y,r+i);}
+                }
+                
             }
-        });
-        bQuit.setOnAction(e -> {
-            final CompletableFuture<Boolean> future = new CompletableFuture<>();
-            future.thenAccept(shouldExit -> {
-                if (shouldExit) {
-                    Platform.exit();
-                }
-            });
-            MessageDialog.showConfirmDialog(
-                frame,
-                "Confirmation needed",
-                "Confirm quitting?",
-                future
-            );
-        });
-        bReset.setOnAction(e -> {
-            final CompletableFuture<Boolean> future = new CompletableFuture<>();
-            future.thenAccept(b -> {
-                if (b) {
-                    controller.resetGame();
-                }
-            });
-            MessageDialog.showConfirmDialog(frame, "Confirmation needed", "Confirm resetting?", future);
-        });
-        // GRAPHICS
-        final int sceneWidth = 600;
-        final int sceneHeight = 200;
-        final Scene scene = new Scene(vbox, sceneWidth, sceneHeight);
+        }
+     
+
+        final int sceneWidth = 1000;
+        final int sceneHeight = 1000;
+        final Scene scene = new Scene(grid, sceneWidth, sceneHeight);
         this.frame.setScene(scene);
         this.frame.show();
+}
+
+
+
+private Button createButton(String text, double size, Image image) {
+    Button button = new Button(text);
+    BackgroundImage backgroundImage = new BackgroundImage(
+        image,
+        BackgroundRepeat.NO_REPEAT,
+        BackgroundRepeat.NO_REPEAT,
+        BackgroundPosition.CENTER,
+        new BackgroundSize(
+            100, 100,
+            true, true,
+            true, false
+        )
+    );
+    button.setBackground(new Background(backgroundImage));
+
+    return button;
+}
+
+private void setChunk(){
+    this.chunk = (int) (Math.random() * 3) + 1;
+}
+
+
+
+
+    private Image randImage(int col,int row){
+        Image image = new Image(
+            getClass().getResource("/images/"+this.chunk+".png").toExternalForm()
+        );
+        return image;
     }
+
 
     @Override
     public void numberIncorrect() {
