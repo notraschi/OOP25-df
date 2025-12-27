@@ -1,5 +1,7 @@
 package it.unibo.df.controller;
 
+import it.unibo.df.input.Input;
+
 /** 
  * this is the sole (and therfore main) controller.
  * uses: state pattern, (strategy pattern obv), inversion of control
@@ -9,9 +11,12 @@ public final class Controller {
 
 	/**
 	 * handles user input.
+	 * 
+	 * @param input the input to handle
+	 * @return wether the input was handled or rejected
 	 */
-	public void hadle(/*input*/) {
-		state.handle(/*input*/);
+	public boolean hadle(Input input) {
+		return state.handle(input);
 	}
 
 	/**
