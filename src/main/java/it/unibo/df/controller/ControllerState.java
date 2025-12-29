@@ -1,14 +1,15 @@
 package it.unibo.df.controller;
 
+import it.unibo.df.gs.GameState;
 import it.unibo.df.input.Input;
 
 /**
  * this is a interface that allows a single controller to switch behavior.
  */
-public sealed interface ControllerState permits ArsenalState, CombatState {
+public sealed interface ControllerState permits ArsenalController, CombatController {
 
 	/**
-	 * this function handles user input.
+	 * handles user input.
 	 *
 	 * @param input is the user's input
 	 * @return wether the input was handled or rejected
@@ -16,8 +17,10 @@ public sealed interface ControllerState permits ArsenalState, CombatState {
 	boolean handle(Input input);
 
 	/**
-	 * this function updates the game's state, and should return a new GameState.
+	 * updates the game's state.
+	 * 
+	 * @return the current game state
 	 */
-	void tick();
+	GameState tick();
 }
 

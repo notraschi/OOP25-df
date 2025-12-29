@@ -1,5 +1,6 @@
 package it.unibo.df.controller;
 
+import it.unibo.df.gs.GameState;
 import it.unibo.df.input.Input;
 
 /** 
@@ -7,7 +8,7 @@ import it.unibo.df.input.Input;
  * uses: state pattern, (strategy pattern obv), inversion of control
  */
 public final class Controller {
-	private ControllerState state;
+	private final ControllerState state = new CombatController();
 
 	/**
 	 * handles user input.
@@ -21,10 +22,11 @@ public final class Controller {
 
 	/**
 	 * updates game's state.
+	 * 
+	 * @return the new game state
 	 */
-	public void tick() {
-		// return
-		state.tick();
+	public GameState tick() {
+		return state.tick();
 	}
 }
 
