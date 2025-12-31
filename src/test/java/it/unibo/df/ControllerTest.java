@@ -19,7 +19,12 @@ class ControllerTest {
     @Test
     void basicCombatInput() {
         assertEquals("yo we fighting!!", ((CombatState) controller.tick()).test());
-        controller.hadle(Move.LEFT);
+        controller.handle(Move.LEFT);
         assertEquals("left", ((CombatState) controller.tick()).test());
+    }
+
+    @Test //DELETME-PLS
+    void aiTestAlVolo() {
+        assertEquals("idle", ((CombatState) controller.tick()).test());
     }
 }

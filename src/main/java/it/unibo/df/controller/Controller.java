@@ -16,7 +16,7 @@ public final class Controller {
 	 * @param input the input to handle
 	 * @return wether the input was handled or rejected
 	 */
-	public boolean hadle(Input input) {
+	public boolean handle(Input input) {
 		return state.handle(input);
 	}
 

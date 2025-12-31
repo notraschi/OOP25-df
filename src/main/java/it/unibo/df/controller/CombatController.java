@@ -1,5 +1,8 @@
 package it.unibo.df.controller;
 
+import it.unibo.df.ai.AiController;
+import it.unibo.df.ai.AiControllerBuilder;
+import it.unibo.df.ai.IdleStrategy;
 import it.unibo.df.gs.CombatState;
 import it.unibo.df.gs.GameState;
 import it.unibo.df.input.Attack;
@@ -12,6 +15,7 @@ import it.unibo.df.input.Move;
  */
 public final class CombatController implements ControllerState {
 	private final CombatState gameState = new CombatState();
+	private final AiController aiController = new AiControllerBuilder().add(new IdleStrategy()).build();
 
 	/**
 	 * {@inheritDoc }
@@ -44,6 +48,7 @@ public final class CombatController implements ControllerState {
 			case Move.DOWN -> gameState.setTest("down");
 			case Move.RIGHT -> gameState.setTest("right");
 			case Move.LEFT -> gameState.setTest("left");
+			case Move.IDLE -> gameState.setTest("idle"); //MODIFY-ME
 		}
 		return true;
 	}
@@ -64,6 +69,7 @@ public final class CombatController implements ControllerState {
 	 */
 	@Override
 	public GameState tick() {
+		handle(aiController.computeNextInput(gameState)); //DELETME
 		return gameState;
 	}
 }
