@@ -1,16 +1,15 @@
 package it.unibo.df.gs;
 
+import java.util.List;
+import java.util.Set;
+
+import it.unibo.df.model.abilities.Vec2D;
+
 /**
  * represents the game's state while in combat.
  */
-public final class CombatState implements GameState {
-    private String testString = "yo we fighting!!";
-
-    public String test() {
-        return testString;
-    }
-
-    public void setTest(String s) {
-        testString = s;
-    }
-}
+public record CombatState(
+    Vec2D playerPos,
+    Vec2D enemyPos,
+    List<Set<Vec2D>> activeEffects // effects currenty visible
+) implements GameState {}

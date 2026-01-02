@@ -1,20 +1,20 @@
 package it.unibo.df.model.abilities;
 
+import java.util.Optional;
+import java.util.Set;
+
 /**
  * Functional interface defining the logic of an ability.
  */
 @FunctionalInterface
-
 public interface AbilityFn {
     
     /**
-     * Applies the ability logic and computes its effect.
+     * Applies the ability effect.
      *
-     * @param gameState the current game state
-     * @param caster the entity using the ability
-     * @param target the target position
-     * @return the resulting ability effect
+     * @param caster the position of the entity using the ability
+     * @return an optional set of affected cells
      */
-    AbilityEffect apply(Object gameState, Object caster, Vec2D target);
+    Optional<Set<Vec2D>> apply(Vec2D caster);
 }
 

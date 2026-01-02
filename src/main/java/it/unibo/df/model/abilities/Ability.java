@@ -7,8 +7,8 @@ package it.unibo.df.model.abilities;
  * @param name display name of the ability
  * @param cooldown cooldown time in ticks
  * @param type category of the ability
- * @param hpDelta base hp variation value
- * @param stealAmount amount of hp stolen by lifesteal abilities
+ * @param casterHpDelta caster hp variation
+ * @param targetHpDelta target hp variation
  * @param effect function implementing the ability logic
  */
 public record Ability(
@@ -16,11 +16,8 @@ public record Ability(
     String name,
     int cooldown,
     AbilityType type,
-    int hpDelta,
-    int stealAmount,
-    AbilityFn effect
+    int casterHpDelta,
+    int targetHpDelta,
+    AbilityFn effect 
 ) { }
-
-
-
  
