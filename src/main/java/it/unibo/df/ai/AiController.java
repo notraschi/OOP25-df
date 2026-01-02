@@ -3,6 +3,7 @@ package it.unibo.df.ai;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Queue;
 
 import it.unibo.df.gs.GameState;
@@ -13,7 +14,7 @@ import it.unibo.df.input.Input;
  * Context of AiStrategy.
  */
 public class AiController {
-    private final Queue<Input> actionQueue = new LinkedList<>();
+    private final Queue<Optional<Input>> actionQueue = new LinkedList<>();
     private final List<AiStrategy> avaiableStrategies;
     private AiStrategy currentStrategy; 
 
@@ -21,7 +22,7 @@ public class AiController {
         avaiableStrategies = strategies;
     }
 
-    public Input computeNextInput(GameState gameState) {
+    public Optional<Input> computeNextInput(GameState gameState) {
         return getInput(gameState);
     }
 
@@ -33,11 +34,11 @@ public class AiController {
         this.currentStrategy = strategy;
     }
 
-    private void addInputToQueue(List<Input> inputs) {
+    private void addInputToQueue(List<Optional<Input>> inputs) {
         actionQueue.addAll(inputs);
     }
 
-    private Input getInput (GameState gameState) {
+    private Optional<Input> getInput (GameState gameState) {
         if (actionQueue.isEmpty()) {
             updateStrategy(gameState);
             addInputToQueue(currentStrategy.computeNextAction(gameState));

@@ -1,6 +1,7 @@
 package it.unibo.df.ai;
 
 import java.util.List;
+import java.util.Optional;
 
 import it.unibo.df.gs.GameState;
 import it.unibo.df.input.Input;
@@ -14,7 +15,7 @@ public interface AiStrategy {
      * @param gameContext game state is used to calculate the best action
      * @return an action is composed of one or more inputs
      */
-    List<Input> computeNextAction(GameState gameContext);
+    List<Optional<Input>> computeNextAction(GameState gameContext);
 
     /**
      * 

@@ -1,6 +1,7 @@
 package it.unibo.df.ai;
 
 import java.util.List;
+import java.util.Optional;
 
 import it.unibo.df.gs.GameState;
 import it.unibo.df.input.Input;
@@ -22,6 +23,6 @@ public interface AiBehavior {
      * 
      * @return ordered list of input to follow.
      */
-    List<Input> execute();
+    List<Optional<Input>> execute();
 
 }

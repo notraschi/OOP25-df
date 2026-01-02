@@ -1,10 +1,10 @@
 package it.unibo.df.ai;
 
 import java.util.List;
+import java.util.Optional;
 
 import it.unibo.df.gs.GameState;
 import it.unibo.df.input.Input;
-import it.unibo.df.input.Move;
 
 public class IdleBehavior implements AiBehavior{
 
@@ -14,8 +14,8 @@ public class IdleBehavior implements AiBehavior{
     }
 
     @Override
-    public List<Input> execute() {
-        return List.of(Move.IDLE);
+    public List<Optional<Input>> execute() {
+        return List.of(Optional.empty());
     }
 
 }

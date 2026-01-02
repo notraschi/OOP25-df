@@ -22,9 +22,4 @@ class ControllerTest {
         controller.handle(Move.LEFT);
         assertEquals("left", ((CombatState) controller.tick()).test());
     }
-
-    @Test //DELETME-PLS
-    void aiTestAlVolo() {
-        assertEquals("idle", ((CombatState) controller.tick()).test());
-    }
 }

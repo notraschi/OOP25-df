@@ -2,6 +2,7 @@ package it.unibo.df.ai;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import it.unibo.df.gs.GameState;
 import it.unibo.df.input.Input;
@@ -11,7 +12,7 @@ public class IdleStrategy implements AiStrategy {
     final List<AiBehavior> behaviors = new ArrayList<>(List.of(new IdleBehavior())); //test
 
     @Override
-    public List<Input> computeNextAction(GameState gameContext) {//test //SADAFA
+    public List<Optional<Input>> computeNextAction(GameState gameContext) {//test //SADAFA
         return bestBehavior().execute();
     }
 

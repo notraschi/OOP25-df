@@ -4,7 +4,6 @@ public enum Move implements CombatInput {
 	UP,
 	DOWN,
 	LEFT,
-	RIGHT,
-	IDLE
+	RIGHT
 }
 
