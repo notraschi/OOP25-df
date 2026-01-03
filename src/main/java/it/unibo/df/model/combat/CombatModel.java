@@ -6,6 +6,7 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 import it.unibo.df.model.abilities.Ability;
+import it.unibo.df.model.abilities.AbilityType;
 import it.unibo.df.model.abilities.Vec2D;
 
 /**
@@ -24,7 +25,7 @@ public class CombatModel {
      */
     public void move(Optional<Integer> entityId, Vec2D delta) {
         Entity target = entityId.map(enemies::get).orElse(player);
-        target.move(delta);
+        target.move(delta, boardSize);
     }
 
     /**
@@ -48,11 +49,15 @@ public class CombatModel {
     private void applyAbiliy(Entity caster, Stream<Entity> targets, Ability ab) {
         var cells = ab.effect().apply(caster.position);
         if (cells.isPresent()) {
-            targets.filter(t -> cells.get().contains(t.position))
-                .forEach(t -> {
-                    // t.takeDmg(ab.targetHpDelta()); 
-                    // caster.gainHp(ab.casterHpDelta());
-                });
+        targets
+            .filter(t -> cells.get().contains(t.position))
+            .forEach(t -> {
+                t.takeDmg(ab.targetHpDelta());
+                caster.gainHp(ab.casterHpDelta());
+            });
+
+        } else if (ab.type() == AbilityType.HEAL) {
+            caster.gainHp(ab.casterHpDelta());
         }
     }
 
@@ -80,12 +85,39 @@ public class CombatModel {
         }
 
         /**
+         * Applies damage to the entity.
+         *
+         * @param dmg damage amount (positive number)
+         */
+        void takeDmg(final int dmg) {
+            this.hp = Math.max(0, this.hp - dmg);
+        }
+
+        /**
+         * Heals the entity.
+         *
+         * @param heal healing amount (positive number)
+         */
+        void gainHp(final int heal) {
+            this.hp = Math.min(this.maxHp, this.hp + heal);
+        }
+
+
+        /**
          * moves.
          * 
          * @param delta contatins deltaX and deltaY
          * @return if it moved
          */
-        boolean move(Vec2D delta) { //TODO
+        boolean move(Vec2D delta, int bound) {
+            final int newX = this.position.x() + delta.x();
+            final int newY = this.position.y() + delta.y();
+            
+            if (newX < 0 || newX >= bound || newY < 0 || newY >= bound) {
+                return false;
+            }
+            
+            this.position = new Vec2D(newX, newY);
             return true;
         }
     }
