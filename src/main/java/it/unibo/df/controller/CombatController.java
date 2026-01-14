@@ -1,6 +1,5 @@
 package it.unibo.df.controller;
 
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -97,7 +96,7 @@ public final class CombatController implements ControllerState {
 		var state = new CombatState(
 			model.playerPos(),
 			model.enemyPos(),
-			Collections.unmodifiableList(effects)
+			List.copyOf(effects)
 		);
 		effects.clear(); // now we're ready for new effects happening
 		return state;
