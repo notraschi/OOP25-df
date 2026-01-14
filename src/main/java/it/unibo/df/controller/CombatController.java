@@ -60,8 +60,7 @@ public final class CombatController implements ControllerState {
 			case Move.RIGHT -> delta = new Vec2D(1, 0);
 			default -> delta = new Vec2D(0, 0);
 		}
-		model.move(entityId, delta);
-		return true;
+		return model.move(entityId, delta);
 	}
 
 	/**

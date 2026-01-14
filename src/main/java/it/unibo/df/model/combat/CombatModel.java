@@ -25,9 +25,9 @@ public class CombatModel {
      * @param entityId id of the enemy (if one)
      * @param delta how much to move
      */
-    public void move(Optional<Integer> entityId, Vec2D delta) {
+    public boolean move(Optional<Integer> entityId, Vec2D delta) {
         Entity target = entityId.map(enemies::get).orElse(player);
-        target.move(delta, boardSize);
+        return target.move(delta, boardSize);
     }
 
     /**
