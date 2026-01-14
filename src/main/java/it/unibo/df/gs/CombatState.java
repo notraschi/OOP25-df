@@ -10,6 +10,6 @@ import it.unibo.df.model.abilities.Vec2D;
  */
 public record CombatState(
     Vec2D playerPos,
-    Vec2D enemyPos,
-    List<Set<Vec2D>> activeEffects // effects currenty visible
+    Set<Vec2D> enemyPos,
+    List<Set<Vec2D>> effects // effects casted since last tick
 ) implements GameState {}

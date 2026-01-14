@@ -3,6 +3,8 @@ package it.unibo.df.model.combat;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import it.unibo.df.model.abilities.Ability;
@@ -33,20 +35,26 @@ public class CombatModel {
      * 
      * @param entityId id of the enemy (if one)
      * @param ability ability to cast
+     * @return affected cells (none for healing abilities)
      */
-    public void cast(Optional<Integer> entityId, int ability) {
+    public Optional<Set<Vec2D>> cast(Optional<Integer> entityId, int ability) {
         if (entityId.isEmpty()) {
-            applyAbiliy(player, enemies.values().stream(), player.loadout.get(ability));
+            return applyAbiliy(player, enemies.values().stream(), player.loadout.get(ability));
         } else {
             var enemy = enemies.get(entityId.get());
-            applyAbiliy(enemy, Stream.of(player), enemy.loadout.get(ability));
+            return applyAbiliy(enemy, Stream.of(player), enemy.loadout.get(ability));
         }
     }
 
     /**
      * applies ability and computes side effects.
+     * 
+     * @param caster the caster
+     * @param targets the targets
+     * @param ab the ability cast
+     * @return affected cells
      */
-    private void applyAbiliy(Entity caster, Stream<Entity> targets, Ability ab) {
+    private Optional<Set<Vec2D>> applyAbiliy(Entity caster, Stream<Entity> targets, Ability ab) {
         var cells = ab.effect().apply(caster.position);
         if (cells.isPresent()) {
         targets
@@ -59,6 +67,25 @@ public class CombatModel {
         } else if (ab.type() == AbilityType.HEAL) {
             caster.gainHp(ab.casterHpDelta());
         }
+        return cells;
+    }
+
+    /**
+     * getter for player pos.
+     * 
+     * @return player's position
+     */
+    public Vec2D playerPos() {
+        return player.position;
+    }
+
+    /**
+     * getter for enemies pos.
+     * 
+     * @return enemies' position
+     */
+    public Set<Vec2D> enemyPos() {
+        return enemies.values().stream().map(e -> e.position).collect(Collectors.toSet());
     }
 
     /**
@@ -101,7 +128,6 @@ public class CombatModel {
         void gainHp(final int heal) {
             this.hp = Math.min(this.maxHp, this.hp + heal);
         }
-
 
         /**
          * moves.
