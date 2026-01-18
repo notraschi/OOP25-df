@@ -1,0 +1,24 @@
+abilities:
+  - id: 1
+    name: Slash
+    cooldown: 3
+    type: ATTACK
+    casterHpDelta: 0
+    targetHpDelta: 8
+    area: ADJ4
+
+  - id: 2
+    name: Heal
+    cooldown: 5
+    type: HEAL
+    casterHpDelta: 6
+    targetHpDelta: 0
+    area: NONE
+
+  - id: 3
+    name: Vamp
+    cooldown: 4
+    type: LIFESTEAL
+    casterHpDelta: 3
+    targetHpDelta: 6
+    area: ADJ4

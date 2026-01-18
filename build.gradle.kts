@@ -34,6 +34,9 @@ dependencies {
     // Suppressions for SpotBugs
     compileOnly("com.github.spotbugs:spotbugs-annotations:4.9.8")
 
+    // YAML parser
+    implementation("org.yaml:snakeyaml:2.2")
+    
     // Example library: Guava. Add what you need (and use the latest version where appropriate).
     // implementation("com.google.guava:guava:28.1-jre")
 
