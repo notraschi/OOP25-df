@@ -14,6 +14,7 @@ import it.unibo.df.input.Attack;
 import it.unibo.df.input.CombatInput;
 import it.unibo.df.input.Input;
 import it.unibo.df.input.Move;
+import it.unibo.df.model.abilities.Ability;
 import it.unibo.df.model.abilities.Vec2D;
 import it.unibo.df.model.combat.CombatModel;
 
@@ -21,27 +22,29 @@ import it.unibo.df.model.combat.CombatModel;
  * combat state.
  */
 public final class CombatController implements ControllerState {
-	private final AiController aiController = new AiControllerBuilder().add(new IdleStrategy()).build();
-	private final CombatModel model = new CombatModel();
-	private final List<Set<Vec2D>> effects = new LinkedList<>();
+	private final AiController aiController;
+	private final CombatModel model;
+	private final List<Set<Vec2D>> effects;
+
+    public CombatController(List<Ability> loadout) {
+		aiController = new AiControllerBuilder().add(new IdleStrategy()).build();
+		model = new CombatModel(loadout);
+		effects = new LinkedList<>();
+    }
 
 	/**
 	 * {@inheritDoc }
 	 */
 	@Override
 	public boolean handle(Input input) {
-		boolean handled;
-		switch (input) {
-			case CombatInput action -> {
-				handled = true;
+		return switch (input) {
+			case CombatInput action -> 
 				switch (action) {
 					case Move moveAction -> handleMove(Optional.empty(), moveAction);
 					case Attack attackAction -> handleAttack(Optional.empty(), attackAction);
-				}
-			}
-			default -> handled = false;
-		}
-		return handled;
+				};
+			default -> false;
+		};
 	}
 
 	/**

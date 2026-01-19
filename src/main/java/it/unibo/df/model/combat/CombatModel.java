@@ -1,5 +1,6 @@
 package it.unibo.df.model.combat;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -15,9 +16,17 @@ import it.unibo.df.model.abilities.Vec2D;
  * gamemodel.
  */
 public class CombatModel {
-    private Entity player;
-    private Map<Integer, Entity> enemies;
+    private final Entity player;
+    private final Map<Integer, Entity> enemies;
     private int boardSize;
+
+    public CombatModel(List<Ability> playerLoadout) {
+        player = new Entity(new Vec2D(0, 0), 100, playerLoadout);
+        // TODO: add enemies' loadout
+        enemies = new LinkedHashMap<>();
+        // TODO: fix boardsize
+        boardSize = 10;
+    }
 
     /**
      * moves an entity.

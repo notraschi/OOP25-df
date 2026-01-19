@@ -8,7 +8,7 @@ import it.unibo.df.input.Input;
  * uses: state pattern, (strategy pattern obv), inversion of control
  */
 public final class Controller {
-	private final ControllerState state = new CombatController();
+	private ControllerState state = new ArsenalController();
 
 	/**
 	 * handles user input.
@@ -27,6 +27,18 @@ public final class Controller {
 	 */
 	public GameState tick() {
 		return state.tick();
+	}
+
+	/**
+	 * sets up the battle-phase
+	 */
+	public void toBattle() {
+		if (state instanceof ArsenalController arsenalController) {
+			var loadout = arsenalController.currentLoadout();
+			state = new CombatController(loadout);
+		} else {
+			throw new IllegalStateException("already in battle");
+		}
 	}
 }
 
