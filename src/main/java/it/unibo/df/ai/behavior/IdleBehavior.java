@@ -1,8 +1,9 @@
-package it.unibo.df.ai;
+package it.unibo.df.ai.behavior;
 
 import java.util.List;
 import java.util.Optional;
 
+import it.unibo.df.ai.AiBehavior;
 import it.unibo.df.gs.GameState;
 import it.unibo.df.input.Input;
 
