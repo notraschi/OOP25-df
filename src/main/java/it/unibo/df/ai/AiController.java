@@ -8,6 +8,7 @@ import java.util.Queue;
 
 import it.unibo.df.gs.GameState;
 import it.unibo.df.input.Input;
+import it.unibo.df.model.abilities.Ability;
 
 
 /**
@@ -16,10 +17,14 @@ import it.unibo.df.input.Input;
 public class AiController {
     private final Queue<Optional<Input>> actionQueue = new LinkedList<>();
     private final List<AiStrategy> avaiableStrategies;
+    private final List<Ability> loadout;
+    private final int idEntity;
     private AiStrategy currentStrategy; 
 
-    public AiController(List<AiStrategy> strategies) {
-        avaiableStrategies = strategies;
+    public AiController(List<AiStrategy> strategies, List<Ability> loadout, int idEntity) {
+        this.avaiableStrategies = strategies;
+        this.loadout = loadout;
+        this.idEntity = idEntity;
     }
 
     public Optional<Input> computeNextInput(GameState gameState) {

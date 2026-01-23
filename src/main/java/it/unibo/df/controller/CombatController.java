@@ -1,13 +1,15 @@
 package it.unibo.df.controller;
 
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
 import it.unibo.df.ai.AiController;
 import it.unibo.df.ai.AiControllerBuilder;
-import it.unibo.df.ai.IdleStrategy;
+import it.unibo.df.ai.AiStrategyType;
 import it.unibo.df.gs.CombatState;
 import it.unibo.df.gs.GameState;
 import it.unibo.df.input.Attack;
@@ -17,20 +19,30 @@ import it.unibo.df.input.Move;
 import it.unibo.df.model.abilities.Ability;
 import it.unibo.df.model.abilities.Vec2D;
 import it.unibo.df.model.combat.CombatModel;
+import it.unibo.df.model.combat.EnemyDefinition;
+import it.unibo.df.model.combat.EnemyFactory;
 
 /**
  * combat state.
  */
 public final class CombatController implements ControllerState {
-	private final AiController aiController;
+	//private final AiController aiController;
+	private final Map<Integer,AiController> aiControllers = new HashMap<>();
 	private final CombatModel model;
 	private final List<Set<Vec2D>> effects;
 
     public CombatController(List<Ability> loadout) {
-		aiController = new AiControllerBuilder().add(new IdleStrategy()).build();
 		model = new CombatModel(loadout);
+		spawnEnemy(EnemyFactory.basicEnemy(new Vec2D(3, 3)));
 		effects = new LinkedList<>();
     }
+
+	private void spawnEnemy(EnemyDefinition enemy) {
+		int id = model.addEnemy(enemy);
+		var aiBuilder = new AiControllerBuilder(id).setLoadout(enemy.loadout());
+		enemy.strategies().stream().forEach(s -> aiBuilder.add(s));
+		aiControllers.put(id, aiBuilder.build());
+	}
 
 	/**
 	 * {@inheritDoc }
@@ -90,12 +102,13 @@ public final class CombatController implements ControllerState {
 	*/
 	@Override
 	public GameState tick() {
-		aiController.computeNextInput(null).ifPresent(i -> {
+
+		aiControllers.entrySet().stream().forEach(b -> b.getValue().computeNextInput(null).ifPresent(i -> {
 			switch ((CombatInput) i) {
-				case Move moveAction -> handleMove(Optional.of(1), moveAction);
-				case Attack attackAction -> handleAttack(Optional.of(1), attackAction);
+				case Move moveAction -> handleMove(Optional.of(b.getKey()), moveAction);
+				case Attack attackAction -> handleAttack(Optional.of(b.getKey()), attackAction);
 			}
-		});
+		}));
 		var state = new CombatState(
 			model.playerPos(),
 			model.enemyPos(),

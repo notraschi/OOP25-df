@@ -2,7 +2,9 @@ package it.unibo.df.ai;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
+
+import it.unibo.df.ai.strategy.IdleStrategy;
+import it.unibo.df.model.abilities.Ability;
 
 /**
  * Builder for Ai Controller.
@@ -10,9 +12,29 @@ import java.util.Objects;
 public class AiControllerBuilder {
 
     private final List<AiStrategy> strategies;
+    private final List<Ability> loadout;
+    private final int idEntity;
 
-    public AiControllerBuilder() {
+    /**
+     * Start build of an AiController. 
+     * 
+     * @param idEntity to which the controller is associated
+     */
+    public AiControllerBuilder(int idEntity) {
         this.strategies = new ArrayList<>();
+        this.loadout = new ArrayList<>();
+        this.idEntity = idEntity;
+    }
+
+    /**
+     *  loadout of enemy
+     * 
+     * @param loadout the equipped abilities
+     * @return builder
+     */
+    public AiControllerBuilder setLoadout(List<Ability> loadout) {
+        this.loadout.addAll(loadout);
+        return this;
     }
 
     /**
@@ -21,10 +43,11 @@ public class AiControllerBuilder {
      * @param strategy to add.
      * @return builder
      */
-    public AiControllerBuilder add(AiStrategy strategy) {
-        if (Objects.isNull(strategy)) {
-            throw new IllegalStateException("Null strategy is illegal!");            
-        }
+    public AiControllerBuilder add(AiStrategyType type) { //TODO
+        AiStrategy strategy = switch (type) {
+            case IDLE -> new IdleStrategy();
+            default -> throw new IllegalArgumentException("Strategia non implementata: " + type);
+        };
         this.strategies.add(strategy);
         return this;
     }
@@ -38,7 +61,11 @@ public class AiControllerBuilder {
         if (strategies.isEmpty()) {
             throw new IllegalStateException("There are no strategies to follow!");
         }
-        return new AiController(new ArrayList<>(this.strategies));
+        return new AiController(
+            new ArrayList<>(this.strategies),
+            new ArrayList<>(this.loadout),
+            idEntity
+        );
     }
 
 }

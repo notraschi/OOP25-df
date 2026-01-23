@@ -19,6 +19,7 @@ public class CombatModel {
     private final Entity player;
     private final Map<Integer, Entity> enemies;
     private int boardSize;
+    private int nextEnemyId = 0;
 
     public CombatModel(List<Ability> playerLoadout) {
         player = new Entity(new Vec2D(0, 0), 100, playerLoadout);
@@ -26,6 +27,20 @@ public class CombatModel {
         enemies = new LinkedHashMap<>();
         // TODO: fix boardsize
         boardSize = 10;
+    }
+
+    /**
+     * add an entity enemie.
+     * 
+     * @param entityId id of the enemy (if one)
+     * @param hp hp of the enemy
+     * @param enemyLoadout loadout of enemy
+     * @return the id of the entity
+     */
+    public int addEnemy(EnemyDefinition enemy) {
+        nextEnemyId++;
+        enemies.put(nextEnemyId, new Entity(enemy.position(), enemy.hp(), enemy.loadout()));
+        return nextEnemyId;
     }
 
     /**
