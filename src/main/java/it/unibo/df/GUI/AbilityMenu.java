@@ -22,6 +22,9 @@ public class AbilityMenu extends Application{
         Scene scene = new Scene(menuArea);
         scene.getStylesheets().add(getClass().getResource("/css/boardStyle.css").toExternalForm());
         stage.setScene(scene);
+        stage.setMaximized(true);
+        stage.setMinWidth(500);
+        stage.setMinHeight(500);
         stage.show();
         
 

@@ -4,9 +4,16 @@ import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
+import javafx.scene.image.Image;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundImage;
+import javafx.scene.layout.BackgroundPosition;
+import javafx.scene.layout.BackgroundRepeat;
+import javafx.scene.layout.BackgroundSize;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.RowConstraints;
+import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
 public class GameBoard extends Application{
@@ -28,6 +35,9 @@ public class GameBoard extends Application{
         Scene scene = new Scene(mainPanel);
         scene.getStylesheets().add(getClass().getResource("/css/boardStyle.css").toExternalForm());
         stage.setScene(scene);
+        stage.setMaximized(true);
+        stage.setMinWidth(400);
+        stage.setMinHeight(700);
         stage.show();
     }
 
@@ -50,12 +60,29 @@ public class GameBoard extends Application{
     private GridPane fillPlayArea(GridPane grid){
         for (int i = 0; i < grid.getColumnCount(); i++){
             for (int j = 0; j < grid.getRowCount(); j++){
-                Label lbl = new Label("casella "+i+" "+j);
-                lbl.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
-                grid.add(lbl, i, j);
+                StackPane cell = new StackPane();
+                cell.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
+                if (i==0&&j==0){
+                    cell.setBackground(new Background(openImageAsBackground("/images/wizard.png")));
+                }else if (i== grid.getColumnCount()-1 && j== grid.getRowCount()-1){
+                    cell.setBackground(new Background(openImageAsBackground("/images/barbarian.png")));
+                }
+                grid.add(cell, i, j);
             }
         }
         return grid;
+    }
+
+    private BackgroundImage openImageAsBackground(String filaname){
+        return new BackgroundImage(
+            new Image(filaname),
+            BackgroundRepeat.NO_REPEAT,
+            BackgroundRepeat.NO_REPEAT,
+            BackgroundPosition.CENTER,
+            new BackgroundSize(
+                100, 100, true, true, false, true
+            )
+        );
     }
 
     private GridPane fillAbilityArea(){

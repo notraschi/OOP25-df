@@ -1,5 +1,12 @@
-.label {
+StackPane {
+    
     -fx-border-color: black;
     -fx-border-width: 1px;
+    -fx-alignment: center;
 }
-
+.casellacampo{
+    -fx-background-color: darkgreen;
+}
+.casellaplayer{
+    -fx-background-color: red;
+}
