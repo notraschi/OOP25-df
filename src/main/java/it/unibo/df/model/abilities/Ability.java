@@ -1,5 +1,7 @@
 package it.unibo.df.model.abilities;
 
+import it.unibo.df.gs.AbilityView;
+
 /**
  * Immutable description of a game ability.
  *
@@ -19,5 +21,9 @@ public record Ability(
     int casterHpDelta,
     int targetHpDelta,
     AbilityFn effect 
-) { }
+) {
+    public AbilityView asView() {
+        return new AbilityView(this.name, this.id, this.casterHpDelta, this.targetHpDelta);
+    }
+}
  
