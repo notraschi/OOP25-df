@@ -8,6 +8,7 @@ import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
@@ -17,7 +18,6 @@ public class MainStage extends Application{
     private AbilityMenu menu = new AbilityMenu();
     private Timeline timeline;
 
-    private int counter=0;
 
 
     @Override
@@ -34,13 +34,17 @@ public class MainStage extends Application{
         timeline.play();
         
         stage.setMaximized(true);
+        double min = (Double.min(
+            Screen.getPrimary().getBounds().getHeight(),
+            Screen.getPrimary().getBounds().getWidth()))/2;
+
+        stage.setMinHeight(min);
+        stage.setMinWidth(min);
         stage.show();
 
     }
 
     private void tick(){
-        counter++;
-        System.out.print(counter);
         var gs = (CombatState)controller.tick();
         board.reset(gs.playerPos());
     }
