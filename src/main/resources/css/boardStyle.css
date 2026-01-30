@@ -4,9 +4,9 @@ StackPane {
     -fx-border-width: 1px;
     -fx-alignment: center;
 }
-.casellacampo{
+.casellaplayer{
     -fx-background-color: darkgreen;
 }
-.casellaplayer{
+.casellaenemy{
     -fx-background-color: red;
 }

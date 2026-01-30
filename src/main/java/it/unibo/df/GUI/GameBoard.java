@@ -1,44 +1,101 @@
 package it.unibo.df.GUI;
 
+import it.unibo.df.controller.Controller;
+import it.unibo.df.gs.CombatState;
+import it.unibo.df.input.Move;
+import it.unibo.df.model.abilities.Vec2D;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.application.Application;
+import javafx.beans.value.ChangeListener;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
-import javafx.scene.image.Image;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundImage;
-import javafx.scene.layout.BackgroundPosition;
-import javafx.scene.layout.BackgroundRepeat;
-import javafx.scene.layout.BackgroundSize;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.RowConstraints;
 import javafx.scene.layout.StackPane;
+
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 public class GameBoard extends Application{
-    //private int boardSize = 10;
+    private int boardSize = 10;
+    private Controller controller = new Controller();;
+    private GridPane playArea;
+    private Vec2D playerPos = new Vec2D(0,0);
+    private Vec2D enemyPos = new Vec2D(9,9);
     private String title = "Il nostro gioco";
+
+  
 
     @Override
     public void start(Stage stage){
+        controller.toBattle();
+
         stage.setTitle(title);
-        GridPane mainPanel = new GridPane();
-        formatColumns(mainPanel,1,100);
-        formatRows(mainPanel,1,80);
-        formatRows(mainPanel,1,20);
-        GridPane playArea = new GridPane();
-        formatColumns(playArea, 20, 100/20);
-        formatRows(playArea, 10, 10);
-        mainPanel.add(fillPlayArea(playArea), 0, 0); 
-        mainPanel.add(fillLowBar(), 0, 1);
-        Scene scene = new Scene(mainPanel);
+        
+        BorderPane borderPane = new BorderPane();
+        StackPane externalWindowPane = new StackPane();
+        GridPane centerPane = new GridPane();
+        playArea = new GridPane();
+        centerPane.setMaxSize(Region.USE_PREF_SIZE, Region.USE_PREF_SIZE);
+
+        formatColumns(centerPane,1,100);
+        formatRows(centerPane,1,80);
+        formatRows(centerPane,1,20);
+        
+        formatColumns(playArea, this.boardSize, 100/this.boardSize);
+        formatRows(playArea,  this.boardSize, 100/this.boardSize);
+                
+        centerPane.add(fillPlayArea(playArea), 0, 0); 
+        centerPane.add(fillLowBar(), 0, 1);
+
+        externalWindowPane.getChildren().add(centerPane);
+        borderPane.setCenter(externalWindowPane);
+
+        Scene scene = new Scene(borderPane);
         scene.getStylesheets().add(getClass().getResource("/css/boardStyle.css").toExternalForm());
         stage.setScene(scene);
         stage.setMaximized(true);
-        stage.setMinWidth(400);
-        stage.setMinHeight(700);
+
+        Timeline timeline = new Timeline(
+            new KeyFrame(Duration.seconds(1), e->tick())
+        );
+        
+        ChangeListener<Number> resizebility = (obs, oldValue, newValue) -> {
+            double size = Double.min(externalWindowPane.getWidth(), externalWindowPane.getHeight());
+            centerPane.setPrefSize(size, size);
+        };
+
+        stage.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
+            if (event.getCode() == KeyCode.DOWN) {
+                controller.handle(Move.DOWN);
+                event.consume(); // blocca propagazione
+            }else if (event.getCode() == KeyCode.UP) {
+                controller.handle(Move.UP);
+                event.consume(); // blocca propagazione
+            }else if (event.getCode() == KeyCode.RIGHT) {
+                controller.handle(Move.RIGHT);
+                event.consume(); // blocca propagazione
+            }else if (event.getCode() == KeyCode.LEFT) {
+                controller.handle(Move.LEFT);
+                event.consume(); // blocca propagazione
+            }
+        });
+
+        externalWindowPane.widthProperty().addListener(resizebility);
+        externalWindowPane.heightProperty().addListener(resizebility);
+
         stage.show();
+        timeline.play();
+            
+        
+        
     }
 
     private void formatColumns(GridPane grid, int size, double perc){
@@ -62,27 +119,15 @@ public class GameBoard extends Application{
             for (int j = 0; j < grid.getRowCount(); j++){
                 StackPane cell = new StackPane();
                 cell.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
-                if (i==0&&j==0){
-                    cell.setBackground(new Background(openImageAsBackground("/images/wizard.png")));
+                if (playerPos.x()==i&&j==playerPos.y()){
+                    cell.getStyleClass().add("casellaplayer");
                 }else if (i== grid.getColumnCount()-1 && j== grid.getRowCount()-1){
-                    cell.setBackground(new Background(openImageAsBackground("/images/barbarian.png")));
+                    cell.getStyleClass().add("casellaenemy");
                 }
                 grid.add(cell, i, j);
             }
         }
         return grid;
-    }
-
-    private BackgroundImage openImageAsBackground(String filaname){
-        return new BackgroundImage(
-            new Image(filaname),
-            BackgroundRepeat.NO_REPEAT,
-            BackgroundRepeat.NO_REPEAT,
-            BackgroundPosition.CENTER,
-            new BackgroundSize(
-                100, 100, true, true, false, true
-            )
-        );
     }
 
     private GridPane fillAbilityArea(){
@@ -129,6 +174,30 @@ public class GameBoard extends Application{
         lowBar.add(fillBindingArea(), 2, 0);
         return lowBar;
     }
+
+    private void tick(){
+       
+        var gs = (CombatState) controller.tick();
+        reset(gs.playerPos()/*,gs.enemyPos()*/);
+    }
+
+    private void reset(Vec2D playerNextMove/*, Set<Vec2D> enemyNextMove*/){
+        Integer index= 0;
+        for (int i = 0; i < this.boardSize; i++){
+            for (int j = 0; j < this.boardSize; j++){
+                index=Integer.parseInt(String.valueOf(i)+String.valueOf(j));
+                if (playerPos.x()+playerNextMove.x()==i&&j==playerPos.y()+playerNextMove.y()){
+                    playArea.getChildren().get(index).getStyleClass().add("casellaplayer");
+                /*}else if (enemyPos.x()+enemyNextMove.x()==i && j==enemyPos.y()+enemyNextMove.y()){
+                    playArea.getChildren().get(index).getStyleClass().add("casellaenemy");
+                */}else{
+                    playArea.getChildren().get(index).getStyleClass().clear();
+                }
+            }
+        }
+    }
+
+
 
     public static void entry(String[] args) {
         launch(args);
