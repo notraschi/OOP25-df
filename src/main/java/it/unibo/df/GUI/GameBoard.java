@@ -1,18 +1,10 @@
 package it.unibo.df.GUI;
 
-import it.unibo.df.controller.Controller;
-import it.unibo.df.gs.CombatState;
-import it.unibo.df.input.Move;
 import it.unibo.df.model.abilities.Vec2D;
-import javafx.animation.KeyFrame;
-import javafx.animation.Timeline;
-import javafx.application.Application;
 import javafx.beans.value.ChangeListener;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
@@ -20,29 +12,23 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.RowConstraints;
 import javafx.scene.layout.StackPane;
 
-import javafx.stage.Stage;
-import javafx.util.Duration;
-
-public class GameBoard extends Application{
+public class GameBoard {
     private int boardSize = 10;
-    private Controller controller = new Controller();;
     private GridPane playArea;
     private Vec2D playerPos = new Vec2D(0,0);
-    private Vec2D enemyPos = new Vec2D(9,9);
-    private String title = "Il nostro gioco";
+    private Scene board;
+    //private Vec2D enemyPos = new Vec2D(9,9);
+    
+    public GameBoard(){
+        setupBoardScene();
+    }
 
-  
-
-    @Override
-    public void start(Stage stage){
-        controller.toBattle();
-
-        stage.setTitle(title);
-        
+    private void setupBoardScene(){
         BorderPane borderPane = new BorderPane();
         StackPane externalWindowPane = new StackPane();
         GridPane centerPane = new GridPane();
         playArea = new GridPane();
+
         centerPane.setMaxSize(Region.USE_PREF_SIZE, Region.USE_PREF_SIZE);
 
         formatColumns(centerPane,1,100);
@@ -58,43 +44,16 @@ public class GameBoard extends Application{
         externalWindowPane.getChildren().add(centerPane);
         borderPane.setCenter(externalWindowPane);
 
-        Scene scene = new Scene(borderPane);
-        scene.getStylesheets().add(getClass().getResource("/css/boardStyle.css").toExternalForm());
-        stage.setScene(scene);
-        stage.setMaximized(true);
-
-        Timeline timeline = new Timeline(
-            new KeyFrame(Duration.seconds(1), e->tick())
-        );
-        
         ChangeListener<Number> resizebility = (obs, oldValue, newValue) -> {
             double size = Double.min(externalWindowPane.getWidth(), externalWindowPane.getHeight());
             centerPane.setPrefSize(size, size);
         };
 
-        stage.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
-            if (event.getCode() == KeyCode.DOWN) {
-                controller.handle(Move.DOWN);
-                event.consume(); // blocca propagazione
-            }else if (event.getCode() == KeyCode.UP) {
-                controller.handle(Move.UP);
-                event.consume(); // blocca propagazione
-            }else if (event.getCode() == KeyCode.RIGHT) {
-                controller.handle(Move.RIGHT);
-                event.consume(); // blocca propagazione
-            }else if (event.getCode() == KeyCode.LEFT) {
-                controller.handle(Move.LEFT);
-                event.consume(); // blocca propagazione
-            }
-        });
-
         externalWindowPane.widthProperty().addListener(resizebility);
         externalWindowPane.heightProperty().addListener(resizebility);
 
-        stage.show();
-        timeline.play();
-            
-        
+        board = new Scene(borderPane);
+        board.getStylesheets().add(getClass().getResource("/css/boardStyle.css").toExternalForm());
         
     }
 
@@ -175,13 +134,7 @@ public class GameBoard extends Application{
         return lowBar;
     }
 
-    private void tick(){
-       
-        var gs = (CombatState) controller.tick();
-        reset(gs.playerPos()/*,gs.enemyPos()*/);
-    }
-
-    private void reset(Vec2D playerNextMove/*, Set<Vec2D> enemyNextMove*/){
+    public void reset(Vec2D playerNextMove/*, Set<Vec2D> enemyNextMove*/){
         Integer index= 0;
         for (int i = 0; i < this.boardSize; i++){
             for (int j = 0; j < this.boardSize; j++){
@@ -197,9 +150,8 @@ public class GameBoard extends Application{
         }
     }
 
-
-
-    public static void entry(String[] args) {
-        launch(args);
+    public Scene getBoardScene(){
+        return board;
     }
+
 }

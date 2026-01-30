@@ -1,17 +1,20 @@
 package it.unibo.df.GUI;
 
-import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.RowConstraints;
-import javafx.stage.Stage;
 
-public class AbilityMenu extends Application{
 
-    @Override
-    public void start (Stage stage){
+public class AbilityMenu {
+    private Scene menu;
+
+    public AbilityMenu(){
+        setupAbilityMenuScene();
+    }
+
+    private void  setupAbilityMenuScene(){
         GridPane menuArea = new GridPane();
         formatColumns(menuArea, 1, 100);
         formatRows(menuArea, 1, 80);
@@ -19,15 +22,8 @@ public class AbilityMenu extends Application{
         menuArea.add(fillUpperArea(), 0, 0);
         menuArea.add(fillLowerArea(), 0, 1);
 
-        Scene scene = new Scene(menuArea);
-        scene.getStylesheets().add(getClass().getResource("/css/boardStyle.css").toExternalForm());
-        stage.setScene(scene);
-        stage.setMaximized(true);
-        stage.setMinWidth(500);
-        stage.setMinHeight(500);
-        stage.show();
-        
-
+        menu = new Scene(menuArea);
+        menu.getStylesheets().add(getClass().getResource("/css/boardStyle.css").toExternalForm());
     }
 
     private void formatColumns(GridPane grid, int size, double perc){
@@ -102,10 +98,7 @@ public class AbilityMenu extends Application{
         return lbl;
     }
 
-    public static void entry(String[] args) {
-        launch(args);
+    public Scene getScene(){
+        return menu;
     }
-
-
-
 }

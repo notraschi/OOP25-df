@@ -1,0 +1,3 @@
+4 FRECCE per muovere il rettangolo verde
+Q per uscire dal gioco
+I per aprire e chiudere l'inventario delle mosse
