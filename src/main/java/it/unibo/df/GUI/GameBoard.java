@@ -143,12 +143,13 @@ public class GameBoard {
 
     private void refreshMap(CombatState gs, Set<Vec2D> effects){
         Integer indexOfList= 0;
+        List<Vec2D> enemyPosition=List.copyOf(gs.enemies().entrySet().stream().map(e->e.getValue().position()).toList());
         for (int i = 0; i < this.boardSize; i++){
             for (int j = 0; j < this.boardSize; j++){
                 indexOfList=Integer.parseInt(String.valueOf(i)+String.valueOf(j));
-                if (gs.playerPos().equals(new Vec2D(i,j) )){
+                if (gs.player().position().equals(new Vec2D(i,j) )){
                     playArea.getChildren().get(indexOfList).getStyleClass().add("casellaplayer");
-                }else if (gs.enemyPos().contains(new Vec2D(i,j))){
+                }else if (enemyPosition.contains(new Vec2D(i,j))){
                     playArea.getChildren().get(indexOfList).getStyleClass().add("casellaenemy");
                 }else if (effects.contains(new Vec2D(i,j))){
                     playArea.getChildren().get(indexOfList).getStyleClass().add("caselladanno");
