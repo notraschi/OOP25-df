@@ -11,6 +11,7 @@ import java.util.stream.Stream;
 import it.unibo.df.model.abilities.Ability;
 import it.unibo.df.model.abilities.AbilityType;
 import it.unibo.df.model.abilities.Vec2D;
+import it.unibo.df.snapshot.EntityView;
 
 /**
  * gamemodel.
@@ -94,22 +95,56 @@ public class CombatModel {
         return cells;
     }
 
+    // /**
+    //  * getter for player pos.
+    //  * 
+    //  * @return player's position
+    //  */
+    // // public Vec2D playerPos() {
+    // //     return player.position;
+    // // }
+
+    // /**
+    //  * getter for enemies pos.
+    //  * 
+    //  * @return enemies' position
+    //  */
+    // // public Set<Vec2D> enemyPos() {
+    // //     return enemies.values().stream().map(e -> e.position).collect(Collectors.toSet());
+    // // }
+
     /**
-     * getter for player pos.
+     * create a player data view.
      * 
-     * @return player's position
+     * @return player's view
      */
-    public Vec2D playerPos() {
-        return player.position;
+    public EntityView playerView() {
+        return new EntityView(
+            player.maxHp,
+            player.hp,
+            player.position
+        );
     }
 
     /**
-     * getter for enemies pos.
+     * create a enemies data views.
      * 
-     * @return enemies' position
+     * @return enemies views
      */
-    public Set<Vec2D> enemyPos() {
-        return enemies.values().stream().map(e -> e.position).collect(Collectors.toSet());
+    public Map<Integer, EntityView> enemyView() {
+        return enemies.entrySet().stream().collect(
+            Collectors.toMap(
+                e -> e.getKey(),
+                e -> {
+                    var v = e.getValue();
+                    return new EntityView(
+                        v.maxHp,
+                        v.hp,
+                        v.position
+                    );
+                }
+            )
+        );
     }
 
     /**

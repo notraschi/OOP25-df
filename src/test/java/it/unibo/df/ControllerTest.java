@@ -40,7 +40,7 @@ final class ControllerTest {
         // check for new state update...
         var gs = (CombatState) controller.tick();
         assertNotNull(gs);
-        assertEquals(new Vec2D(0, 0), gs.playerPos());
+        assertEquals(new Vec2D(0, 0), gs.player().position());
         assertEquals(1, gs.effects().size());
         assertEquals(4, gs.effects().get(0).size());
         assertEquals( // the effect i cased is supposed to hit these four positions
@@ -56,7 +56,7 @@ final class ControllerTest {
         assertTrue(controller.handle(Move.DOWN));
         gs = (CombatState) controller.tick();
         assertEquals(0, gs.effects().size()); // no new effects to display
-        assertEquals(new Vec2D(0, 1), gs.playerPos());
+        assertEquals(new Vec2D(0, 1), gs.player().position());
         // move the player out of bounds
         assertFalse(controller.handle(Move.LEFT));
     }
