@@ -46,7 +46,7 @@ public class MainStage extends Application{
 
     private void tick(){
         var gs = (CombatState)controller.tick();
-        board.reset(gs.playerPos());
+        board.reset(gs.player().position());
     }
 
     private void visualChange(Stage stage){
