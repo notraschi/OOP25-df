@@ -1,5 +1,6 @@
 package it.unibo.df.GUI;
 
+import it.unibo.df.gs.ArsenalState;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.layout.ColumnConstraints;
@@ -8,6 +9,7 @@ import javafx.scene.layout.RowConstraints;
 
 
 public class AbilityMenu {
+    private GridPane inventaryArea;
     private Scene menu;
 
     public AbilityMenu(){
@@ -52,17 +54,17 @@ public class AbilityMenu {
     }
 
     private GridPane fillInventaryArea(){
-        GridPane area = new GridPane();
-        formatColumns(area, 5, 20);
-        formatRows(area, 5, 20);
+        inventaryArea = new GridPane();
+        formatColumns(inventaryArea, 5, 20);
+        formatRows(inventaryArea, 5, 20);
         for (int i = 0; i < 5; i++){
             for (int j = 0; j < 5; j++){
-                Label lbl = new Label("Ability n "+(i+j));
+                Label lbl = new Label("null");
                 lbl.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
-                area.add(lbl, i, j);
+                inventaryArea.add(lbl, i, j);
             }
         }
-        return area; 
+        return inventaryArea; 
     }
 
     private GridPane fillMixerArea(){
@@ -97,6 +99,24 @@ public class AbilityMenu {
         lbl.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
         return lbl;
     }
+
+    /**
+	 * refresh the inventary page and write the equipment, unlocked an locked moves
+	 * 
+	 * @param an arsenal state 
+	 */
+    public void refresh(ArsenalState gs){
+        for (var e : inventaryArea.getChildren()){
+            if ( e instanceof Label label){
+                label.setText("ora si");
+            }
+        }
+
+    }
+    /**
+	 * 
+	 * @return a scene of the inventory
+	 */
 
     public Scene getScene(){
         return menu;

@@ -1,5 +1,11 @@
 package it.unibo.df.GUI;
 
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import it.unibo.df.gs.ArsenalState;
+import it.unibo.df.gs.CombatState;
 import it.unibo.df.model.abilities.Vec2D;
 import javafx.beans.value.ChangeListener;
 import javafx.scene.Scene;
@@ -15,11 +21,12 @@ import javafx.scene.layout.StackPane;
 public class GameBoard {
     private int boardSize = 10;
     private GridPane playArea;
-    private Vec2D playerPos = new Vec2D(0,0);
+    private GridPane abilityArea;
+    private List<String> keys;
     private Scene board;
-    //private Vec2D enemyPos = new Vec2D(9,9);
     
-    public GameBoard(){
+    public GameBoard(List<String> keys){
+        this.keys=List.copyOf(keys);
         setupBoardScene();
     }
 
@@ -78,11 +85,6 @@ public class GameBoard {
             for (int j = 0; j < grid.getRowCount(); j++){
                 StackPane cell = new StackPane();
                 cell.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
-                if (playerPos.x()==i&&j==playerPos.y()){
-                    cell.getStyleClass().add("casellaplayer");
-                }else if (i== grid.getColumnCount()-1 && j== grid.getRowCount()-1){
-                    cell.getStyleClass().add("casellaenemy");
-                }
                 grid.add(cell, i, j);
             }
         }
@@ -90,17 +92,16 @@ public class GameBoard {
     }
 
     private GridPane fillAbilityArea(){
-        GridPane area = new GridPane();
-        
-        formatColumns(area, 3, 33);
-        formatRows(area, 1, 70);
-        formatRows(area, 1, 30);
+        abilityArea = new GridPane();
+        formatColumns(abilityArea, 3, 33);
+        formatRows(abilityArea, 1, 70);
+        formatRows(abilityArea, 1, 30);
         for (int i = 0; i < 3; i++){
             Label lbl = new Label("Ability"+(i+1));
             lbl.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
-            area.add(lbl, i, 0);
+            abilityArea.add(lbl, i, 0);
         }   
-        return area;
+        return abilityArea;
     }
 
     private GridPane fillLifeBarArea(){
@@ -114,13 +115,19 @@ public class GameBoard {
         return area;
     }
     
-    private GridPane fillBindingArea(){
+    private GridPane fillKeysArea(){
         GridPane area = new GridPane();
-        formatColumns(area, 1, 100);
-        formatRows(area, 1,100);
-        Label lbl = new Label("qui ci vanno i pulsanti");
-        lbl.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
-        area.add(lbl, 0, 0);
+        int index=0;
+        formatColumns(area, 4, 25);
+        formatRows(area, 2,50);
+        for (int i = 0; i < 2 ; i++){
+            for (int j = 0; j<4; j++){
+                Label lbl = new Label(keys.get(index));
+                lbl.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
+                area.add(lbl, j, i);
+                index++;
+            }
+        }
         return area;
     }
 
@@ -130,26 +137,57 @@ public class GameBoard {
         formatRows(lowBar, 1, 100);
         lowBar.add(fillAbilityArea(), 0, 0);
         lowBar.add(fillLifeBarArea(), 1, 0);
-        lowBar.add(fillBindingArea(), 2, 0);
+        lowBar.add(fillKeysArea(), 2, 0);
         return lowBar;
     }
 
-    public void reset(Vec2D playerNextMove/*, Set<Vec2D> enemyNextMove*/){
-        Integer index= 0;
+    private void refreshMap(CombatState gs, Set<Vec2D> effects){
+        Integer indexOfList= 0;
+        List<Vec2D> enemyPosition=List.copyOf(gs.enemies().entrySet().stream().map(e->e.getValue().position()).toList());
         for (int i = 0; i < this.boardSize; i++){
             for (int j = 0; j < this.boardSize; j++){
-                index=Integer.parseInt(String.valueOf(i)+String.valueOf(j));
-                if (playerPos.x()+playerNextMove.x()==i&&j==playerPos.y()+playerNextMove.y()){
-                    playArea.getChildren().get(index).getStyleClass().add("casellaplayer");
-                /*}else if (enemyPos.x()+enemyNextMove.x()==i && j==enemyPos.y()+enemyNextMove.y()){
-                    playArea.getChildren().get(index).getStyleClass().add("casellaenemy");
-                */}else{
-                    playArea.getChildren().get(index).getStyleClass().clear();
+                indexOfList=Integer.parseInt(String.valueOf(i)+String.valueOf(j));
+                if (gs.player().position().equals(new Vec2D(i,j) )){
+                    playArea.getChildren().get(indexOfList).getStyleClass().add("casellaplayer");
+                }else if (enemyPosition.contains(new Vec2D(i,j))){
+                    playArea.getChildren().get(indexOfList).getStyleClass().add("casellaenemy");
+                }else if (effects.contains(new Vec2D(i,j))){
+                    playArea.getChildren().get(indexOfList).getStyleClass().add("caselladanno");
+                }else{
+                    playArea.getChildren().get(indexOfList).getStyleClass().clear();
                 }
             }
         }
     }
 
+    /*private void refreshLife(CombatState gs){
+
+    }
+    */
+    public void refreshAbility(ArsenalState gs){
+        for (var e : abilityArea.getChildren()){
+            if (e instanceof Label content){
+                content.setText(gs.equipped().get(0).name());
+            }
+        }
+    }
+    /**
+	 * refresh the game board, to move enemy player and color where an ability hit
+	 * 
+	 * @param a combat state
+	 */
+    public void refresh(CombatState gs){
+        Set<Vec2D> eff= new HashSet<>();
+        for (var e : gs.effects()){
+            eff.addAll(e);
+        }
+        refreshMap(gs, eff);
+    
+    }
+    /**
+	 * 
+	 * @return a scene of the board
+	 */
     public Scene getBoardScene(){
         return board;
     }
