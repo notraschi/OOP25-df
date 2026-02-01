@@ -6,13 +6,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collector;
-import java.util.stream.Collectors;
 
 import it.unibo.df.ai.AiController;
 import it.unibo.df.ai.AiControllerBuilder;
 import it.unibo.df.gs.CombatState;
-import it.unibo.df.gs.EntityState;
 import it.unibo.df.gs.GameState;
 import it.unibo.df.input.Attack;
 import it.unibo.df.input.CombatInput;
@@ -93,28 +90,11 @@ public final class CombatController implements ControllerState {
 	}
 
 	private CombatState buildState() {
-		var p = model.playerView();
-		var playerState = new EntityState(
-			p.hpMax(),
-			p.hp(),
-			p.position()
-		);
-
-		var enemiesView = model.enemyView().entrySet().stream().collect(
-			Collectors.toMap(
-				e -> e.getKey(),
-				e -> new EntityState(
-					e.getValue().hpMax(),
-					e.getValue().hp(),
-					e.getValue().position()
-				)
-			)
-		);
-
 		return new CombatState(
-			playerState,
-			enemiesView,
-			List.copyOf(effects));
+			model.playerView(),
+			model.enemyView(),
+			List.copyOf(effects)
+		);
 	}
 
 	/**

@@ -11,6 +11,7 @@ import java.util.stream.Stream;
 import it.unibo.df.model.abilities.Ability;
 import it.unibo.df.model.abilities.AbilityType;
 import it.unibo.df.model.abilities.Vec2D;
+import it.unibo.df.snapshot.EntityView;
 
 /**
  * gamemodel.

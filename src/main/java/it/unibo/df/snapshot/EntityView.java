@@ -1,8 +1,8 @@
-package it.unibo.df.gs;
+package it.unibo.df.snapshot;
 
 import it.unibo.df.model.abilities.Vec2D;
 
-public record EntityState(
+public record EntityView(
     int hpMax,
     int hp,
     Vec2D position
