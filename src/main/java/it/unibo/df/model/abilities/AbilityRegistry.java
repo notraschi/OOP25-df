@@ -35,6 +35,24 @@ public final class AbilityRegistry {
         return abilitiesById.get(id);
     }
 
+    /**
+     * Returns all registered abilities.
+     *
+     * @return list of abilities
+     */
+    public List<Ability> getAll() {
+        return List.copyOf(abilitiesById.values());
+    }
+
+    /**
+     * Returns how many abilities are registered.
+     *
+     * @return number of abilities
+     */
+    public int size() {
+        return abilitiesById.size();
+    }
+
     private void loadDefault() {
         try (InputStream stream = getClass().getClassLoader().getResourceAsStream("abilities.yml")) {
             if (stream == null) {
@@ -70,9 +88,9 @@ public final class AbilityRegistry {
 
         final Map<String, Object> abilityData = (Map<String, Object>) entry;
 
-        final int id = ((Number) abilityData.get("id")).intValue();
+        final int id = (int) abilityData.get("id");
         final String name = String.valueOf(abilityData.get("name"));
-        final int cooldown = ((Number) abilityData.get("cooldown")).intValue();
+        final int cooldown = (int) abilityData.get("cooldown");
         final AbilityType type = AbilityType.valueOf(
             String.valueOf(abilityData.get("type")).toUpperCase(Locale.ROOT)
         );
@@ -99,8 +117,5 @@ public final class AbilityRegistry {
             targetHpDelta,
             effect
         ));
-    }
-    public int size() {
-        return abilitiesById.size();
     }
 }
