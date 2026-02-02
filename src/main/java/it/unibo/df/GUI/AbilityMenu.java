@@ -3,7 +3,7 @@ package it.unibo.df.GUI;
 import java.util.LinkedList;
 import java.util.List;
 
-import it.unibo.df.gs.AbilityView;
+import it.unibo.df.dto.AbilityView;
 import it.unibo.df.gs.ArsenalState;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;

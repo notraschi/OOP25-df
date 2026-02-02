@@ -2,6 +2,8 @@ package it.unibo.df.gs;
 
 import java.util.List;
 
+import it.unibo.df.dto.AbilityView;
+
 /**
  * represents the game's state while in the arsenal.
  */

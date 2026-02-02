@@ -1,4 +1,4 @@
-package it.unibo.df.snapshot;
+package it.unibo.df.dto;
 
 import it.unibo.df.model.abilities.Vec2D;
 

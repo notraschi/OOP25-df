@@ -1,6 +1,6 @@
 package it.unibo.df.model.abilities;
 
-import it.unibo.df.gs.AbilityView;
+import it.unibo.df.dto.AbilityView;
 
 /**
  * Immutable description of a game ability.

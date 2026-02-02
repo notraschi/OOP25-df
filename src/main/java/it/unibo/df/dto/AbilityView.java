@@ -1,4 +1,4 @@
-package it.unibo.df.gs;
+package it.unibo.df.dto;
 
 /**
  * represents an Ability, it is used to forward abiliy info to the view (in ArsenalState)

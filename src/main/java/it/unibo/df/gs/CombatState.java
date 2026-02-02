@@ -4,8 +4,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import it.unibo.df.dto.EntityView;
 import it.unibo.df.model.abilities.Vec2D;
-import it.unibo.df.snapshot.EntityView;
 
 /**
  * represents the game's state while in combat.
