@@ -1,7 +1,10 @@
 package it.unibo.df.controller;
 
+import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
+import it.unibo.df.gs.ArsenalState;
 import it.unibo.df.gs.GameState;
 import it.unibo.df.input.ArsenalInput;
 import it.unibo.df.input.Combine;
@@ -15,9 +18,15 @@ import it.unibo.df.model.arsenal.ArsenalModel;
  */
 public final class ArsenalController implements ControllerState {
 	private final ArsenalModel model;
+	private final ArsenalState state;
 
 	public ArsenalController() {
 		model = new ArsenalModel();
+		state = new ArsenalState(
+			model.getArsenal().stream().map(Ability::asView).collect(Collectors.toList()),
+			new LinkedList<>(),
+			new LinkedList<>()
+		);
 	}
 
 	@Override
@@ -33,11 +42,19 @@ public final class ArsenalController implements ControllerState {
 	}
 
 	private boolean handleEquip(Equip input) {
-		return model.equip(input.id());
+		var result = model.equip(input.id());
+		if (result) state.equipped().add(input.id());
+		return result;
 	}
 
     private boolean handleCombine(Combine input) {
-        return model.combine(input.id1(), input.id2());
+        var result = model.combine(input.id1(), input.id2());
+		result.ifPresent(unlocked -> {
+			state.lost().add(input.id1());
+			state.lost().add(input.id2());
+			state.unlocked().add(unlocked);
+		});
+		return result.isPresent();
     }
 
 	public List<Ability> currentLoadout() {
@@ -46,6 +63,8 @@ public final class ArsenalController implements ControllerState {
 
 	@Override
 	public GameState tick() {
-		return model.getState();
+		var tmp = ArsenalState.copyOf(state);
+		state.clear();
+		return tmp;
 	}
 }

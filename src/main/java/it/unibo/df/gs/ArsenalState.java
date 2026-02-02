@@ -10,10 +10,10 @@ import it.unibo.df.dto.AbilityView;
 public record ArsenalState(
     // hold abilities loaded in or gained via combine
     List<AbilityView> unlocked,
-    // abilities lost after combine
-    List<AbilityView> lost,
-    // abilities (ability) just equipped
-    List<AbilityView> equipped
+    // ids of abilities lost after combine
+    List<Integer> lost,
+    // ids of abilities (ability) just equipped
+    List<Integer> equipped
 ) implements GameState {
 
     public void clear() {
