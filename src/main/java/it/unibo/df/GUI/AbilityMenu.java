@@ -1,5 +1,9 @@
 package it.unibo.df.GUI;
 
+import java.util.LinkedList;
+import java.util.List;
+
+import it.unibo.df.gs.AbilityView;
 import it.unibo.df.gs.ArsenalState;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
@@ -10,6 +14,7 @@ import javafx.scene.layout.RowConstraints;
 
 public class AbilityMenu {
     private GridPane inventaryArea;
+    private GridPane equipment;
     private Scene menu;
 
     public AbilityMenu(){
@@ -46,10 +51,12 @@ public class AbilityMenu {
 
     private GridPane fillUpperArea(){
         GridPane area = new GridPane();
-        formatColumns(area, 2, 50);
+        formatColumns(area, 1, 50);
+        formatColumns(area, 2, 25);
         formatRows(area, 1, 100);
         area.add(fillInventaryArea(), 0, 0);
-        area.add(fillMixerArea(), 1, 0);
+        area.add(fillEquipmentArea(), 1, 0);
+        ///area.add(fillMixerArea(), 2, 0);
         return area;
     }
 
@@ -59,7 +66,7 @@ public class AbilityMenu {
         formatRows(inventaryArea, 5, 20);
         for (int i = 0; i < 5; i++){
             for (int j = 0; j < 5; j++){
-                Label lbl = new Label("null");
+                Label lbl = new Label();
                 lbl.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
                 inventaryArea.add(lbl, i, j);
             }
@@ -67,16 +74,16 @@ public class AbilityMenu {
         return inventaryArea; 
     }
 
-    private GridPane fillMixerArea(){
-        GridPane area = new GridPane();
-        formatColumns(area, 2, 50);
-        formatRows(area, 1, 100);
-        for (int j = 0; j < 2; j++){
-            Label lbl = new Label("this area is for mixer and your equipment");
+    private GridPane fillEquipmentArea(){
+        equipment = new GridPane();
+        formatColumns(equipment, 1, 100);
+        formatRows(equipment, 3, 33);
+        for (int j = 0; j < 3; j++){
+            Label lbl = new Label();
             lbl.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
-            area.add(lbl, j, 0);
+            equipment.add(lbl, 0, j);
         }
-        return area;
+        return equipment;
     }
 
     private GridPane fillLowerArea(){
@@ -105,13 +112,26 @@ public class AbilityMenu {
 	 * 
 	 * @param an arsenal state 
 	 */
-    public void refresh(ArsenalState gs){
+    public void set(ArsenalState gs){
+        int index =0;
+        List<AbilityView> mosse = new LinkedList<>();
+        mosse.addAll(gs.unlocked());
+        mosse.addAll(gs.lost().reversed());
         for (var e : inventaryArea.getChildren()){
-            if ( e instanceof Label label){
-                label.setText("ora si");
+            if (e instanceof Label label){
+                label.setText(mosse.size()<index?mosse.get(index).name():"null");
             }
         }
-
+    }
+    public void refresh(ArsenalState gs){
+        int index = 0;
+        for (var e : equipment.getChildren()){
+            if (e instanceof Label content){
+                content.setText("EQUIP "+String.valueOf(index)+":\n"+gs.equipped().get(index).name());
+            }
+            index++;
+        }
+        
     }
     /**
 	 * 

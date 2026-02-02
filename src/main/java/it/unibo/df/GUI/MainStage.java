@@ -1,6 +1,7 @@
 package it.unibo.df.GUI;
 
 import java.util.List;
+import java.util.Optional;
 
 import it.unibo.df.controller.Controller;
 import it.unibo.df.gs.ArsenalState;
@@ -11,6 +12,8 @@ import it.unibo.df.input.Move;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.Screen;
@@ -20,7 +23,8 @@ import javafx.util.Duration;
 public class MainStage extends Application{
     private Controller controller = new Controller();
     private GameBoard board = new GameBoard(
-        List.of("← \nleft","→ \nright",
+        List.of("← \nleft",
+        "→ \nright",
         "↑ \nup",
         "↓ \ndown",
         "I \ninventory",
@@ -39,13 +43,14 @@ public class MainStage extends Application{
     public void start(Stage stage){
         addKeysListeners(stage);
         
-        menu.refresh((ArsenalState)controller.tick());
+        menu.set((ArsenalState)controller.tick());
         
         controller.handle(new Equip(1));
         controller.handle(new Equip(2));
         controller.handle(new Equip(3));
-        
-        board.refreshAbility((ArsenalState)controller.tick());
+        var gs =(ArsenalState)controller.tick();
+        board.refreshAbility(gs);
+        menu.refresh(gs);
 
 
         controller.toBattle();
@@ -85,6 +90,25 @@ public class MainStage extends Application{
         }
     }
 
+    private void pause(Stage stage){
+        Alert alert = new Alert(Alert.AlertType.NONE);
+        ButtonType resume= new ButtonType("resume");
+        ButtonType quit = new ButtonType("quit");
+        alert.setTitle("pause");
+        alert.setContentText("Game Paused");
+        alert.getButtonTypes().setAll(resume,quit);
+        if (stage.getScene().equals(board.getBoardScene())){
+            timeline.pause();
+            Optional<ButtonType> result = alert.showAndWait();
+            if (result.isPresent() && result.get() == resume){
+                timeline.play();
+            }else if (result.isPresent() && result.get() == quit){
+                stage.close();
+            }
+        }
+        
+    }
+
     private void addKeysListeners(Stage stage){
         stage.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
             if (event.getCode() == KeyCode.Q) {
@@ -100,7 +124,7 @@ public class MainStage extends Application{
             }else if (event.getCode() == KeyCode.I){
                 visualChange(stage);
             }else if (event.getCode() == KeyCode.SPACE){
-                System.out.print("pause");
+               pause(stage);
             }else if (event.getCode() == KeyCode.Z){
                 controller.handle(stage.getScene().equals(menu.getScene())?new Equip(1):Attack.ABILITY1);
             }else if (event.getCode() == KeyCode.X){

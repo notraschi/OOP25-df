@@ -24,6 +24,7 @@ public class GameBoard {
     private GridPane abilityArea;
     private List<String> keys;
     private Scene board;
+    private ProgressBar lifeBar;
     
     public GameBoard(List<String> keys){
         this.keys=List.copyOf(keys);
@@ -105,7 +106,7 @@ public class GameBoard {
     }
 
     private GridPane fillLifeBarArea(){
-        ProgressBar lifeBar = new ProgressBar(1.0);
+        lifeBar = new ProgressBar(1.0);
         GridPane area = new GridPane();
         formatColumns(area,1, 100);
         formatRows(area, 1, 100);
@@ -160,15 +161,17 @@ public class GameBoard {
         }
     }
 
-    /*private void refreshLife(CombatState gs){
-
+    private void refreshLife(CombatState gs){
+        lifeBar.setProgress(gs.player().hpRatio());
     }
-    */
+    
     public void refreshAbility(ArsenalState gs){
+        int index = 0;
         for (var e : abilityArea.getChildren()){
             if (e instanceof Label content){
-                content.setText(gs.equipped().get(0).name());
+                content.setText(gs.equipped().get(index).name());
             }
+            index++;
         }
     }
     /**
@@ -182,6 +185,7 @@ public class GameBoard {
             eff.addAll(e);
         }
         refreshMap(gs, eff);
+        refreshLife(gs);
     
     }
     /**
