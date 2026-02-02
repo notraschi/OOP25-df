@@ -14,21 +14,11 @@ public record ArsenalState(
     List<AbilityView> equipped
 ) implements GameState {
 
-   /*  public static ArsenalState setup(List<AbilityView> abs) {
-        return new ArsenalState(abs, List.of(), List.of());
+    public void clear() {
+        unlocked.clear();
+        lost.clear();
+        equipped.clear();
     }
-
-    public static ArsenalState equip(AbilityView ab) {
-        return new ArsenalState(List.of(), List.of(), List.of(ab));
-    }
-
-    public static ArsenalState combine(List<AbilityView> ingredients, AbilityView result) {
-        return new ArsenalState(List.of(), ingredients, List.of(result));
-    }
-
-    public static ArsenalState unchanged() {
-        return new ArsenalState(List.of(), List.of(), List.of());
-    } */
 
     public static ArsenalState copyOf(ArsenalState as) {
         return new ArsenalState(List.copyOf(as.unlocked), List.copyOf(as.lost), List.copyOf(as.equipped));

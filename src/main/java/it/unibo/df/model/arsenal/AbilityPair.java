@@ -1,4 +1,4 @@
-package it.unibo.df.model.abilities.combine;
+package it.unibo.df.model.arsenal;
 
 /**
  * Represents a pair of ability identifiers used as a key in combination maps.

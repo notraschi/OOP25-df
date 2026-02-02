@@ -1,4 +1,4 @@
-package it.unibo.df.model.abilities.combine;
+package it.unibo.df.model.arsenal;
 
 import java.util.HashMap;
 import java.util.Map;
