@@ -40,5 +40,15 @@ public final class Controller {
 			throw new IllegalStateException("already in battle");
 		}
 	}
-}
 
+	/**
+	 * sets up the arsenal phase
+	 */
+	public void toArsenal() {
+		if (state instanceof CombatController) {
+			state = new ArsenalController();
+		} else {
+			throw new IllegalStateException("already in arsenal");
+		}
+	}
+}
