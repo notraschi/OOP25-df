@@ -1,35 +1,23 @@
 package it.unibo.df.controller;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
-import it.unibo.df.gs.ArsenalState;
 import it.unibo.df.gs.GameState;
 import it.unibo.df.input.ArsenalInput;
 import it.unibo.df.input.Combine;
 import it.unibo.df.input.Equip;
 import it.unibo.df.input.Input;
 import it.unibo.df.model.abilities.Ability;
-import it.unibo.df.model.abilities.AbilityRegistry;
-import it.unibo.df.model.abilities.combine.AbilityCombiner;
-import it.unibo.df.model.abilities.combine.DefaultCombinations;
+import it.unibo.df.model.arsenal.ArsenalModel;
 
 /**
  * arsenal state.
  */
 public final class ArsenalController implements ControllerState {
-	private final AbilityRegistry arsenal;
-	private final List<Ability> loadout;
-	private final AbilityCombiner combiner;
-	private final ArsenalState state;
+	private final ArsenalModel model;
 
 	public ArsenalController() {
-		arsenal = new AbilityRegistry();
-		loadout = new ArrayList<>();
-		combiner = DefaultCombinations.create();
-		// here i should add all the arsenal in the unlocked part... TODO.
-		state = new ArsenalState(new LinkedList<>(), new LinkedList<>(), new LinkedList<>());
+		model = new ArsenalModel();
 	}
 
 	@Override
@@ -44,37 +32,20 @@ public final class ArsenalController implements ControllerState {
 		};
 	}
 
-	private boolean handleEquip(Equip input) { // TODO: fix this lone return true
-		loadout.add(arsenal.get(input.id()));
-		state.equipped().add(arsenal.get(input.id()).asView());
-		return true;
+	private boolean handleEquip(Equip input) {
+		return model.equip(input.id());
 	}
 
-    private boolean handleCombine(Combine combine) { // maybe use the utilities in ArsenalState?
-        // TODO: better logic
-		var result = combiner.combine(arsenal.get(combine.id1()), arsenal.get(combine.id2()));
-		result.ifPresent(r -> {
-			state.lost().addAll(
-				List.of(
-					arsenal.get(combine.id1()).asView(),
-					arsenal.get(combine.id2()).asView()
-				)
-			);
-			state.unlocked().add(r.asView());
-		});
-		return result.isPresent();
+    private boolean handleCombine(Combine input) {
+        return model.combine(input.id1(), input.id2());
     }
 
 	public List<Ability> currentLoadout() {
-		return List.copyOf(loadout);
+		return model.getLoadout();
 	}
 
 	@Override
 	public GameState tick() {
-		var stateCopy = ArsenalState.copyOf(state);
-		state.lost().clear();
-		state.equipped().clear();
-		state.unlocked().clear();
-		return stateCopy;
+		return model.getState();
 	}
 }

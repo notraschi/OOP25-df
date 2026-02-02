@@ -1,4 +1,4 @@
-package it.unibo.df.model.abilities.combine;
+package it.unibo.df.model.arsenal;
 
 import it.unibo.df.model.abilities.Ability;
 import it.unibo.df.model.abilities.AbilityType;
