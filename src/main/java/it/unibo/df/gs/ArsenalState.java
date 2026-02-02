@@ -2,16 +2,18 @@ package it.unibo.df.gs;
 
 import java.util.List;
 
+import it.unibo.df.dto.AbilityView;
+
 /**
  * represents the game's state while in the arsenal.
  */
 public record ArsenalState(
     // hold abilities loaded in or gained via combine
     List<AbilityView> unlocked,
-    // abilities lost after combine
-    List<AbilityView> lost,
-    // abilities (ability) just equipped
-    List<AbilityView> equipped
+    // ids of abilities lost after combine
+    List<Integer> lost,
+    // ids of abilities (ability) just equipped
+    List<Integer> equipped
 ) implements GameState {
 
     public void clear() {
