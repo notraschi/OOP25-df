@@ -12,8 +12,10 @@ import it.unibo.df.input.Move;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
+import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.ToggleButton;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.Screen;
@@ -34,34 +36,40 @@ public class MainStage extends Application{
         "Q \nquit",
         "SPACE \npause")
     );
-    private AbilityMenu menu = new AbilityMenu();
+    private AbilityMenu menu = new AbilityMenu(
+        List.of(
+        "ENTER \nto combine abilities",
+        "Z \nto add to loadout",
+        "I \nBack to play",
+        "1 \nselect in mixer",
+        "Q \nquit"));
     private Timeline timeline;
+    private Stage stage;
 
 
 
     @Override
-    public void start(Stage stage){
-        addKeysListeners(stage);
-        
-        menu.set((ArsenalState)controller.tick());
-        
+    public void start(Stage s){
+        stage = s;
+        addKeysListenersToBoard(board.getScene());
+        addKeysListenersToMenu(menu.getScene());
+        addKeysListenersToStage();
+        //menu.set((ArsenalState)controller.tick());
         controller.handle(new Equip(1));
         controller.handle(new Equip(2));
-        controller.handle(new Equip(3));
+
         var gs =(ArsenalState)controller.tick();
-        board.refreshAbility(gs);
         menu.refresh(gs);
-
-
-        controller.toBattle();
-        board.refresh((CombatState)controller.tick());
+        //controller.toBattle();
+        //board.refreshAbility(gs);
+        //board.refresh((CombatState)controller.tick());
 
         timeline = new Timeline(
             new KeyFrame(Duration.millis(500), e->tick())
         );
         timeline.setCycleCount(Timeline.INDEFINITE);
         stage.setScene(menu.getScene());
-        visualChange(stage);
+        //visualChange();
         stage.setMaximized(true);
         double min = (Double.min(
             Screen.getPrimary().getBounds().getHeight(),
@@ -77,27 +85,26 @@ public class MainStage extends Application{
         board.refresh((CombatState)controller.tick());
     }
 
-    private void visualChange(Stage stage){
+    private void visualChange(){
         if (stage.getScene().equals(menu.getScene()) ){
             //controller.toBattle();
-
             timeline.play();
             //board.
-            stage.setScene(board.getBoardScene());
-        }else if (stage.getScene().equals(board.getBoardScene())){
+            stage.setScene(board.getScene());
+        }else if (stage.getScene().equals(board.getScene())){
             timeline.stop();
             stage.setScene(menu.getScene());
         }
     }
 
-    private void pause(Stage stage){
+    private void pause(){
         Alert alert = new Alert(Alert.AlertType.NONE);
         ButtonType resume= new ButtonType("resume");
         ButtonType quit = new ButtonType("quit");
         alert.setTitle("pause");
         alert.setContentText("Game Paused");
         alert.getButtonTypes().setAll(resume,quit);
-        if (stage.getScene().equals(board.getBoardScene())){
+        if (stage.getScene().equals(board.getScene())){
             timeline.pause();
             Optional<ButtonType> result = alert.showAndWait();
             if (result.isPresent() && result.get() == resume){
@@ -109,37 +116,54 @@ public class MainStage extends Application{
         
     }
 
-    private void addKeysListeners(Stage stage){
-        stage.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
-            if (event.getCode() == KeyCode.Q) {
-                stage.close();
-            }else if (event.getCode() == KeyCode.DOWN) {
-                controller.handle(stage.getScene().equals(menu.getScene())?null:Move.DOWN);
+    private void addKeysListenersToBoard(Scene boardScene){
+        boardScene.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
+            if (event.getCode() == KeyCode.DOWN) {
+                controller.handle(Move.DOWN);
             }else if (event.getCode() == KeyCode.UP) {
-                controller.handle(stage.getScene().equals(menu.getScene())?null:Move.UP);
+                controller.handle(Move.UP);
             }else if (event.getCode() == KeyCode.RIGHT) {
-                controller.handle(stage.getScene().equals(menu.getScene())?null:Move.RIGHT);
+                controller.handle(Move.RIGHT);
             }else if (event.getCode() == KeyCode.LEFT) {
-                controller.handle(stage.getScene().equals(menu.getScene())?null:Move.LEFT);
-            }else if (event.getCode() == KeyCode.I){
-                visualChange(stage);
+                controller.handle(Move.LEFT);
             }else if (event.getCode() == KeyCode.SPACE){
-               pause(stage);
+               pause();
             }else if (event.getCode() == KeyCode.Z){
-                controller.handle(stage.getScene().equals(menu.getScene())?new Equip(1):Attack.ABILITY1);
+                controller.handle(Attack.ABILITY1);
             }else if (event.getCode() == KeyCode.X){
-                controller.handle(stage.getScene().equals(menu.getScene())?new Equip(1):Attack.ABILITY2);
+                controller.handle(Attack.ABILITY2);
             }else if (event.getCode() == KeyCode.C){
-                controller.handle(stage.getScene().equals(menu.getScene())?new Equip(1):Attack.ABILITY3);
-            }else if (event.getCode() == KeyCode.DIGIT1){
-                controller.handle(Move.DOWN);
-            }else if (event.getCode() == KeyCode.DIGIT2){
-                controller.handle(Move.DOWN);
+                controller.handle(Attack.ABILITY3);
             }
-
+        });
+    }
+    private void addKeysListenersToStage(){
+        stage.addEventFilter(KeyEvent.KEY_PRESSED, event ->{
+            if (event.getCode() == KeyCode.Q){
+                stage.close();
+            }else if (event.getCode() == KeyCode.I){
+                visualChange();
+            }
         });
     }
 
+    private void addKeysListenersToMenu(Scene menuScene){
+        menuScene.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
+            if (menu.getGroup().getSelectedToggle() != null){
+                ToggleButton btn = (ToggleButton)menu.getGroup().getSelectedToggle();
+                if (event.getCode() == KeyCode.Z){
+                    controller.handle((new Equip(menu.getId(btn.getText()))));
+                    menu.refresh((ArsenalState)controller.tick());
+                }else if (event.getCode() == KeyCode.DIGIT1){
+                    menu.addAbilityToCombine(btn.getText());
+                    menu.refreshCombine();
+                }else if (event.getCode() == KeyCode.ENTER){
+
+                }
+            }
+        });
+        }
+    
     public static void entry(String[] args) {
         launch(args);
     }

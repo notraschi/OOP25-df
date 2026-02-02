@@ -1,12 +1,14 @@
 package it.unibo.df.GUI;
 
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-
 import it.unibo.df.gs.AbilityView;
 import it.unibo.df.gs.ArsenalState;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
+import javafx.scene.control.ToggleButton;
+import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.RowConstraints;
@@ -15,9 +17,17 @@ import javafx.scene.layout.RowConstraints;
 public class AbilityMenu {
     private GridPane inventaryArea;
     private GridPane equipment;
+    private GridPane combineArea;
+    private List<String> keys;
+    private List<AbilityView> unlocked = new LinkedList<>();
+    private List<AbilityView> lost = new LinkedList<>();
+    private List<AbilityView> equipped = new LinkedList<>();
+    private List<AbilityView> combiner = new LinkedList<>();
+    private ToggleGroup group = new ToggleGroup();
     private Scene menu;
 
-    public AbilityMenu(){
+    public AbilityMenu(List<String> keys){
+        this.keys = List.copyOf(keys);
         setupAbilityMenuScene();
     }
 
@@ -56,19 +66,33 @@ public class AbilityMenu {
         formatRows(area, 1, 100);
         area.add(fillInventaryArea(), 0, 0);
         area.add(fillEquipmentArea(), 1, 0);
-        ///area.add(fillMixerArea(), 2, 0);
+        area.add(fillMixerArea(), 2, 0);
         return area;
     }
+    
+    private GridPane fillMixerArea(){
+        combineArea = new GridPane();
+        formatColumns(combineArea, 1, 100);
+        formatRows(combineArea, 2, 50);
+        for (int i = 0; i < 2; i++){
+            Label lbl = new Label("");
+            lbl.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
+            combineArea.add(lbl, 0, i);
+        }
+        return combineArea;
 
+    }
+    
     private GridPane fillInventaryArea(){
         inventaryArea = new GridPane();
         formatColumns(inventaryArea, 5, 20);
         formatRows(inventaryArea, 5, 20);
         for (int i = 0; i < 5; i++){
             for (int j = 0; j < 5; j++){
-                Label lbl = new Label();
-                lbl.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
-                inventaryArea.add(lbl, i, j);
+                ToggleButton btn = new ToggleButton();
+                btn.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
+                inventaryArea.add(btn, i, j);
+                btn.setToggleGroup(group);
             }
         }
         return inventaryArea; 
@@ -91,7 +115,7 @@ public class AbilityMenu {
         formatColumns(area, 2, 50);
         formatRows(area, 1, 100);
         area.add(fillDescriptionArea(), 0, 0);
-        area.add(fillBindingsArea(), 1, 0);
+        area.add(fillKeysArea(), 1, 0);
         return area;
     }
 
@@ -101,10 +125,21 @@ public class AbilityMenu {
         return lbl;
     }
 
-    private Label fillBindingsArea(){
-        Label lbl = new Label("This area is for Bindings");
-        lbl.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
-        return lbl;
+    private GridPane fillKeysArea(){
+        GridPane area = new GridPane();
+        Iterator<String> key = keys.iterator();
+        formatColumns(area, 3, 33);
+        formatRows(area, 2, 50);
+        
+        for (int i = 0; i < 2; i++){
+            for (int j = 0; j < 3;j++){
+                Label lbl = new Label(key.hasNext()?key.next():"");
+                lbl.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
+                area.add(lbl, j, i);
+            }
+        }
+        
+        return area;
     }
 
     /**
@@ -113,26 +148,66 @@ public class AbilityMenu {
 	 * @param an arsenal state 
 	 */
     public void set(ArsenalState gs){
-        int index =0;
-        List<AbilityView> mosse = new LinkedList<>();
-        mosse.addAll(gs.unlocked());
-        mosse.addAll(gs.lost().reversed());
+        unlocked.addAll(gs.unlocked());
+        lost.addAll(gs.lost());
+        unlocked.removeAll(lost);
+        equipped.addAll(gs.equipped());        
+    }
+
+    public void refresh(ArsenalState gs){
+        set(gs);
+        Iterator<AbilityView> ability1 = unlocked.iterator();
+        Iterator<AbilityView> ability2 = lost.iterator();
+        Iterator<AbilityView> ability3 = equipped.iterator();
         for (var e : inventaryArea.getChildren()){
-            if (e instanceof Label label){
-                label.setText(mosse.size()<index?mosse.get(index).name():"null");
+            if (e instanceof ToggleButton button){
+                button.setText(ability1.hasNext()?ability1.next().name():ability2.hasNext()?"lost"+ability2.next().name():"");
             }
         }
-    }
-    public void refresh(ArsenalState gs){
-        int index = 0;
         for (var e : equipment.getChildren()){
-            if (e instanceof Label content){
-                content.setText("EQUIP "+String.valueOf(index)+":\n"+gs.equipped().get(index).name());
+            if (e instanceof Label label){
+                label.setText(ability3.hasNext()?ability3.next().name():"");
             }
-            index++;
         }
         
+
     }
+
+    public int getId(String name){
+        for(var e : unlocked){
+            if (e.name().equals(name)){
+                return e.id();
+            }
+        }
+        return 0;
+    }
+
+    public void addAbilityToCombine(String name){
+        if (combiner.size()>=2){
+            combiner.removeFirst();
+        }
+        for (var e : unlocked){
+            if (e.name().equals(name)){
+                combiner.add(e);
+            }
+        }
+        
+
+    }
+
+    public void refreshCombine(){
+        Iterator<AbilityView> ability = combiner.iterator();
+        for (var e : combineArea.getChildren()){
+            if (e instanceof Label lbl){
+                lbl.setText(ability.hasNext()?ability.next().name():"");
+            }
+        }
+    }
+
+   public ToggleGroup getGroup(){
+        return group;
+   }
+
     /**
 	 * 
 	 * @return a scene of the inventory

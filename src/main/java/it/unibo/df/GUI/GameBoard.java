@@ -1,9 +1,11 @@
 package it.unibo.df.GUI;
 
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import it.unibo.df.gs.AbilityView;
 import it.unibo.df.gs.ArsenalState;
 import it.unibo.df.gs.CombatState;
 import it.unibo.df.model.abilities.Vec2D;
@@ -166,12 +168,11 @@ public class GameBoard {
     }
     
     public void refreshAbility(ArsenalState gs){
-        int index = 0;
+        Iterator<AbilityView> ability = gs.equipped().iterator();
         for (var e : abilityArea.getChildren()){
             if (e instanceof Label content){
-                content.setText(gs.equipped().get(index).name());
+                content.setText(ability.next().name());
             }
-            index++;
         }
     }
     /**
@@ -192,7 +193,7 @@ public class GameBoard {
 	 * 
 	 * @return a scene of the board
 	 */
-    public Scene getBoardScene(){
+    public Scene getScene(){
         return board;
     }
 
