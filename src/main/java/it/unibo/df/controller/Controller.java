@@ -36,6 +36,9 @@ public final class Controller {
 	public void toBattle() {
 		if (state instanceof ArsenalController arsenalController) {
 			var loadout = arsenalController.currentLoadout();
+			if (loadout.size() != 3) {
+				throw new IllegalStateException("going to the battle unprepared isn't wise...");
+			}
 			state = new CombatController(loadout);
 		} else {
 			throw new IllegalStateException("already in battle");

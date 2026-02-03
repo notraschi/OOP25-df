@@ -5,8 +5,8 @@ import java.util.Set;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import it.unibo.df.controller.Controller;
@@ -22,17 +22,23 @@ import it.unibo.df.model.abilities.Vec2D;
 final class ControllerTest {
     private Controller controller;
 
-    @BeforeEach
-    void setup() {
-        // ArsenalController
-        controller = new Controller();
-    }
-
     @Test
-    void testToBattle() {
+    void completeTest() {
+        controller = new Controller();
+
         // a valid move id is 1 for example.
-        // equip ability with id 1
         assertTrue(controller.handle(new Equip(1)));
+        assertTrue(controller.handle(new Equip(2)));
+        // cannot go to battle right now, loadout isn't full yet!
+        var ex = assertThrows(IllegalStateException.class, () -> controller.toBattle());
+        assertNotNull(ex);
+
+        assertTrue(controller.handle(new Equip(3)));
+        // cannot insert any more abilities
+        assertFalse(controller.handle(new Equip(1)));
+        // cannot insert unknown abilities
+        assertFalse(controller.handle(new Equip(-1)));
+
         // switches controller to CombatController
         controller.toBattle();
         // perform ability

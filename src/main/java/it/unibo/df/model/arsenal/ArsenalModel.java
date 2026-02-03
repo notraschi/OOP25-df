@@ -21,14 +21,18 @@ public class ArsenalModel {
     }
 
     public boolean equip(int id) {
-        if (arsenal.get(id) == null) return false;
+        if (arsenal.get(id) == null || loadout.size() > 2) {
+            return false;
+        }
 
         loadout.add(arsenal.get(id));
 		return true;
     }
 
     public Optional<AbilityView> combine(int id1, int id2) {
-        if (arsenal.get(id1) == null || arsenal.get(id2) == null) return Optional.empty();
+        if (arsenal.get(id1) == null || arsenal.get(id2) == null) {
+            return Optional.empty();
+        }
 
 		var result = combiner.combine(arsenal.get(id1), arsenal.get(id2));
 		return result.map(Ability::asView);
