@@ -100,13 +100,7 @@ public final class AbilityRegistry {
         final String area = String.valueOf(abilityData.getOrDefault("area", "NONE"))
             .toUpperCase(Locale.ROOT);
 
-        final AbilityFn effect = switch (area) {
-            case "NONE" -> caster -> Optional.empty();
-            case "SELF" -> caster -> Optional.of(Set.of(caster));
-            case "ADJ4" -> AbilityAreas.adjacent4();
-            default -> throw new IllegalArgumentException("Unknown area: " + area);
-        };
-
+        final AbilityFn effect = AbilityAreas.fromString(area);
 
         abilitiesById.put(id,new Ability(
             id,

@@ -43,4 +43,19 @@ public final class AbilityAreas {
             return Optional.of(area);
         };
     }
+
+    /**
+     * Converts an area name to an area function.
+     * 
+     * @param areaName the name of the area
+     * @return area function
+     */
+    public static AbilityFn fromString(final String areaName) {
+        return switch (areaName) {
+            case "NONE" -> none();
+            case "SELF" -> self();
+            case "ADJ4" -> adjacent4();
+            default -> throw new IllegalArgumentException("Unknown area: " + areaName);
+        };
+    }
 }
