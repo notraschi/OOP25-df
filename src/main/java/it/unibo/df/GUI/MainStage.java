@@ -48,6 +48,7 @@ public class MainStage extends Application{
     );
     private Timeline timeline;
     private Stage stage;
+    private int timeToTick = 500;
 
 
 
@@ -61,16 +62,15 @@ public class MainStage extends Application{
 
         controller.handle(new Equip(1));
         controller.handle(new Equip(2));
-        menu.refresh((ArsenalState)controller.tick());
+        menu.refresh((ArsenalState)controller.tick(0));
         
 
         timeline = new Timeline(
-            new KeyFrame(Duration.millis(500), e->tick())
+            new KeyFrame(Duration.millis(timeToTick), e->tick())
         );
         timeline.setCycleCount(Timeline.INDEFINITE);
         stage.setScene(menu.getScene());
         visualChange();
-        board.refresh((CombatState)controller.tick());
         stage.setMaximized(true);
         double min = (Double.min(
             Screen.getPrimary().getBounds().getHeight(),
@@ -83,7 +83,7 @@ public class MainStage extends Application{
     }
 
     private void tick(){
-        board.refresh((CombatState)controller.tick());
+        board.refresh((CombatState)controller.tick(timeToTick));
     }
 
     private void visualChange(){
@@ -151,7 +151,7 @@ public class MainStage extends Application{
                 switch(event.getCode()){
                     case KeyCode.Z -> {
                         controller.handle(new Equip(menu.getId(btn.getText())));
-                        menu.refresh((ArsenalState)controller.tick());
+                        menu.refresh((ArsenalState)controller.tick(0));
                     }
                     case KeyCode.DIGIT1 -> {
                         menu.addAbilityToCombine(btn.getText());
