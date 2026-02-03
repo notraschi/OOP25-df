@@ -154,7 +154,7 @@ public class AbilityMenu {
             unlocked.put(e.id(), e);
         }
         lost.addAll(gs.lost());
-        equipped.addAll(gs.equipped());        
+        equipped.addAll(gs.equipped());      
     }
 
     public void refresh(ArsenalState gs){
@@ -174,6 +174,9 @@ public class AbilityMenu {
         }
         
 
+    }
+    public void cleanEquipped() {
+        equipped.clear();
     }
 
     public int getId(String name){

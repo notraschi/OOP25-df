@@ -62,6 +62,7 @@ public class MainStage extends Application{
 
         controller.handle(new Equip(1));
         controller.handle(new Equip(2));
+        controller.handle(new Equip(3));
         menu.refresh((ArsenalState)controller.tick(0));
         
 
@@ -95,6 +96,8 @@ public class MainStage extends Application{
         }else if (stage.getScene().equals(board.getScene())){
             timeline.stop();
             controller.toArsenal();
+            menu.cleanEquipped();
+            menu.refresh((ArsenalState)controller.tick(0));
             stage.setScene(menu.getScene());
         }
     }
@@ -129,6 +132,7 @@ public class MainStage extends Application{
                 case KeyCode.Z -> controller.handle(Attack.ABILITY1);
                 case KeyCode.X -> controller.handle(Attack.ABILITY2);
                 case KeyCode.C -> controller.handle(Attack.ABILITY3);
+                
                 default -> {}
             }
         });
@@ -150,7 +154,8 @@ public class MainStage extends Application{
                 ToggleButton btn = (ToggleButton)menu.getGroup().getSelectedToggle();
                 switch(event.getCode()){
                     case KeyCode.Z -> {
-                        controller.handle(new Equip(menu.getId(btn.getText())));
+                        int id = menu.getId(btn.getText());
+                        controller.handle(new Equip(id));
                         menu.refresh((ArsenalState)controller.tick(0));
                     }
                     case KeyCode.DIGIT1 -> {
