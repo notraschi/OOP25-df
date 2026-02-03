@@ -25,24 +25,28 @@ import javafx.util.Duration;
 public class MainStage extends Application{
     private Controller controller = new Controller();
     private GameBoard board = new GameBoard(
-        List.of("← \nleft",
-        "→ \nright",
-        "↑ \nup",
-        "↓ \ndown",
-        "I \ninventory",
-        "Z \nability 1",
-        "X \nability 2",
-        "C \nability 3",
-        "Q \nquit",
-        "SPACE \npause")
+        List.of(
+            "← \nleft",
+            "→ \nright",
+            "↑ \nup",
+            "↓ \ndown",
+            "I \ninventory",
+            "Z \nability 1",
+            "X \nability 2",
+            "C \nability 3",
+            "Q \nquit",
+            "SPACE \npause"
+        )
     );
     private AbilityMenu menu = new AbilityMenu(
         List.of(
-        "ENTER \nto combine abilities",
-        "Z \nto add to loadout",
-        "I \nBack to play",
-        "1 \nselect in mixer",
-        "Q \nquit"));
+            "ENTER \nto combine abilities",
+            "Z \nto add to loadout",
+            "I \nBack to play",
+            "1 \nselect in mixer",
+            "Q \nquit"
+        )
+    );
     private Timeline timeline;
     private Stage stage;
 
@@ -54,22 +58,20 @@ public class MainStage extends Application{
         addKeysListenersToBoard(board.getScene());
         addKeysListenersToMenu(menu.getScene());
         addKeysListenersToStage();
-        //menu.set((ArsenalState)controller.tick());
+
+
         controller.handle(new Equip(1));
         controller.handle(new Equip(2));
-
-        var gs =(ArsenalState)controller.tick();
-        menu.refresh(gs);
-        //controller.toBattle();
-        //board.refreshAbility(gs);
-        //board.refresh((CombatState)controller.tick());
+        menu.refresh((ArsenalState)controller.tick());
+        
 
         timeline = new Timeline(
             new KeyFrame(Duration.millis(500), e->tick())
         );
         timeline.setCycleCount(Timeline.INDEFINITE);
         stage.setScene(menu.getScene());
-        //visualChange();
+        visualChange();
+        board.refresh((CombatState)controller.tick());
         stage.setMaximized(true);
         double min = (Double.min(
             Screen.getPrimary().getBounds().getHeight(),
@@ -87,12 +89,13 @@ public class MainStage extends Application{
 
     private void visualChange(){
         if (stage.getScene().equals(menu.getScene()) ){
-            //controller.toBattle();
             timeline.play();
-            //board.
+            controller.toBattle();
+            board.refreshAbility(menu.getEquipped());
             stage.setScene(board.getScene());
         }else if (stage.getScene().equals(board.getScene())){
             timeline.stop();
+            controller.toArsenal();
             stage.setScene(menu.getScene());
         }
     }
@@ -118,31 +121,26 @@ public class MainStage extends Application{
 
     private void addKeysListenersToBoard(Scene boardScene){
         boardScene.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
-            if (event.getCode() == KeyCode.DOWN) {
-                controller.handle(Move.DOWN);
-            }else if (event.getCode() == KeyCode.UP) {
-                controller.handle(Move.UP);
-            }else if (event.getCode() == KeyCode.RIGHT) {
-                controller.handle(Move.RIGHT);
-            }else if (event.getCode() == KeyCode.LEFT) {
-                controller.handle(Move.LEFT);
-            }else if (event.getCode() == KeyCode.SPACE){
-               pause();
-            }else if (event.getCode() == KeyCode.Z){
-                controller.handle(Attack.ABILITY1);
-            }else if (event.getCode() == KeyCode.X){
-                controller.handle(Attack.ABILITY2);
-            }else if (event.getCode() == KeyCode.C){
-                controller.handle(Attack.ABILITY3);
+            switch(event.getCode()){
+                case KeyCode.DOWN -> controller.handle(Move.DOWN);
+                case KeyCode.UP -> controller.handle(Move.UP);
+                case KeyCode.RIGHT -> controller.handle(Move.RIGHT);
+                case KeyCode.LEFT -> controller.handle(Move.LEFT);
+                case KeyCode.SPACE -> pause();
+                case KeyCode.Z -> controller.handle(Attack.ABILITY1);
+                case KeyCode.X -> controller.handle(Attack.ABILITY2);
+                case KeyCode.C -> controller.handle(Attack.ABILITY3);
+                default -> {}
             }
         });
     }
+    
     private void addKeysListenersToStage(){
         stage.addEventFilter(KeyEvent.KEY_PRESSED, event ->{
-            if (event.getCode() == KeyCode.Q){
-                stage.close();
-            }else if (event.getCode() == KeyCode.I){
-                visualChange();
+            switch(event.getCode()){
+                case KeyCode.Q -> stage.close();
+                case KeyCode.I -> visualChange();
+                default -> {}
             }
         });
     }
@@ -151,18 +149,23 @@ public class MainStage extends Application{
         menuScene.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
             if (menu.getGroup().getSelectedToggle() != null){
                 ToggleButton btn = (ToggleButton)menu.getGroup().getSelectedToggle();
-                if (event.getCode() == KeyCode.Z){
-                    controller.handle((new Equip(menu.getId(btn.getText()))));
-                    menu.refresh((ArsenalState)controller.tick());
-                }else if (event.getCode() == KeyCode.DIGIT1){
-                    menu.addAbilityToCombine(btn.getText());
-                    menu.refreshCombine();
-                }else if (event.getCode() == KeyCode.ENTER){
+                switch(event.getCode()){
+                    case KeyCode.Z -> {
+                        controller.handle(new Equip(menu.getId(btn.getText())));
+                        menu.refresh((ArsenalState)controller.tick());
+                    }
+                    case KeyCode.DIGIT1 -> {
+                        menu.addAbilityToCombine(btn.getText());
+                        menu.refreshCombine();
+                    }
+                    case KeyCode.ENTER -> {
 
+                    }
+                    default -> {}
                 }
             }
         });
-        }
+    }
     
     public static void entry(String[] args) {
         launch(args);

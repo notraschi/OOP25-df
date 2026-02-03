@@ -4,9 +4,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-
-import it.unibo.df.gs.AbilityView;
-import it.unibo.df.gs.ArsenalState;
+import it.unibo.df.dto.AbilityView;
 import it.unibo.df.gs.CombatState;
 import it.unibo.df.model.abilities.Vec2D;
 import javafx.beans.value.ChangeListener;
@@ -145,7 +143,7 @@ public class GameBoard {
     }
 
     private void refreshMap(CombatState gs, Set<Vec2D> effects){
-        Integer indexOfList= 0;
+        int indexOfList= 0;
         List<Vec2D> enemyPosition=List.copyOf(gs.enemies().entrySet().stream().map(e->e.getValue().position()).toList());
         for (int i = 0; i < this.boardSize; i++){
             for (int j = 0; j < this.boardSize; j++){
@@ -158,7 +156,8 @@ public class GameBoard {
                     playArea.getChildren().get(indexOfList).getStyleClass().add("caselladanno");
                 }else{
                     playArea.getChildren().get(indexOfList).getStyleClass().clear();
-                }
+                }//fare matrice con dentro le caselle 
+
             }
         }
     }
@@ -167,11 +166,11 @@ public class GameBoard {
         lifeBar.setProgress(gs.player().hpRatio());
     }
     
-    public void refreshAbility(ArsenalState gs){
-        Iterator<AbilityView> ability = gs.equipped().iterator();
+    public void refreshAbility(List<AbilityView> equipment){
+        Iterator<AbilityView> equipIt = equipment.iterator();
         for (var e : abilityArea.getChildren()){
             if (e instanceof Label content){
-                content.setText(ability.next().name());
+                content.setText(equipIt.hasNext()?equipIt.next().name():"");
             }
         }
     }

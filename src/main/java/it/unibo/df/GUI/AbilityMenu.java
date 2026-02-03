@@ -1,9 +1,10 @@
 package it.unibo.df.GUI;
 
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
-
+import java.util.Map;
 import it.unibo.df.dto.AbilityView;
 import it.unibo.df.gs.ArsenalState;
 import javafx.scene.Scene;
@@ -20,10 +21,10 @@ public class AbilityMenu {
     private GridPane equipment;
     private GridPane combineArea;
     private List<String> keys;
-    private List<AbilityView> unlocked = new LinkedList<>();
-    private List<AbilityView> lost = new LinkedList<>();
-    private List<AbilityView> equipped = new LinkedList<>();
-    private List<AbilityView> combiner = new LinkedList<>();
+    private Map<Integer, AbilityView> unlocked = new LinkedHashMap<>();
+    private List<Integer> lost = new LinkedList<>();
+    private List<Integer> equipped = new LinkedList<>();
+    private List<Integer> combiner = new LinkedList<>();
     private ToggleGroup group = new ToggleGroup();
     private Scene menu;
 
@@ -44,7 +45,7 @@ public class AbilityMenu {
         menu.getStylesheets().add(getClass().getResource("/css/boardStyle.css").toExternalForm());
     }
 
-    private void formatColumns(GridPane grid, int size, double perc){
+    private void formatColumns(GridPane grid, int size, double perc) {
         ColumnConstraints cc = new ColumnConstraints();
         cc.setPercentWidth(perc);
         for (int i = 0; i<size; i++){
@@ -52,7 +53,7 @@ public class AbilityMenu {
         }
     }
 
-    private void formatRows(GridPane grid, int size, double perc){
+    private void formatRows(GridPane grid, int size, double perc) {
         RowConstraints cr = new RowConstraints();
         cr.setPercentHeight(perc);
         for (int i = 0; i<size; i++){
@@ -60,7 +61,7 @@ public class AbilityMenu {
         }
     }
 
-    private GridPane fillUpperArea(){
+    private GridPane fillUpperArea() {
         GridPane area = new GridPane();
         formatColumns(area, 1, 50);
         formatColumns(area, 2, 25);
@@ -149,25 +150,26 @@ public class AbilityMenu {
 	 * @param an arsenal state 
 	 */
     public void set(ArsenalState gs){
-        unlocked.addAll(gs.unlocked());
+        for (var e : gs.unlocked()){
+            unlocked.put(e.id(), e);
+        }
         lost.addAll(gs.lost());
-        unlocked.removeAll(lost);
         equipped.addAll(gs.equipped());        
     }
 
     public void refresh(ArsenalState gs){
         set(gs);
-        Iterator<AbilityView> ability1 = unlocked.iterator();
-        Iterator<AbilityView> ability2 = lost.iterator();
-        Iterator<AbilityView> ability3 = equipped.iterator();
+        Iterator<AbilityView> unlockIt = unlocked.entrySet().stream().map(e -> e.getValue()).iterator();
+        Iterator<Integer> lostIt = lost.iterator();
+        Iterator<Integer> equipIt = equipped.iterator();
         for (var e : inventaryArea.getChildren()){
             if (e instanceof ToggleButton button){
-                button.setText(ability1.hasNext()?ability1.next().name():ability2.hasNext()?"lost"+ability2.next().name():"");
+                button.setText(unlockIt.hasNext()?unlockIt.next().name():lostIt.hasNext()?unlocked.get(lostIt.next()).name():"");
             }
         }
         for (var e : equipment.getChildren()){
             if (e instanceof Label label){
-                label.setText(ability3.hasNext()?ability3.next().name():"");
+                label.setText(equipIt.hasNext()?unlocked.get(equipIt.next()).name():"");
             }
         }
         
@@ -175,9 +177,9 @@ public class AbilityMenu {
     }
 
     public int getId(String name){
-        for(var e : unlocked){
-            if (e.name().equals(name)){
-                return e.id();
+        for(var e : unlocked.entrySet()){
+            if (e.getValue().name().equals(name)){
+                return e.getKey();
             }
         }
         return 0;
@@ -187,9 +189,9 @@ public class AbilityMenu {
         if (combiner.size()>=2){
             combiner.removeFirst();
         }
-        for (var e : unlocked){
-            if (e.name().equals(name)){
-                combiner.add(e);
+        for (var e : unlocked.entrySet()){
+            if (e.getValue().name().equals(name)){
+                combiner.add(e.getKey());
             }
         }
         
@@ -197,17 +199,20 @@ public class AbilityMenu {
     }
 
     public void refreshCombine(){
-        Iterator<AbilityView> ability = combiner.iterator();
+        Iterator<Integer> combineIt = combiner.iterator();
         for (var e : combineArea.getChildren()){
             if (e instanceof Label lbl){
-                lbl.setText(ability.hasNext()?ability.next().name():"");
+                lbl.setText(combineIt.hasNext()?unlocked.get(combineIt.next()).name():"");
             }
         }
     }
 
-   public ToggleGroup getGroup(){
+    public ToggleGroup getGroup(){
         return group;
-   }
+    }
+    public List<AbilityView> getEquipped(){
+        return equipped.stream().map(e -> unlocked.get(e)).toList();
+    }
 
     /**
 	 * 
