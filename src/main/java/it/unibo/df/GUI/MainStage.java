@@ -88,7 +88,7 @@ public class MainStage extends Application{
     }
 
     private void visualChange(){
-        if (stage.getScene().equals(menu.getScene()) ){
+        if (stage.getScene().equals(menu.getScene()) && menu.getEquipped().size()==3){
             timeline.play();
             controller.toBattle();
             board.refreshAbility(menu.getEquipped());
