@@ -20,6 +20,7 @@ import javafx.scene.layout.StackPane;
 
 public class GameBoard {
     private int boardSize = 10;
+    private StackPane[][] playAreaMat = new StackPane[boardSize][boardSize];
     private GridPane playArea;
     private GridPane abilityArea;
     private List<String> keys;
@@ -54,9 +55,8 @@ public class GameBoard {
 
         ChangeListener<Number> resizebility = (obs, oldValue, newValue) -> {
             double size = Double.min(externalWindowPane.getWidth(), externalWindowPane.getHeight());
-            centerPane.setPrefSize(size, size);
+            centerPane.setPrefSize(size-(size*20)/100, size);
         };
-
         externalWindowPane.widthProperty().addListener(resizebility);
         externalWindowPane.heightProperty().addListener(resizebility);
 
@@ -87,6 +87,7 @@ public class GameBoard {
                 StackPane cell = new StackPane();
                 cell.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
                 grid.add(cell, i, j);
+                playAreaMat[i][j]=cell;
             }
         }
         return grid;
@@ -143,19 +144,18 @@ public class GameBoard {
     }
 
     private void refreshMap(CombatState gs, Set<Vec2D> effects){
-        int indexOfList= 0;
+
         List<Vec2D> enemyPosition=List.copyOf(gs.enemies().entrySet().stream().map(e->e.getValue().position()).toList());
         for (int i = 0; i < this.boardSize; i++){
             for (int j = 0; j < this.boardSize; j++){
-                indexOfList=Integer.parseInt(String.valueOf(i)+String.valueOf(j));
                 if (gs.player().position().equals(new Vec2D(i,j) )){
-                    playArea.getChildren().get(indexOfList).getStyleClass().add("casellaplayer");
+                    playAreaMat[i][j].getStyleClass().add("casellaplayer");
                 }else if (enemyPosition.contains(new Vec2D(i,j))){
-                    playArea.getChildren().get(indexOfList).getStyleClass().add("casellaenemy");
+                    playAreaMat[i][j].getStyleClass().add("casellaenemy");
                 }else if (effects.contains(new Vec2D(i,j))){
-                    playArea.getChildren().get(indexOfList).getStyleClass().add("caselladanno");
+                    playAreaMat[i][j].getStyleClass().add("caselladanno");
                 }else{
-                    playArea.getChildren().get(indexOfList).getStyleClass().clear();
+                    playAreaMat[i][j].getStyleClass().clear();
                 }//fare matrice con dentro le caselle 
 
             }

@@ -2,7 +2,6 @@ package it.unibo.df.GUI;
 
 import java.util.List;
 import java.util.Optional;
-
 import it.unibo.df.controller.Controller;
 import it.unibo.df.gs.ArsenalState;
 import it.unibo.df.gs.CombatState;
