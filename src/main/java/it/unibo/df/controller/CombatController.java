@@ -110,14 +110,16 @@ public final class CombatController implements ControllerState {
 	3.2 - view should set up its own timers when it recieves new effects, and make old effects disapper according to said timers
 	*/
 	@Override
-	public GameState tick() {
-
-		aiControllers.entrySet().stream().forEach(b -> b.getValue().computeNextInput(state).ifPresent(i -> {
-			switch ((CombatInput) i) {
-				case Move moveAction -> handleMove(Optional.of(b.getKey()), moveAction);
-				case Attack attackAction -> handleAttack(Optional.of(b.getKey()), attackAction);
+	public GameState tick(long deltaTime) {
+		model.tick(deltaTime);
+		aiControllers.entrySet().stream()
+			.forEach(e -> e.getValue().computeNextInput(state).ifPresent(in -> {
+				switch ((CombatInput) in) {
+					case Move moveAction -> handleMove(Optional.of(e.getKey()), moveAction);
+					case Attack attackAction -> handleAttack(Optional.of(e.getKey()), attackAction);
+				}
 			}
-		}));
+		));
 		state = buildState(); 
 		effects.clear(); // now we're ready for new effects happening
 		return state;

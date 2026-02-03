@@ -1,71 +1,38 @@
 package it.unibo.df;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.concurrent.TimeUnit;
-
 import org.junit.jupiter.api.Test;
 
-import it.unibo.df.model.combat.Cooldown;
+import it.unibo.df.controller.Controller;
+import it.unibo.df.gs.CombatState;
+import it.unibo.df.input.Attack;
+import it.unibo.df.input.Equip;
 
+/**
+ * simple and dumb test to show cooldowns work.
+ */
 public class CooldownTest {
-    @Test
-    void remainingTimeTest() throws InterruptedException {
-        Cooldown cooldown = new Cooldown();
-        cooldown.setCooldown(5, TimeUnit.SECONDS);
-        Thread.sleep(TimeUnit.MILLISECONDS.convert(4, TimeUnit.SECONDS));
-        assertEquals(1,cooldown.getRemainingTime(TimeUnit.SECONDS));
-    }
 
     @Test
-    void isExpiredTest() throws InterruptedException {
-        Cooldown cooldown = new Cooldown();
-        cooldown.setCooldown(5, TimeUnit.SECONDS);
-        assertFalse(cooldown.isExpire());
-        Thread.sleep(TimeUnit.MILLISECONDS.convert(1, TimeUnit.SECONDS));
-        assertFalse(cooldown.isExpire());
+    void completeTest() {
+        final Controller controller = new Controller(); // now in arsenal mode
 
-        Thread.sleep(TimeUnit.MILLISECONDS.convert(4, TimeUnit.SECONDS));
-        assertTrue(cooldown.isExpire());
+        assertTrue(controller.handle(new Equip(1)));
+        controller.toBattle();
+        assertTrue(controller.handle(Attack.ABILITY1));
+        var gs = (CombatState) controller.tick(1000); // timer starts
+        assertEquals(1, gs.effects().size());
 
-        cooldown.setCooldown(5, TimeUnit.SECONDS);
-        assertFalse(cooldown.isExpire());
-        Thread.sleep(TimeUnit.MILLISECONDS.convert(5001, TimeUnit.MILLISECONDS));
-        assertTrue(cooldown.isExpire());
-    }
+        // NOTE: if the move isnt available, input is still handled correctly.
+        assertTrue(controller.handle(Attack.ABILITY1)); // spam
+        gs = (CombatState) controller.tick(1000); // too early
+        assertEquals(0, gs.effects().size());
 
-    @Test
-    void canUse() throws InterruptedException {
-        List<Integer> ability = new ArrayList<>(List.of(2,3,4));
-        List<Cooldown> cooldownAbility = new ArrayList<>(Collections.nCopies(3, new Cooldown()));
-        Set<Integer> jail = new HashSet<>();
+        controller.tick(1000);
+        controller.handle(Attack.ABILITY1);
 
-        while(true) {
-            if (cooldownAbility.get(1).isExpire()) {
-                System.out.println(ability.get(1));
-                cooldownAbility.get(1).setCooldown(ability.get(1), TimeUnit.SECONDS);
-            }
-
-            if(!jail.contains(ability.get(1))) {
-                System.out.println("boom");
-                Runnable t = () -> {
-                    jail.add(ability.get(1));
-                    try {
-                        Thread.sleep(1000);
-                    } catch (Exception e) {
-                        System.out.println("no");
-                    }
-                    jail.remove(ability.get(1));
-                };
-                new Thread(t).start(); 
-            }
-        }
+        gs = (CombatState) controller.tick(0);
+        assertEquals(1, gs.effects().size());
     }
 }

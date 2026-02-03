@@ -23,10 +23,11 @@ public final class Controller {
 	/**
 	 * updates game's state.
 	 * 
+	 * @param deltaTime time passed since last tick (milliseconds)
 	 * @return the new game state
 	 */
-	public GameState tick() {
-		return state.tick();
+	public GameState tick(long deltaTime) {
+		return state.tick(deltaTime);
 	}
 
 	/**

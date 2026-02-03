@@ -38,7 +38,7 @@ final class ControllerTest {
         // perform ability
         controller.handle(Attack.ABILITY1);
         // check for new state update...
-        var gs = (CombatState) controller.tick();
+        var gs = (CombatState) controller.tick(0);
         assertNotNull(gs);
         assertEquals(new Vec2D(0, 0), gs.player().position());
         assertEquals(1, gs.effects().size());
@@ -54,7 +54,7 @@ final class ControllerTest {
         );
         // move the player
         assertTrue(controller.handle(Move.DOWN));
-        gs = (CombatState) controller.tick();
+        gs = (CombatState) controller.tick(0);
         assertEquals(0, gs.effects().size()); // no new effects to display
         assertEquals(new Vec2D(0, 1), gs.player().position());
         // move the player out of bounds

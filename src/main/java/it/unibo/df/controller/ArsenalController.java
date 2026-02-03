@@ -62,7 +62,7 @@ public final class ArsenalController implements ControllerState {
 	}
 
 	@Override
-	public GameState tick() {
+	public GameState tick(long deltaTime) {
 		var tmp = ArsenalState.copyOf(state);
 		state.clear();
 		return tmp;
