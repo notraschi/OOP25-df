@@ -19,8 +19,9 @@ public sealed interface ControllerState permits ArsenalController, CombatControl
 	/**
 	 * updates the game's state.
 	 * 
+	 * @param deltaTime in millisecs, time passed since last tick
 	 * @return the current game state
 	 */
-	GameState tick();
+	GameState tick(long deltaTime);
 }
 

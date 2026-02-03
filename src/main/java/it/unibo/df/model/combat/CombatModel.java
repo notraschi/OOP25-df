@@ -19,7 +19,7 @@ import it.unibo.df.model.abilities.Vec2D;
 public class CombatModel {
     private final Entity player;
     private final Map<Integer, Entity> enemies;
-    private int boardSize;
+    private final int boardSize;
     private int nextEnemyId = 0;
 
     public CombatModel(List<Ability> playerLoadout) {
@@ -63,10 +63,19 @@ public class CombatModel {
      * @return affected cells (none for healing abilities)
      */
     public Optional<Set<Vec2D>> cast(Optional<Integer> entityId, int ability) {
+
         if (entityId.isEmpty()) {
+            // cooldown check
+            if (player.cooldowns.get(ability).isActive()) return Optional.empty();
+            player.cooldowns.get(ability).begin();
+            //
             return applyAbiliy(player, enemies.values().stream(), player.loadout.get(ability));
         } else {
             var enemy = enemies.get(entityId.get());
+            // cooldown check
+            if (enemy.cooldowns.get(ability).isActive()) return Optional.empty();
+            enemy.cooldowns.get(ability).begin();
+            //
             return applyAbiliy(enemy, Stream.of(player), enemy.loadout.get(ability));
         }
     }
@@ -95,35 +104,13 @@ public class CombatModel {
         return cells;
     }
 
-    // /**
-    //  * getter for player pos.
-    //  * 
-    //  * @return player's position
-    //  */
-    // // public Vec2D playerPos() {
-    // //     return player.position;
-    // // }
-
-    // /**
-    //  * getter for enemies pos.
-    //  * 
-    //  * @return enemies' position
-    //  */
-    // // public Set<Vec2D> enemyPos() {
-    // //     return enemies.values().stream().map(e -> e.position).collect(Collectors.toSet());
-    // // }
-
     /**
      * create a player data view.
      * 
      * @return player's view
      */
     public EntityView playerView() {
-        return new EntityView(
-            player.maxHp,
-            player.hp,
-            player.position
-        );
+        return player.asView();
     }
 
     /**
@@ -132,19 +119,20 @@ public class CombatModel {
      * @return enemies views
      */
     public Map<Integer, EntityView> enemyView() {
-        return enemies.entrySet().stream().collect(
-            Collectors.toMap(
-                e -> e.getKey(),
-                e -> {
-                    var v = e.getValue();
-                    return new EntityView(
-                        v.maxHp,
-                        v.hp,
-                        v.position
-                    );
-                }
-            )
-        );
+        return enemies.entrySet()
+            .stream()
+            .collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue().asView()));
+    }
+
+    /**
+     * makes the time pass in the model.
+     * updates cooldowns.
+     * 
+     * @param deltaTime the time that has passed since last tick, milliseconds
+     */
+    public void tick(long deltaTime) {
+        player.cooldowns.forEach(c -> c.update(deltaTime));
+        enemies.values().forEach(e -> e.cooldowns.forEach(c -> c.update(deltaTime)));
     }
 
     /**
@@ -155,6 +143,7 @@ public class CombatModel {
         private int hp;
         private final int maxHp;
         private final List<Ability> loadout;
+        private final List<Cooldown> cooldowns;
 
         /**
          * Constructs an Entity with the specified position, health, and abilities.
@@ -168,6 +157,9 @@ public class CombatModel {
             this.hp = hp;
             this.maxHp = hp;
             this.loadout = loadout;
+            this.cooldowns = loadout.stream()
+                .map(a -> new Cooldown(a.cooldown() * 1000))
+                .toList();
         }
 
         /**
@@ -204,6 +196,10 @@ public class CombatModel {
             
             this.position = new Vec2D(newX, newY);
             return true;
+        }
+
+        EntityView asView() {
+            return new EntityView(maxHp, hp, position);
         }
     }
 }
