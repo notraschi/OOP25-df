@@ -15,54 +15,57 @@ import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.RowConstraints;
 
-
+/**
+ */
 public class AbilityMenu {
     private GridPane inventaryArea;
     private GridPane equipment;
     private GridPane combineArea;
     private List<String> keys;
-    private Map<Integer, AbilityView> unlocked = new LinkedHashMap<>();
-    private List<Integer> lost = new LinkedList<>();
-    private List<Integer> equipped = new LinkedList<>();
-    private List<Integer> combiner = new LinkedList<>();
-    private ToggleGroup group = new ToggleGroup();
+    private final Map<Integer, AbilityView> unlocked = new LinkedHashMap<>();
+    private final List<Integer> lost = new LinkedList<>();
+    private final List<Integer> equipped = new LinkedList<>();
+    private final List<Integer> combiner = new LinkedList<>();
+    private final ToggleGroup group = new ToggleGroup();
     private Scene menu;
 
-    public AbilityMenu(List<String> keys){
+    /**
+     * @param keys
+     */
+    public AbilityMenu(final List<String> keys) {
         this.keys = List.copyOf(keys);
         setupAbilityMenuScene();
     }
 
-    private void  setupAbilityMenuScene(){
-        GridPane menuArea = new GridPane();
+    private void setupAbilityMenuScene() {
+        final GridPane menuArea = new GridPane();
         formatColumns(menuArea, 1, 100);
         formatRows(menuArea, 1, 80);
         formatRows(menuArea, 1, 20);
         menuArea.add(fillUpperArea(), 0, 0);
         menuArea.add(fillLowerArea(), 0, 1);
-
         menu = new Scene(menuArea);
         menu.getStylesheets().add(getClass().getResource("/css/boardStyle.css").toExternalForm());
     }
 
-    private void formatColumns(GridPane grid, int size, double perc) {
-        ColumnConstraints cc = new ColumnConstraints();
+    private void formatColumns(final GridPane grid, final int size, final double perc) {
+        final ColumnConstraints cc = new ColumnConstraints();
         cc.setPercentWidth(perc);
-        for (int i = 0; i<size; i++){
+        for (int i = 0; i < size; i++) {
             grid.getColumnConstraints().add(cc);
         }
     }
 
-    private void formatRows(GridPane grid, int size, double perc) {
-        RowConstraints cr = new RowConstraints();
+    private void formatRows(final GridPane grid, final int size, final double perc) {
+        final RowConstraints cr = new RowConstraints();
         cr.setPercentHeight(perc);
-        for (int i = 0; i<size; i++){
+        for (int i = 0; i < size; i++) {
             grid.getRowConstraints().add(cr);
         }
     }
 
     private GridPane fillUpperArea() {
-        GridPane area = new GridPane();
+        final GridPane area = new GridPane();
         formatColumns(area, 1, 50);
         formatColumns(area, 2, 25);
         formatRows(area, 1, 100);
@@ -71,27 +74,27 @@ public class AbilityMenu {
         area.add(fillMixerArea(), 2, 0);
         return area;
     }
-    
-    private GridPane fillMixerArea(){
+
+    private GridPane fillMixerArea() {
         combineArea = new GridPane();
         formatColumns(combineArea, 1, 100);
         formatRows(combineArea, 2, 50);
         for (int i = 0; i < 2; i++){
-            Label lbl = new Label("");
+            final Label lbl = new Label("");
             lbl.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
             combineArea.add(lbl, 0, i);
         }
         return combineArea;
 
     }
-    
-    private GridPane fillInventaryArea(){
+
+    private GridPane fillInventaryArea() {
         inventaryArea = new GridPane();
         formatColumns(inventaryArea, 5, 20);
         formatRows(inventaryArea, 5, 20);
-        for (int i = 0; i < 5; i++){
-            for (int j = 0; j < 5; j++){
-                ToggleButton btn = new ToggleButton();
+        for (int i = 0; i < 5; i++) {
+            for (int j = 0; j < 5; j++) {
+                final ToggleButton btn = new ToggleButton();
                 btn.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
                 inventaryArea.add(btn, i, j);
                 btn.setToggleGroup(group);
@@ -100,20 +103,20 @@ public class AbilityMenu {
         return inventaryArea; 
     }
 
-    private GridPane fillEquipmentArea(){
+    private GridPane fillEquipmentArea() {
         equipment = new GridPane();
         formatColumns(equipment, 1, 100);
         formatRows(equipment, 3, 33);
-        for (int j = 0; j < 3; j++){
-            Label lbl = new Label();
+        for (int j = 0; j < 3; j++) {
+            final Label lbl = new Label();
             lbl.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
             equipment.add(lbl, 0, j);
         }
         return equipment;
     }
 
-    private GridPane fillLowerArea(){
-        GridPane area = new GridPane();
+    private GridPane fillLowerArea() {
+        final GridPane area = new GridPane();
         formatColumns(area, 2, 50);
         formatRows(area, 1, 100);
         area.add(fillDescriptionArea(), 0, 0);
@@ -121,108 +124,130 @@ public class AbilityMenu {
         return area;
     }
 
-    private Label fillDescriptionArea(){
-        Label lbl = new Label("This area is for descriptions");
+    private Label fillDescriptionArea() {
+        final Label lbl = new Label("This area is for descriptions");
         lbl.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
         return lbl;
     }
 
-    private GridPane fillKeysArea(){
-        GridPane area = new GridPane();
-        Iterator<String> key = keys.iterator();
+    private GridPane fillKeysArea() {
+        final GridPane area = new GridPane();
+        final Iterator<String> key = keys.iterator();
         formatColumns(area, 3, 33);
         formatRows(area, 2, 50);
-        
-        for (int i = 0; i < 2; i++){
-            for (int j = 0; j < 3;j++){
-                Label lbl = new Label(key.hasNext()?key.next():"");
+        for (int i = 0; i < 2; i++) {
+            for (int j = 0; j < 3; j++) {
+                final Label lbl = new Label(key.hasNext() ? key.next() : "");
                 lbl.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
                 area.add(lbl, j, i);
             }
         }
-        
         return area;
     }
 
     /**
-	 * refresh the inventary page and write the equipment, unlocked an locked moves
+	 * refresh the inventary page and write the equipment, unlocked an locked moves.
 	 * 
-	 * @param an arsenal state 
+     * @param gs 
 	 */
-    public void set(ArsenalState gs){
-        for (var e : gs.unlocked()){
+    public void set(final ArsenalState gs) {
+        for (final var e : gs.unlocked()) {
             unlocked.put(e.id(), e);
         }
         lost.addAll(gs.lost());
         equipped.addAll(gs.equipped());      
     }
 
-    public void refresh(ArsenalState gs){
+    /**
+	 * refresh the inventary page and write the equipment, unlocked an locked moves.
+     * 
+     * @param gs
+     */
+    public void refresh(final ArsenalState gs) {
         set(gs);
-        Iterator<AbilityView> unlockIt = unlocked.entrySet().stream().map(e -> e.getValue()).iterator();
-        Iterator<Integer> lostIt = lost.iterator();
-        Iterator<Integer> equipIt = equipped.iterator();
-        for (var e : inventaryArea.getChildren()){
-            if (e instanceof ToggleButton button){
-                button.setText(unlockIt.hasNext()?unlockIt.next().name():lostIt.hasNext()?unlocked.get(lostIt.next()).name():"");
+        final Iterator<AbilityView> unlockIt = unlocked.entrySet().stream()
+            .map(e -> e.getValue())
+            .iterator();
+        final Iterator<Integer> lostIt = lost.iterator();
+        final Iterator<Integer> equipIt = equipped.iterator();
+        for (final var e : inventaryArea.getChildren()) {
+            if (e instanceof ToggleButton button) {
+                button.setText(
+                    unlockIt.hasNext() 
+                    ? unlockIt.next().name() : lostIt.hasNext() 
+                    ? unlocked.get(lostIt.next()).name() : ""
+                );
             }
         }
-        for (var e : equipment.getChildren()){
-            if (e instanceof Label label){
-                label.setText(equipIt.hasNext()?unlocked.get(equipIt.next()).name():"");
+        for (final var e : equipment.getChildren()) {
+            if (e instanceof Label label) {
+                label.setText(equipIt.hasNext() ? unlocked.get(equipIt.next()).name() : "");
             }
         }
-        
-
     }
+
+    /**
+     */
     public void cleanEquipped() {
         equipped.clear();
     }
 
-    public int getId(String name){
-        for(var e : unlocked.entrySet()){
-            if (e.getValue().name().equals(name)){
+    /**
+     * @param name
+     * @return key or 0
+     */
+    public int getId(final String name) {
+        for (final var e : unlocked.entrySet()) {
+            if (e.getValue().name().equals(name)) {
                 return e.getKey();
             }
         }
         return 0;
     }
 
-    public void addAbilityToCombine(String name){
-        if (combiner.size()>=2){
+    /**
+     * @param name
+     */
+    public void addAbilityToCombine(final String name) {
+        if (combiner.size() >= 2) {
             combiner.removeFirst();
         }
-        for (var e : unlocked.entrySet()){
-            if (e.getValue().name().equals(name)){
+        for (final var e : unlocked.entrySet()) {
+            if (e.getValue().name().equals(name)) {
                 combiner.add(e.getKey());
             }
         }
-        
-
     }
 
-    public void refreshCombine(){
-        Iterator<Integer> combineIt = combiner.iterator();
-        for (var e : combineArea.getChildren()){
-            if (e instanceof Label lbl){
-                lbl.setText(combineIt.hasNext()?unlocked.get(combineIt.next()).name():"");
+    /**
+     */
+    public void refreshCombine() {
+        final Iterator<Integer> combineIt = combiner.iterator();
+        for (final var e : combineArea.getChildren()) {
+            if (e instanceof Label lbl) {
+                lbl.setText(combineIt.hasNext() ? unlocked.get(combineIt.next()).name() : "");
             }
         }
     }
 
-    public ToggleGroup getGroup(){
+    /**
+     * @return group
+     */
+    public ToggleGroup getGroup() {
         return group;
     }
-    public List<AbilityView> getEquipped(){
+
+    /**
+     * @return equipment 
+     */
+    public List<AbilityView> getEquipped() {
         return equipped.stream().map(e -> unlocked.get(e)).toList();
     }
 
     /**
-	 * 
-	 * @return a scene of the inventory
-	 */
-
-    public Scene getScene(){
+     * @return Scene
+     */
+    public Scene getScene() {
         return menu;
     }
 }
