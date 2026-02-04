@@ -5,6 +5,7 @@ import java.util.List;
 import it.unibo.df.ai.AiStrategyType;
 import it.unibo.df.model.abilities.AbilityRegistry;
 import it.unibo.df.model.abilities.Vec2D;
+import it.unibo.df.model.special.SpecialAbilities;
 
 /**
  * Create pre-made enemies so that they make sense.
@@ -19,7 +20,7 @@ public class EnemyFactory {
             position,
             10,
             List.of(
-                arsenal.get(1), //MAGIC NUMBER!!! todo delle costanti con id-abilita 
+                arsenal.get(1), // TODO: remove MAGIC NUMBERs!!
                 arsenal.get(2),
                 arsenal.get(3)
             ),
@@ -27,7 +28,9 @@ public class EnemyFactory {
                 AiStrategyType.IDLE//,
                 // AiStrategyType.AGGRESSIVE,
                 // AiStrategyType.DEFENSE
-            )
+            ),
+            // TODO: remove this, this is tmp
+            SpecialAbilities.DENY_ATTACK
         );
     }
 }

@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.Set;
 
 import it.unibo.df.dto.EntityView;
+import it.unibo.df.dto.SpecialAbilityView;
 import it.unibo.df.model.abilities.Vec2D;
 
 /**
@@ -13,5 +14,8 @@ import it.unibo.df.model.abilities.Vec2D;
 public record CombatState(
     EntityView player,
     Map<Integer, EntityView> enemies,
-    List<Set<Vec2D>> effects // effects casted since last tick
+    // effects casted since last tick
+    List<Set<Vec2D>> effects,
+    // active Special Ability (disruptor)
+    SpecialAbilityView activeDisrupt
 ) implements GameState {}
