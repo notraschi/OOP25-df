@@ -3,7 +3,9 @@ package it.unibo.df.ai;
 import java.util.ArrayList;
 import java.util.List;
 
-import it.unibo.df.ai.strategy.IdleStrategy;
+import it.unibo.df.ai.strategy.EscapeStrategy;
+import it.unibo.df.ai.strategy.PressureStrategy;
+import it.unibo.df.ai.strategy.StabilizeStrategy;
 import it.unibo.df.model.abilities.Ability;
 
 /**
@@ -43,9 +45,11 @@ public class AiControllerBuilder {
      * @param strategy to add.
      * @return builder
      */
-    public AiControllerBuilder add(AiStrategyType type) { //TODO
+    public AiControllerBuilder add(AiStrategyType type) {
         AiStrategy strategy = switch (type) {
-            case IDLE -> new IdleStrategy();
+            case PRESSURE -> new PressureStrategy(idEntity);
+            case STABILIZE -> new StabilizeStrategy(idEntity);
+            case ESCAPE -> new EscapeStrategy(idEntity);
             default -> throw new IllegalArgumentException("Strategia non implementata: " + type);
         };
         this.strategies.add(strategy);

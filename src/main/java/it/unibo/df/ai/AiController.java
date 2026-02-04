@@ -18,7 +18,7 @@ public class AiController {
     private final Queue<Optional<Input>> actionQueue = new LinkedList<>();
     private final List<AiStrategy> avaiableStrategies;
     private final List<Ability> loadout;
-    private final int idEntity;
+    private final int idEntity;                 //forse inutile
     private AiStrategy currentStrategy; 
 
     public AiController(List<AiStrategy> strategies, List<Ability> loadout, int idEntity) {

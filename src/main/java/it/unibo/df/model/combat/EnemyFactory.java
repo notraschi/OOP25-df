@@ -24,9 +24,9 @@ public class EnemyFactory {
                 arsenal.get(3)
             ),
             List.of(
-                AiStrategyType.IDLE//,
-                // AiStrategyType.AGGRESSIVE,
-                // AiStrategyType.DEFENSE
+                AiStrategyType.PRESSURE,
+                AiStrategyType.STABILIZE,
+                AiStrategyType.ESCAPE
             )
         );
     }
