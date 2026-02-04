@@ -17,14 +17,12 @@ public class StabilizeStrategy implements AiStrategy {
 
     @Override
     public List<Optional<Input>> computeNextAction(GameState gameContext) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'computeNextAction'");
+        return List.of(Optional.empty());
     }
 
     @Override
     public double calculateUtility(GameState gameContext) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'calculateUtility'");
+        return 0.0;
     }
 
 }

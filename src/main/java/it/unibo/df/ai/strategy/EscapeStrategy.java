@@ -9,16 +9,20 @@ import it.unibo.df.input.Input;
 
 public class EscapeStrategy implements AiStrategy {
 
+    private final int idEntity;
+
+    public EscapeStrategy(int idEntity) {
+        this.idEntity = idEntity;
+    }
+
     @Override
     public List<Optional<Input>> computeNextAction(GameState gameContext) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'computeNextAction'");
+        return List.of(Optional.empty());
     }
 
     @Override
     public double calculateUtility(GameState gameContext) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'calculateUtility'");
+        return 0.0;
     }
 
 }

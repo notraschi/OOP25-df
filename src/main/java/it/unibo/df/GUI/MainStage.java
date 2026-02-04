@@ -51,7 +51,7 @@ public class MainStage extends Application {
     );
     private Timeline timeline;
     private Stage stage;
-    private final int timeToTick = 500;
+    private final int timeToTick = 50; //MORE
 
     /**
      * 
