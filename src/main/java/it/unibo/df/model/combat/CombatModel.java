@@ -199,7 +199,7 @@ public class CombatModel {
         }
 
         EntityView asView() {
-            return new EntityView(maxHp, hp, position);
+            return new EntityView(maxHp, hp, position, cooldowns.stream().map(c -> (int) c.getRemaining()).toList(),0); //SISTEMARE COOLDOWN MOVE
         }
     }
 }
