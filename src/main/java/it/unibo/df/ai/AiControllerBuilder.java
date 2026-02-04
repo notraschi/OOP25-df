@@ -7,7 +7,6 @@ import it.unibo.df.ai.strategy.EscapeStrategy;
 import it.unibo.df.ai.strategy.PressureStrategy;
 import it.unibo.df.ai.strategy.StabilizeStrategy;
 import it.unibo.df.model.abilities.Ability;
-import it.unibo.df.model.special.SpecialAbilities;
 
 /**
  * Builder for Ai Controller.
@@ -17,18 +16,16 @@ public class AiControllerBuilder {
     private final List<AiStrategy> strategies;
     private final List<Ability> loadout;
     private final int idEntity;
-    private final SpecialAbilities special;
 
     /**
      * Start build of an AiController. 
      * 
      * @param idEntity to which the controller is associated
      */
-    public AiControllerBuilder(int idEntity, SpecialAbilities special) {
+    public AiControllerBuilder(int idEntity) {
         this.strategies = new ArrayList<>();
         this.loadout = new ArrayList<>();
         this.idEntity = idEntity;
-        this.special = special;
     }
 
     /**
@@ -70,8 +67,7 @@ public class AiControllerBuilder {
         }
         return new AiController(
             new ArrayList<>(this.strategies),
-            new ArrayList<>(this.loadout),
-            special
+            new ArrayList<>(this.loadout)
         );
     }
 

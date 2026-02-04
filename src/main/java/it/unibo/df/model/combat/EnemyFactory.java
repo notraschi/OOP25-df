@@ -18,7 +18,7 @@ public class EnemyFactory {
     public static EnemyDefinition basicEnemy(Vec2D position) {
         return new EnemyDefinition(
             position,
-            10,
+            100,
             List.of(
                 arsenal.get(1), // TODO: remove MAGIC NUMBERs!!
                 arsenal.get(2),

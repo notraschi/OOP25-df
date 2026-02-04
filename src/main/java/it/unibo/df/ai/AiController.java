@@ -9,7 +9,6 @@ import java.util.Queue;
 import it.unibo.df.gs.CombatState;
 import it.unibo.df.input.Input;
 import it.unibo.df.model.abilities.Ability;
-import it.unibo.df.model.special.SpecialAbilities;
 
 
 /**
@@ -19,13 +18,11 @@ public class AiController {
     private final Queue<Optional<Input>> actionQueue = new LinkedList<>();
     private final List<AiStrategy> avaiableStrategies;
     private final List<Ability> loadout;
-    private final SpecialAbilities special;                 //forse inutile
     private AiStrategy currentStrategy; 
 
-    public AiController(List<AiStrategy> strategies, List<Ability> loadout, SpecialAbilities special) {
+    public AiController(List<AiStrategy> strategies, List<Ability> loadout) {
         this.avaiableStrategies = strategies;
         this.loadout = loadout;
-        this.special = special;
     }
 
     public Optional<Input> computeNextInput(CombatState gameState) {
@@ -47,7 +44,7 @@ public class AiController {
     private Optional<Input> getInput (CombatState gameState) {
         if (actionQueue.isEmpty()) {
             updateStrategy(gameState);
-            addInputToQueue(currentStrategy.computeNextAction(gameState, loadout, special));
+            addInputToQueue(currentStrategy.computeNextAction(gameState, loadout));
         }
         return actionQueue.poll();
     }

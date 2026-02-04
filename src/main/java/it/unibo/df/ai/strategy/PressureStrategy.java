@@ -7,9 +7,9 @@ import java.util.Random;
 import it.unibo.df.ai.AiStrategy;
 import it.unibo.df.ai.util.TacticsUtility;
 import it.unibo.df.gs.CombatState;
+import it.unibo.df.input.Attack;
 import it.unibo.df.input.Input;
 import it.unibo.df.model.abilities.Ability;
-import it.unibo.df.model.special.SpecialAbilities;
 
 public class PressureStrategy implements AiStrategy{
 
@@ -20,14 +20,22 @@ public class PressureStrategy implements AiStrategy{
     }
 
     @Override
-    public List<Optional<Input>> computeNextAction(CombatState gameContext, List<Ability> loadout, SpecialAbilities special) {
+    public List<Optional<Input>> computeNextAction(CombatState gameContext, List<Ability> loadout) {
         Random rand = new Random();
-        var in = TacticsUtility.getMovesToTargetting(gameContext.enemies().get(idEntity).position(), gameContext.player().position());
+        var enemies = gameContext.enemies().get(idEntity);
+        var player = gameContext.player();
+        var in = TacticsUtility.getMovesToTargetting(enemies.position(), player.position());
+
+        System.out.println(gameContext.activeDisrupt());
+        System.out.println(enemies.hp());
+        System.out.println(gameContext.effects().size());
         if(in.isEmpty()) {
-            return List.of(Optional.empty());
+            System.out.println("specialll");
+            return List.of(Optional.of(Attack.SPECIAL));
         } else {
             return List.of(Optional.of(in.get(rand.nextInt(0,in.size()))));
         }
+        
     }
 
     @Override

@@ -7,7 +7,6 @@ import it.unibo.df.ai.AiStrategy;
 import it.unibo.df.gs.CombatState;
 import it.unibo.df.input.Input;
 import it.unibo.df.model.abilities.Ability;
-import it.unibo.df.model.special.SpecialAbilities;
 
 public class StabilizeStrategy implements AiStrategy {
 
@@ -18,7 +17,7 @@ public class StabilizeStrategy implements AiStrategy {
     }
 
     @Override
-    public List<Optional<Input>> computeNextAction(CombatState gameContext, List<Ability> loadout, SpecialAbilities special) {
+    public List<Optional<Input>> computeNextAction(CombatState gameContext, List<Ability> loadout) {
         return List.of(Optional.empty());
     }
 

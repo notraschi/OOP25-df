@@ -40,7 +40,7 @@ public final class CombatController implements ControllerState {
 
 	private void spawnEnemy(EnemyDefinition enemy) {
 		int id = model.addEnemy(enemy);
-		var aiBuilder = new AiControllerBuilder(id,enemy.special()).setLoadout(enemy.loadout());
+		var aiBuilder = new AiControllerBuilder(id).setLoadout(enemy.loadout());
 		enemy.strategies().stream().forEach(s -> aiBuilder.add(s));
 		aiControllers.put(id, aiBuilder.build());
 	}
@@ -86,6 +86,7 @@ public final class CombatController implements ControllerState {
 	 */
 	private boolean handleAttack(Optional<Integer> entityId, Attack ability) {
 		if (ability.equals(Attack.SPECIAL)) {
+			System.out.println("ciao frra");
 			model.castSpecial(
 				entityId.orElseThrow(() -> new IllegalArgumentException("player cant special"))
 			);

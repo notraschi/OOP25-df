@@ -6,6 +6,7 @@ import java.util.Optional;
 import it.unibo.df.ai.AiStrategy;
 import it.unibo.df.gs.CombatState;
 import it.unibo.df.input.Input;
+import it.unibo.df.model.abilities.Ability;
 
 public class EscapeStrategy implements AiStrategy {
 
@@ -16,7 +17,7 @@ public class EscapeStrategy implements AiStrategy {
     }
 
     @Override
-    public List<Optional<Input>> computeNextAction(CombatState gameContext) {
+    public List<Optional<Input>> computeNextAction(CombatState gameContext, List<Ability> loadout) {
         return List.of(Optional.empty());
     }
 
