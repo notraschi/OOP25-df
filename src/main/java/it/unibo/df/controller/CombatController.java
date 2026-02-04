@@ -85,7 +85,13 @@ public final class CombatController implements ControllerState {
 	 * @return true if input was handled
 	 */
 	private boolean handleAttack(Optional<Integer> entityId, Attack ability) {
-		model.cast(entityId, ability.ordinal()).ifPresent(affected -> effects.add(affected));
+		if (ability.equals(Attack.SPECIAL)) {
+			model.castSpecial(
+				entityId.orElseThrow(() -> new IllegalArgumentException("player cant special"))
+			);
+		} else {
+			model.cast(entityId, ability.ordinal()).ifPresent(affected -> effects.add(affected));
+		}
 		return true;
 	}
 
