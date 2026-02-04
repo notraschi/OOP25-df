@@ -12,6 +12,8 @@ import it.unibo.df.dto.EntityView;
 import it.unibo.df.model.abilities.Ability;
 import it.unibo.df.model.abilities.AbilityType;
 import it.unibo.df.model.abilities.Vec2D;
+import it.unibo.df.model.special.SpecialAbilities;
+import it.unibo.df.model.special.SpecialAbility;
 
 /**
  * gamemodel.
@@ -21,17 +23,19 @@ public class CombatModel {
     private final Map<Integer, Entity> enemies;
     private final int boardSize;
     private int nextEnemyId = 0;
+    private Optional<SpecialAbilities> disrupt;
 
     public CombatModel(List<Ability> playerLoadout) {
-        player = new Entity(new Vec2D(0, 0), 100, playerLoadout);
+        player = new Entity(new Vec2D(0, 0), 100, playerLoadout, Optional.empty());
         // TODO: add enemies' loadout
         enemies = new LinkedHashMap<>();
         // TODO: fix boardsize
         boardSize = 10;
+        disrupt = Optional.empty();
     }
 
     /**
-     * add an entity enemie.
+     * add an entity enemy.
      * 
      * @param entityId id of the enemy (if one)
      * @param hp hp of the enemy
@@ -40,7 +44,8 @@ public class CombatModel {
      */
     public int addEnemy(EnemyDefinition enemy) {
         nextEnemyId++;
-        enemies.put(nextEnemyId, new Entity(enemy.position(), enemy.hp(), enemy.loadout()));
+        // TODO: give a enemy its special.
+        enemies.put(nextEnemyId, new Entity(enemy.position(), enemy.hp(), enemy.loadout(), Optional.empty()));
         return nextEnemyId;
     }
 
@@ -51,31 +56,53 @@ public class CombatModel {
      * @param delta how much to move
      */
     public boolean move(Optional<Integer> entityId, Vec2D delta) {
-        Entity target = entityId.map(enemies::get).orElse(player);
-        return target.move(delta, boardSize);
+        return entityId.map(enemies::get)
+            .map(e -> e.move(delta, boardSize))
+            .orElse(
+                player.move(
+                    applyDisruption(delta).orElse(new Vec2D(0, 0)), boardSize
+                )
+            );
+
+        // Entity target = entityId.map(enemies::get).orElse(player);
+        // return target.move(delta, boardSize);
     }
 
     /**
-     * casts an ability.
+     * casts a normal ability.
      * 
      * @param entityId id of the enemy (if one)
      * @param ability ability to cast
      * @return affected cells (none for healing abilities)
      */
     public Optional<Set<Vec2D>> cast(Optional<Integer> entityId, int ability) {
-
         if (entityId.isEmpty()) {
-            // cooldown check
-            if (player.cooldowns.get(ability).isActive()) return Optional.empty();
-            player.cooldowns.get(ability).begin();
-            //
-            return applyAbiliy(player, enemies.values().stream(), player.loadout.get(ability));
+            return applyDisruption(ability)
+                .filter(ab -> !player.cooldowns.get(ab).isActive())
+                .flatMap(ab -> {
+                    player.cooldowns.get(ab).begin();
+                    return applyAbiliy(player, enemies.values().stream(), player.loadout.get(ab));
+                });
+            
+            // // special ability check
+            // if (applyDisruption(ability).isEmpty()) {
+            //     return Optional.empty();
+            // }
+            // var disrupted = applyDisruption(ability).get();
+
+            // // cooldown check
+            // if (player.cooldowns.get(disrupted).isActive()) {
+            //     return Optional.empty();
+            // }
+            // player.cooldowns.get(disrupted).begin();
+            // return applyAbiliy(player, enemies.values().stream(), player.loadout.get(ability));
         } else {
             var enemy = enemies.get(entityId.get());
             // cooldown check
-            if (enemy.cooldowns.get(ability).isActive()) return Optional.empty();
+            if (enemy.cooldowns.get(ability).isActive()) {
+                return Optional.empty();
+            }
             enemy.cooldowns.get(ability).begin();
-            //
             return applyAbiliy(enemy, Stream.of(player), enemy.loadout.get(ability));
         }
     }
@@ -102,6 +129,36 @@ public class CombatModel {
             caster.gainHp(ab.casterHpDelta());
         }
         return cells;
+    }
+
+    /**
+     * casts a special ability.
+     * 
+     * @param entityId id of the enemy
+     */
+    public void castSpecial(int entityId) {
+        var enemy = enemies.get(entityId);
+        enemy.special.ifPresentOrElse(s -> {
+                disrupt = Optional.of(s);
+                disrupt.get().ability.timer().begin();
+            },
+            () -> {
+                throw new IllegalStateException("someone made an enemy without a special");
+            }
+        );
+    }
+
+    /**
+     * applies special ability (disrupt).
+     */
+    private <T> Optional<T> applyDisruption(T input) {
+        // guard
+        if (disrupt.isEmpty() || !disrupt.get().ability.canHandle(input)) {
+            return Optional.of(input);
+        }
+        // safe cast because of the guard earlier (i hate this)
+        var casted = (SpecialAbility<T>) disrupt.get().ability;
+        return casted.trasform(input);
     }
 
     /**
@@ -133,6 +190,11 @@ public class CombatModel {
     public void tick(long deltaTime) {
         player.cooldowns.forEach(c -> c.update(deltaTime));
         enemies.values().forEach(e -> e.cooldowns.forEach(c -> c.update(deltaTime)));
+        disrupt.ifPresent(ab -> ab.ability.timer().update(deltaTime));
+        // remove disrupt if timer is done
+        if (disrupt.isPresent() && !disrupt.get().ability.timer().isActive()) {
+            disrupt = Optional.empty();
+        }
     }
 
     /**
@@ -144,6 +206,7 @@ public class CombatModel {
         private final int maxHp;
         private final List<Ability> loadout;
         private final List<Cooldown> cooldowns;
+        private final Optional<SpecialAbilities> special;
 
         /**
          * Constructs an Entity with the specified position, health, and abilities.
@@ -152,7 +215,12 @@ public class CombatModel {
          * @param hp default hp 
          * @param loadout starting loadout
          */        
-        Entity(final Vec2D position, final int hp, final List<Ability> loadout) {
+        Entity(
+            final Vec2D position,
+            final int hp,
+            final List<Ability> loadout,
+            final Optional<SpecialAbilities> special
+        ) {
             this.position = position;
             this.hp = hp;
             this.maxHp = hp;
@@ -160,6 +228,7 @@ public class CombatModel {
             this.cooldowns = loadout.stream()
                 .map(a -> new Cooldown(a.cooldown() * 1000))
                 .toList();
+            this.special = special;
         }
 
         /**
