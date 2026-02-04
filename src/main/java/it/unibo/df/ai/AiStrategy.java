@@ -6,6 +6,8 @@ import java.util.Optional;
 import it.unibo.df.gs.CombatState;
 import it.unibo.df.gs.GameState;
 import it.unibo.df.input.Input;
+import it.unibo.df.model.abilities.Ability;
+import it.unibo.df.model.special.SpecialAbilities;
 /**
  * AI-driven strategies implemented via Strategy Pattern.
  */
@@ -16,7 +18,7 @@ public interface AiStrategy {
      * @param gameContext game state is used to calculate the best action
      * @return an action is composed of one or more inputs
      */
-    List<Optional<Input>> computeNextAction(CombatState gameContext);
+    List<Optional<Input>> computeNextAction(CombatState gameContext, List<Ability> loadout, SpecialAbilities special);
 
     /**
      * 

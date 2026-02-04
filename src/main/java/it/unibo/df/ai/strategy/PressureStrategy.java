@@ -8,6 +8,8 @@ import it.unibo.df.ai.AiStrategy;
 import it.unibo.df.ai.util.TacticsUtility;
 import it.unibo.df.gs.CombatState;
 import it.unibo.df.input.Input;
+import it.unibo.df.model.abilities.Ability;
+import it.unibo.df.model.special.SpecialAbilities;
 
 public class PressureStrategy implements AiStrategy{
 
@@ -18,11 +20,11 @@ public class PressureStrategy implements AiStrategy{
     }
 
     @Override
-    public List<Optional<Input>> computeNextAction(CombatState gameContext) {
+    public List<Optional<Input>> computeNextAction(CombatState gameContext, List<Ability> loadout, SpecialAbilities special) {
         Random rand = new Random();
         var in = TacticsUtility.getMovesToTargetting(gameContext.enemies().get(idEntity).position(), gameContext.player().position());
         if(in.isEmpty()) {
-            return List.of();
+            return List.of(Optional.empty());
         } else {
             return List.of(Optional.of(in.get(rand.nextInt(0,in.size()))));
         }

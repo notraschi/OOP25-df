@@ -40,7 +40,7 @@ public final class CombatController implements ControllerState {
 
 	private void spawnEnemy(EnemyDefinition enemy) {
 		int id = model.addEnemy(enemy);
-		var aiBuilder = new AiControllerBuilder(id).setLoadout(enemy.loadout());
+		var aiBuilder = new AiControllerBuilder(id,enemy.special()).setLoadout(enemy.loadout());
 		enemy.strategies().stream().forEach(s -> aiBuilder.add(s));
 		aiControllers.put(id, aiBuilder.build());
 	}
