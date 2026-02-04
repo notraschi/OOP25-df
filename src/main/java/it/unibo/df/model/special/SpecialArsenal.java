@@ -1,37 +1,30 @@
 package it.unibo.df.model.special;
 
-import java.util.Arrays;
 import java.util.Optional;
-import java.util.stream.Collectors;
+import java.util.Set;
 
 import it.unibo.df.dto.SpecialAbilityView;
-import it.unibo.df.input.Attack;
-import it.unibo.df.input.Move;
+import it.unibo.df.model.abilities.Vec2D;
 
 public enum SpecialArsenal {
     INVERT_MOVEMENT(
-        new SpecialAbility(
-            Arrays.stream(Move.values()).collect(Collectors.toSet()),
-            in -> switch ((Move) in) {
-                case Move.DOWN -> Optional.of(Move.UP);
-                case Move.UP -> Optional.of(Move.DOWN);
-                case Move.RIGHT -> Optional.of(Move.LEFT);
-                case Move.LEFT -> Optional.of(Move.RIGHT);
-            },
+        new SpecialAbility<Vec2D>(
+            Set.of(new Vec2D(0,1), new Vec2D(0,-1), new Vec2D(1,0), new Vec2D(-1,0)),
+            vec -> Optional.of(new Vec2D(-vec.x(), -vec.y())),
             6
         )
     ),
     DENY_MOVEMENT(
-        new SpecialAbility(
-            Arrays.stream(Move.values()).collect(Collectors.toSet()),
-            SpecialAbilityFn::deny,
+        new SpecialAbility<Vec2D>(
+            Set.of(new Vec2D(0,1), new Vec2D(0,-1), new Vec2D(1,0), new Vec2D(-1,0)),
+            vec -> Optional.empty(),
             2
         )
     ),
     DENY_ATTACK(
-        new SpecialAbility(
-            Arrays.stream(Attack.values()).collect(Collectors.toSet()),
-            SpecialAbilityFn::deny,
+        new SpecialAbility<Integer>(
+            Set.of(1, 2, 3),
+            n -> Optional.empty(),
             5
         )
     );
