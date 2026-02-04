@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import it.unibo.df.dto.EntityView;
+import it.unibo.df.dto.SpecialAbilityView;
 import it.unibo.df.model.abilities.Ability;
 import it.unibo.df.model.abilities.AbilityType;
 import it.unibo.df.model.abilities.Vec2D;
@@ -179,6 +180,10 @@ public class CombatModel {
         return enemies.entrySet()
             .stream()
             .collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue().asView()));
+    }
+
+    public SpecialAbilityView getDisrupt() {
+        return SpecialAbilities.asView(disrupt);
     }
 
     /**
