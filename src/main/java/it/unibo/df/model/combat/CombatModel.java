@@ -11,7 +11,6 @@ import java.util.stream.Stream;
 import it.unibo.df.dto.EntityView;
 import it.unibo.df.dto.SpecialAbilityView;
 import it.unibo.df.model.abilities.Ability;
-import it.unibo.df.model.abilities.AbilityType;
 import it.unibo.df.model.abilities.Vec2D;
 import it.unibo.df.model.special.SpecialAbilities;
 import it.unibo.df.model.special.SpecialAbility;
@@ -46,7 +45,10 @@ public class CombatModel {
     public int addEnemy(EnemyDefinition enemy) {
         nextEnemyId++;
         // TODO: give a enemy its special.
-        enemies.put(nextEnemyId, new Entity(enemy.position(), enemy.hp(), enemy.loadout(), Optional.empty()));
+        enemies.put(
+            nextEnemyId,
+            new Entity(enemy.position(), enemy.hp(), enemy.loadout(), Optional.of(enemy.special()))
+        );
         return nextEnemyId;
     }
 
@@ -103,14 +105,13 @@ public class CombatModel {
     private Optional<Set<Vec2D>> applyAbiliy(Entity caster, Stream<Entity> targets, Ability ab) {
         var cells = ab.effect().apply(caster.position);
         if (cells.isPresent()) {
-        targets
-            .filter(t -> cells.get().contains(t.position))
-            .forEach(t -> {
-                t.takeDmg(ab.targetHpDelta());
-                caster.gainHp(ab.casterHpDelta());
-            });
-
-        } else if (ab.type() == AbilityType.HEAL) {
+            targets
+                .filter(t -> cells.get().contains(t.position))
+                .forEach(t -> {
+                    t.takeDmg(ab.targetHpDelta());
+                    caster.gainHp(ab.casterHpDelta());
+                });
+        } else {
             caster.gainHp(ab.casterHpDelta());
         }
         return cells;
