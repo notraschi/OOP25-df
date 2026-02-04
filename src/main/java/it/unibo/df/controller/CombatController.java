@@ -93,7 +93,8 @@ public final class CombatController implements ControllerState {
 		return new CombatState(
 			model.playerView(),
 			model.enemyView(),
-			List.copyOf(effects)
+			List.copyOf(effects),
+			model.getDisrupt()
 		);
 	}
 
