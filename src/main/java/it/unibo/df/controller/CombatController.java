@@ -66,7 +66,7 @@ public final class CombatController implements ControllerState {
 	 * @param direction the direction to move towards
 	 * @return true if input was handled
 	 */
-	private boolean handleMove(Optional<Integer> entityId, Move direction) { //TODO
+	private boolean handleMove(Optional<Integer> entityId, Move direction) {
 		Vec2D delta;
 		switch (direction) {
 			case Move.UP -> delta = new Vec2D(0, -1);

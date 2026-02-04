@@ -6,7 +6,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Queue;
 
-import it.unibo.df.gs.GameState;
+import it.unibo.df.gs.CombatState;
 import it.unibo.df.input.Input;
 import it.unibo.df.model.abilities.Ability;
 
@@ -27,7 +27,7 @@ public class AiController {
         this.idEntity = idEntity;
     }
 
-    public Optional<Input> computeNextInput(GameState gameState) {
+    public Optional<Input> computeNextInput(CombatState gameState) {
         return getInput(gameState);
     }
 
@@ -43,7 +43,7 @@ public class AiController {
         actionQueue.addAll(inputs);
     }
 
-    private Optional<Input> getInput (GameState gameState) {
+    private Optional<Input> getInput (CombatState gameState) {
         if (actionQueue.isEmpty()) {
             updateStrategy(gameState);
             addInputToQueue(currentStrategy.computeNextAction(gameState));
@@ -51,7 +51,7 @@ public class AiController {
         return actionQueue.poll();
     }
 
-    private void updateStrategy(GameState gameState) { //+-
+    private void updateStrategy(CombatState gameState) { //+-
 
         AiStrategy bestStrategy = this.currentStrategy;
         double maxUtility = (Objects.isNull(bestStrategy)) 

@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import it.unibo.df.ai.AiStrategy;
-import it.unibo.df.gs.GameState;
+import it.unibo.df.gs.CombatState;
 import it.unibo.df.input.Input;
 
 public class StabilizeStrategy implements AiStrategy {
@@ -16,12 +16,12 @@ public class StabilizeStrategy implements AiStrategy {
     }
 
     @Override
-    public List<Optional<Input>> computeNextAction(GameState gameContext) {
+    public List<Optional<Input>> computeNextAction(CombatState gameContext) {
         return List.of(Optional.empty());
     }
 
     @Override
-    public double calculateUtility(GameState gameContext) {
+    public double calculateUtility(CombatState gameContext) {
         return 0.0;
     }
 
