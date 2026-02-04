@@ -7,6 +7,9 @@ import it.unibo.df.dto.SpecialAbilityView;
 import it.unibo.df.model.abilities.Vec2D;
 import it.unibo.df.model.combat.Cooldown;
 
+/**
+ * stores the special abilities, and utilities.
+ */
 public enum SpecialAbilities {
     INVERT_MOVEMENT(
         new SpecialAbility<Vec2D>(
@@ -39,6 +42,12 @@ public enum SpecialAbilities {
         ability = effect;
     }
 
+    /**
+     * converts SpecialAbility to the view-able version.
+     * 
+     * @param special the SpecialAbility
+     * @return the view version
+     */
     public static SpecialAbilityView asView(Optional<SpecialAbilities> special) {
         if (special.isPresent()) {
             return switch (special.get()) {

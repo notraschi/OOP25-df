@@ -64,9 +64,6 @@ public class CombatModel {
                     applyDisruption(delta).orElse(new Vec2D(0, 0)), boardSize
                 )
             );
-
-        // Entity target = entityId.map(enemies::get).orElse(player);
-        // return target.move(delta, boardSize);
     }
 
     /**
@@ -84,19 +81,6 @@ public class CombatModel {
                     player.cooldowns.get(ab).begin();
                     return applyAbiliy(player, enemies.values().stream(), player.loadout.get(ab));
                 });
-            
-            // // special ability check
-            // if (applyDisruption(ability).isEmpty()) {
-            //     return Optional.empty();
-            // }
-            // var disrupted = applyDisruption(ability).get();
-
-            // // cooldown check
-            // if (player.cooldowns.get(disrupted).isActive()) {
-            //     return Optional.empty();
-            // }
-            // player.cooldowns.get(disrupted).begin();
-            // return applyAbiliy(player, enemies.values().stream(), player.loadout.get(ability));
         } else {
             var enemy = enemies.get(entityId.get());
             // cooldown check
@@ -133,7 +117,7 @@ public class CombatModel {
     }
 
     /**
-     * casts a special ability.
+     * casts a special ability, sets it as the active one (removes previews).
      * 
      * @param entityId id of the enemy
      */
@@ -151,6 +135,11 @@ public class CombatModel {
 
     /**
      * applies special ability (disrupt).
+     * 
+     * @param input the input to disrupt
+     * @return an optional containing the original input if no disruption was applied,
+     * otherwise an optional containing the new input, or an empty optional, according to
+     * disruption policy
      */
     private <T> Optional<T> applyDisruption(T input) {
         // guard
@@ -182,6 +171,11 @@ public class CombatModel {
             .collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue().asView()));
     }
 
+    /**
+     * returns currently active special ability (disruptor).
+     * 
+     * @return currently active special ability (disruptor).
+     */
     public SpecialAbilityView getDisrupt() {
         return SpecialAbilities.asView(disrupt);
     }
