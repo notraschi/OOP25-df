@@ -1,24 +1,128 @@
 abilities:
   - id: 1
-    name: Slash
-    cooldown: 3
+    name: Close Strike
+    cooldown: 2
     type: ATTACK
     casterHpDelta: 0
     targetHpDelta: 8
     area: ADJ4
 
   - id: 2
-    name: Heal
-    cooldown: 5
-    type: HEAL
+    name: Cross Cut
+    cooldown: 7
+    type: ATTACK
+    casterHpDelta: 0
+    targetHpDelta: 16
+    area: DIAGX
+
+  - id: 3
+    name: Long Shot
+    cooldown: 20
+    type: ATTACK
+    casterHpDelta: 0
+    targetHpDelta: 28
+    area: LINE_R
+
+  - id: 4
+    name: Arrow Burst
+    cooldown: 20
+    type: ATTACK
+    casterHpDelta: 0
+    targetHpDelta: 30
+    area: ARROW_R
+
+  - id: 5
+    name: Fan Sweep
+    cooldown: 8
+    type: ATTACK
+    casterHpDelta: 0
+    targetHpDelta: 15
+    area: ARROWWIDE_U
+
+  - id: 6
+    name: Tight Hit
+    cooldown: 20
+    type: ATTACK
+    casterHpDelta: 0
+    targetHpDelta: 32
+    area: P3_U
+
+  - id: 7
+    name: Triple Push
+    cooldown: 7
+    type: ATTACK
+    casterHpDelta: 0
+    targetHpDelta: 14
+    area: COLUMNS3_D
+
+  - id: 8
+    name: Side Sweep
+    cooldown: 7
+    type: ATTACK
+    casterHpDelta: 0
+    targetHpDelta: 14
+    area: P2_L
+
+  - id: 9
+    name: V Slash
+    cooldown: 7
+    type: ATTACK
+    casterHpDelta: 0
+    targetHpDelta: 15
+    area: P1_R
+
+  - id: 10
+    name: Wide Smash
+    cooldown: 8
+    type: ATTACK
+    casterHpDelta: 0
+    targetHpDelta: 18
+    area: P4_D
+
+  - id: 11
+    name: Drain Close
+    cooldown: 3
+    type: LIFESTEAL
     casterHpDelta: 6
+    targetHpDelta: 10
+    area: ADJ4
+
+  - id: 12
+    name: Drain Cross
+    cooldown: 7
+    type: LIFESTEAL
+    casterHpDelta: 8
+    targetHpDelta: 16
+    area: DIAGX
+
+  - id: 13
+    name: Drain Arrow
+    cooldown: 20
+    type: LIFESTEAL
+    casterHpDelta: 12
+    targetHpDelta: 24
+    area: ARROW_R
+
+  - id: 14
+    name: Small Heal
+    cooldown: 3
+    type: HEAL
+    casterHpDelta: 12
     targetHpDelta: 0
     area: NONE
 
-  - id: 3
-    name: Vamp
-    cooldown: 4
-    type: LIFESTEAL
-    casterHpDelta: 3
-    targetHpDelta: 6
-    area: ADJ4
+  - id: 15
+    name: Medium Heal
+    cooldown: 7
+    type: HEAL
+    casterHpDelta: 20
+    targetHpDelta: 0
+    area: NONE
+
+  - id: 16
+    name: Big Heal
+    cooldown: 20
+    type: HEAL
+    casterHpDelta: 30
+    targetHpDelta: 0
+    area: NONE
