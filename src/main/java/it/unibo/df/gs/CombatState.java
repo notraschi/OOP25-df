@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import it.unibo.df.dto.CombatStatus;
 import it.unibo.df.dto.EntityView;
 import it.unibo.df.dto.SpecialAbilityView;
 import it.unibo.df.model.abilities.Vec2D;
@@ -18,4 +19,15 @@ public record CombatState(
     List<Set<Vec2D>> effects,
     // active Special Ability (disruptor)
     SpecialAbilityView activeDisrupt
-) implements GameState {}
+) implements GameState {
+
+    public CombatStatus matchStatus() {
+        if (player.hp() == 0) {
+            return CombatStatus.LOST;
+        } else if (enemies.values().stream().map(EntityView::hp).allMatch(hp -> hp == 0)) {
+            return CombatStatus.WON;
+        } else {
+            return CombatStatus.RUNNING;
+        }
+    }
+}
