@@ -15,7 +15,6 @@ import it.unibo.df.model.abilities.Ability;
  * Context of AiStrategy.
  */
 public class AiController {
-    private final Queue<Optional<Input>> actionQueue = new LinkedList<>();
     private final List<AiStrategy> avaiableStrategies;
     private final List<Ability> loadout;
     private AiStrategy currentStrategy; 
@@ -29,24 +28,14 @@ public class AiController {
         return getInput(gameState);
     }
 
-    public void interrupt() { //+-
-        actionQueue.clear();
-    }
-
     private void setStrategy(AiStrategy strategy) {
         this.currentStrategy = strategy;
     }
 
-    private void addInputToQueue(List<Optional<Input>> inputs) {
-        actionQueue.addAll(inputs);
-    }
-
     private Optional<Input> getInput (CombatState gameState) {
-        if (actionQueue.isEmpty()) {
-            updateStrategy(gameState);
-            addInputToQueue(currentStrategy.computeNextAction(gameState, loadout));
-        }
-        return actionQueue.poll();
+
+        updateStrategy(gameState);
+        return currentStrategy.computeNextAction(gameState, loadout);
     }
 
     private void updateStrategy(CombatState gameState) { //+-
@@ -54,10 +43,10 @@ public class AiController {
         AiStrategy bestStrategy = this.currentStrategy;
         double maxUtility = (Objects.isNull(bestStrategy)) 
                         ? Double.NEGATIVE_INFINITY
-                        : currentStrategy.calculateUtility(gameState) + 0.10; //the best candidate must exceed it by 0.10
+                        : currentStrategy.calculateUtility(gameState, loadout) + 0.05; //the best candidate must exceed it by 0.10
 
         for (AiStrategy strategy: avaiableStrategies) { //use continue to skipp calculation of current strategy, brutto
-            double utility = strategy.calculateUtility(gameState);
+            double utility = strategy.calculateUtility(gameState, loadout);
             if(maxUtility < utility) {
                 maxUtility = utility;
                 bestStrategy = strategy;

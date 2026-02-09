@@ -33,4 +33,42 @@ public class EnemyFactory {
             SpecialAbilities.DENY_ATTACK
         );
     }
+
+    public static EnemyDefinition createSniper(Vec2D position) {
+        return new EnemyDefinition(
+            position,
+            80, // Meno vita
+            List.of(
+                arsenal.get(10), // Long Shot (LINE_R) - Attacco principale
+                arsenal.get(5),  // Arrow Burst (ARROW_R) - Attacco medio
+                arsenal.get(99)  // Quick Heal (SELF) - Cura piccola
+            ),
+            List.of(
+                AiStrategyType.ESCAPE,   // Scappa appena ti avvicini
+                AiStrategyType.PRESSURE, // Ti spara da lontano
+                AiStrategyType.STABILIZE // Si cura se serve
+            ),
+            SpecialAbilities.DENY_MOVEMENT // Ti blocca per mirare meglio
+        );
+    }
+
+    public static EnemyDefinition createTank(Vec2D position) {
+        return new EnemyDefinition(
+            position,
+            150, // Tanta vita
+            List.of(
+                arsenal.get(1),  // Close Strike (ADJ4)
+                arsenal.get(8),  // Fan Sweep (ARROWWIDE_U)
+                arsenal.get(20)  // Big Heal (SELF)
+            ),
+            List.of(
+                AiStrategyType.PRESSURE, // Ti corre addosso
+                AiStrategyType.STABILIZE // Si cura spesso
+                // Niente Escape: il tank non scappa!
+            ),
+            SpecialAbilities.INVERT_MOVEMENT // Ti confonde mentre ti è vicino
+        );
+    }
+
+    //BERSERKER ONLY ATTACCO RAVVICINATO
 }

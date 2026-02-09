@@ -17,13 +17,13 @@ public interface AiStrategy {
      * @param gameContext game state is used to calculate the best action
      * @return an action is composed of one or more inputs
      */
-    List<Optional<Input>> computeNextAction(CombatState gameContext, List<Ability> loadout);
+    Optional<Input> computeNextAction(CombatState gameContext, List<Ability> loadout);
 
     /**
      * 
      * @param gameContext game state is to rate the usefulness of the strategy
      * @return a value in the range 0.0 to 1.0
      */
-    double calculateUtility(CombatState gameContext);
+    double calculateUtility(CombatState gameContext, List<Ability> loadout);
 
 }

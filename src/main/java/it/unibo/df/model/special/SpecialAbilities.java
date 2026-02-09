@@ -30,7 +30,7 @@ public enum SpecialAbilities {
     DENY_ATTACK(
         new SpecialAbility<Integer>(
             Integer.class,
-            Set.of(1, 2, 3),
+            Set.of(0, 1, 2),
             n -> Optional.empty(),
             new Cooldown(5000)
         )
