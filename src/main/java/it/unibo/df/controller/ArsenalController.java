@@ -2,6 +2,7 @@ package it.unibo.df.controller;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import it.unibo.df.gs.ArsenalState;
@@ -20,10 +21,10 @@ public final class ArsenalController implements ControllerState {
 	private final ArsenalModel model;
 	private final ArsenalState state;
 
-	public ArsenalController() {
-		model = new ArsenalModel();
+	public ArsenalController(Map<Integer, Ability> arsenal) {
+		model = new ArsenalModel(arsenal);
 		state = new ArsenalState(
-			model.getArsenal().stream().map(Ability::asView).collect(Collectors.toList()),
+			arsenal.entrySet().stream().map(e -> e.getValue().asView()).collect(Collectors.toList()),
 			new LinkedList<>(),
 			new LinkedList<>()
 		);

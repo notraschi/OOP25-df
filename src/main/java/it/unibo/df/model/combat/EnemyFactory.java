@@ -3,7 +3,7 @@ package it.unibo.df.model.combat;
 import java.util.List;
 
 import it.unibo.df.ai.AiStrategyType;
-import it.unibo.df.model.abilities.AbilityRegistry;
+import it.unibo.df.controller.Progress;
 import it.unibo.df.model.abilities.Vec2D;
 import it.unibo.df.model.special.SpecialAbilities;
 
@@ -12,7 +12,7 @@ import it.unibo.df.model.special.SpecialAbilities;
  */
 public class EnemyFactory {
 
-    private static final AbilityRegistry arsenal = new AbilityRegistry();
+    private static final Progress arsenal = new Progress();
     private EnemyFactory() {}
 
     public static EnemyDefinition basicEnemy(Vec2D position) {

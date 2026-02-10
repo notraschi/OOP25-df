@@ -20,7 +20,7 @@ class AbilityTest {
     @Test
     void abilityAndEffectAreCreated() {
         AbilityFn fn = (caster) -> Optional.empty();
-        Ability a = new Ability(1, "BasicHeal", 3, AbilityType.HEAL, 5, 0, fn);
+        Ability a = new Ability(1, "BasicHeal",true, 3, AbilityType.HEAL, 5, 0, fn);
 
         assertEquals(1, a.id());
         assertNotNull(a.effect());
@@ -31,6 +31,7 @@ class AbilityTest {
         Ability a = new Ability(
             2,
             "BasicLifeSteal",
+            true,
             10,
             AbilityType.LIFESTEAL,
             4,
