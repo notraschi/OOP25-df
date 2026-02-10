@@ -18,9 +18,9 @@ public class CooldownTest {
     void completeTest() {
         final Controller controller = new Controller(); // now in arsenal mode
 
+        assertTrue(controller.handle(new Equip(1)));
         assertTrue(controller.handle(new Equip(3)));
         assertTrue(controller.handle(new Equip(2)));
-        assertTrue(controller.handle(new Equip(1)));
 
         controller.toBattle();
         assertTrue(controller.handle(Attack.ABILITY1));
