@@ -1,12 +1,9 @@
 package it.unibo.df.controller;
 
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -40,7 +37,7 @@ public final class Progress {
         final Random random = new Random();
         for (int i= 0; i < killedEnemy; i++) {
             List<Integer> keys = List.copyOf(lockedAbilitiesById.keySet());
-            int index = random.nextInt()%keys.size();
+            int index = random.nextInt(0, keys.size()); // % keys.size();
             unlockedAbilitiesById.put(keys.get(index), lockedAbilitiesById.get(keys.get(index)));
             lockedAbilitiesById.remove(keys.get(index));
         }
