@@ -27,7 +27,6 @@ public class CombatModel {
 
     public CombatModel(List<Ability> playerLoadout) {
         player = new Entity(new Vec2D(0, 0), 100, playerLoadout, Optional.empty());
-        // TODO: add enemies' loadout
         enemies = new LinkedHashMap<>();
         // TODO: fix boardsize
         boardSize = 10;
@@ -44,7 +43,6 @@ public class CombatModel {
      */
     public int addEnemy(EnemyDefinition enemy) {
         nextEnemyId++;
-        // TODO: give a enemy its special.
         enemies.put(
             nextEnemyId,
             new Entity(enemy.position(), enemy.hp(), enemy.loadout(), Optional.of(enemy.special()))
@@ -196,7 +194,9 @@ public class CombatModel {
             disrupt = Optional.empty();
         }
     }
-
+    public long getKilledEnemies() {
+        return enemies.values().stream().filter(e -> e.hp == 0).count();
+    }
     /**
      * Represents an entity in the game with position, health, and abilities.
      */
@@ -271,4 +271,6 @@ public class CombatModel {
             return new EntityView(maxHp, hp, position, cooldowns.stream().map(c -> (int) c.getRemaining()).toList(),0); //SISTEMARE COOLDOWN MOVE
         }
     }
+
+   
 }

@@ -125,4 +125,8 @@ public final class CombatController implements ControllerState {
 		effects.clear(); // now we're ready for new effects happening
 		return state;
 	}
+
+	public long killedEnemies() {
+		return model.getKilledEnemies();
+	}
 }

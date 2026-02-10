@@ -1,30 +1,55 @@
-package it.unibo.df.model.abilities;
+package it.unibo.df.controller;
 
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.Random;
 
+import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
+
+import it.unibo.df.model.abilities.Ability;
+import it.unibo.df.model.abilities.AbilityAreas;
+import it.unibo.df.model.abilities.AbilityFn;
+import it.unibo.df.model.abilities.AbilityType;
 
 /**
  * Loads abilities from a YAML file.
  */
-public final class AbilityRegistry {
+public final class Progress {
 
-    private final Map<Integer, Ability> abilitiesById = new HashMap<>();
-
+    private final Map<Integer, Ability> unlockedAbilitiesById = new LinkedHashMap<>();
+    private final Map<Integer, Ability> lockedAbilitiesById = new LinkedHashMap<>();
     /**
      * Creates a registry loading abilities.yml from resources.
      */
-    public AbilityRegistry() {
+    public Progress() {
         loadDefault();
     }
 
+    public void update(long killedEnemy) {
+        final Random random = new Random();
+        for (int i= 0; i < killedEnemy; i++) {
+            List<Integer> keys = List.copyOf(lockedAbilitiesById.keySet());
+            int index = random.nextInt()%keys.size();
+            unlockedAbilitiesById.put(keys.get(index), lockedAbilitiesById.get(keys.get(index)));
+            lockedAbilitiesById.remove(keys.get(index));
+        }
+    }
+
+    public Map<Integer,Ability> unlockedAbilities() {
+        return Collections.unmodifiableMap(unlockedAbilitiesById);
+    }
+    //queste 3 funxioni non servono piu 
     /**
      * Returns an ability by id.
      *
@@ -32,7 +57,7 @@ public final class AbilityRegistry {
      * @return ability or null
      */
     public Ability get(final int id) {
-        return abilitiesById.get(id);
+        return unlockedAbilitiesById.get(id);
     }
 
     /**
@@ -41,7 +66,7 @@ public final class AbilityRegistry {
      * @return list of abilities
      */
     public List<Ability> getAll() {
-        return List.copyOf(abilitiesById.values());
+        return List.copyOf(unlockedAbilitiesById.values());
     }
 
     /**
@@ -50,8 +75,10 @@ public final class AbilityRegistry {
      * @return number of abilities
      */
     public int size() {
-        return abilitiesById.size();
+        return unlockedAbilitiesById.size();
     }
+
+
 
     private void loadDefault() {
         try (InputStream stream = getClass().getClassLoader().getResourceAsStream("abilities.yml")) {
@@ -74,11 +101,33 @@ public final class AbilityRegistry {
         if (!(listObj instanceof List<?> list)) {
             throw new IllegalStateException("Missing abilities list");
         }
-
+        
+        
         for (final Object entry : list) {
             addAbility(entry);
         }
     }
+    public void write() {
+        List<Ability> abilities = new LinkedList<>();
+        abilities.addAll(unlockedAbilitiesById.values());
+        abilities.addAll(lockedAbilitiesById.values());
+        Map<String,Object> root = new LinkedHashMap<>();
+        root.put("abilities", abilities);
+
+        DumperOptions options = new DumperOptions();
+        options.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
+        options.setPrettyFlow(true);
+        Yaml yaml = new Yaml(options);
+        try (FileWriter writer = new FileWriter("abilities.yml")) {
+            yaml.dump(root, writer);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        
+    }
+
+    
+
 
     @SuppressWarnings("unchecked")
     private void addAbility(final Object entry) {
@@ -90,6 +139,7 @@ public final class AbilityRegistry {
 
         final int id = (int) abilityData.get("id");
         final String name = String.valueOf(abilityData.get("name"));
+        final boolean unlocked = (boolean) abilityData.get("unlocked");
         final int cooldown = (int) abilityData.get("cooldown");
         final AbilityType type = AbilityType.valueOf(
             String.valueOf(abilityData.get("type")).toUpperCase(Locale.ROOT)
@@ -101,15 +151,16 @@ public final class AbilityRegistry {
             .toUpperCase(Locale.ROOT);
 
         final AbilityFn effect = AbilityAreas.fromString(area);
-
-        abilitiesById.put(id,new Ability(
-            id,
-            name,
-            cooldown,
-            type,
-            casterHpDelta,
-            targetHpDelta,
-            effect
-        ));
+        ((boolean) abilityData.get("unlocked") ? unlockedAbilitiesById : lockedAbilitiesById)
+            .put(id, new Ability(
+                id,
+                name,
+                unlocked,
+                cooldown,
+                type,
+                casterHpDelta,
+                targetHpDelta,
+                effect
+            ));
     }
 }

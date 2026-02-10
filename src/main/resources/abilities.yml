@@ -1,14 +1,17 @@
 abilities:
   - id: 1
     name: Close Strike
+    unlocked: true
     cooldown: 2
     type: ATTACK
     casterHpDelta: 0
     targetHpDelta: 8
     area: ADJ4
+    
 
   - id: 2
     name: Cross Cut
+    unlocked: true
     cooldown: 7
     type: ATTACK
     casterHpDelta: 0
@@ -17,6 +20,7 @@ abilities:
 
   - id: 3
     name: Long Shot
+    unlocked: true
     cooldown: 20
     type: ATTACK
     casterHpDelta: 0
@@ -25,6 +29,7 @@ abilities:
 
   - id: 4
     name: Arrow Burst
+    unlocked: false
     cooldown: 20
     type: ATTACK
     casterHpDelta: 0
@@ -33,6 +38,7 @@ abilities:
 
   - id: 5
     name: Fan Sweep
+    unlocked: false
     cooldown: 8
     type: ATTACK
     casterHpDelta: 0
@@ -41,6 +47,7 @@ abilities:
 
   - id: 6
     name: Tight Hit
+    unlocked: false
     cooldown: 20
     type: ATTACK
     casterHpDelta: 0
@@ -49,6 +56,7 @@ abilities:
 
   - id: 7
     name: Triple Push
+    unlocked: false
     cooldown: 7
     type: ATTACK
     casterHpDelta: 0
@@ -57,6 +65,7 @@ abilities:
 
   - id: 8
     name: Side Sweep
+    unlocked: false
     cooldown: 7
     type: ATTACK
     casterHpDelta: 0
@@ -65,6 +74,7 @@ abilities:
 
   - id: 9
     name: V Slash
+    unlocked: false
     cooldown: 7
     type: ATTACK
     casterHpDelta: 0
@@ -73,6 +83,7 @@ abilities:
 
   - id: 10
     name: Wide Smash
+    unlocked: false
     cooldown: 8
     type: ATTACK
     casterHpDelta: 0
@@ -81,6 +92,7 @@ abilities:
 
   - id: 11
     name: Drain Close
+    unlocked: false
     cooldown: 3
     type: LIFESTEAL
     casterHpDelta: 6
@@ -89,6 +101,7 @@ abilities:
 
   - id: 12
     name: Drain Cross
+    unlocked: false
     cooldown: 7
     type: LIFESTEAL
     casterHpDelta: 8
@@ -97,6 +110,7 @@ abilities:
 
   - id: 13
     name: Drain Arrow
+    unlocked: false
     cooldown: 20
     type: LIFESTEAL
     casterHpDelta: 12
@@ -105,6 +119,7 @@ abilities:
 
   - id: 14
     name: Small Heal
+    unlocked: false
     cooldown: 3
     type: HEAL
     casterHpDelta: 12
@@ -113,6 +128,7 @@ abilities:
 
   - id: 15
     name: Medium Heal
+    unlocked: false
     cooldown: 7
     type: HEAL
     casterHpDelta: 20
@@ -121,6 +137,7 @@ abilities:
 
   - id: 16
     name: Big Heal
+    unlocked: false
     cooldown: 20
     type: HEAL
     casterHpDelta: 30

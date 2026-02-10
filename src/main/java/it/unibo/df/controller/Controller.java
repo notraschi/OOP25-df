@@ -8,7 +8,9 @@ import it.unibo.df.input.Input;
  * uses: state pattern, (strategy pattern obv), inversion of control
  */
 public final class Controller {
-	private ControllerState state = new ArsenalController();
+	private final Progress progress = new Progress();
+	private ControllerState state = new ArsenalController(progress.unlockedAbilities());
+	
 
 	/**
 	 * handles user input.
@@ -49,10 +51,15 @@ public final class Controller {
 	 * sets up the arsenal phase
 	 */
 	public void toArsenal() {
-		if (state instanceof CombatController) {
-			state = new ArsenalController();
+		if (state instanceof CombatController combatController) {
+			progress.update(combatController.killedEnemies());
+			state = new ArsenalController(progress.unlockedAbilities());
 		} else {
 			throw new IllegalStateException("already in arsenal");
 		}
+	}
+
+	public void saveOnClose() {
+		progress.write();
 	}
 }

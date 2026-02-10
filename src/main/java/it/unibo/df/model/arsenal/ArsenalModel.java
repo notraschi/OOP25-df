@@ -1,21 +1,21 @@
 package it.unibo.df.model.arsenal;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
-
 import it.unibo.df.dto.AbilityView;
 import it.unibo.df.model.abilities.Ability;
-import it.unibo.df.model.abilities.AbilityRegistry;
 
 public class ArsenalModel {
-    private final AbilityRegistry arsenal;
+    private final Map<Integer, Ability> arsenal;
 	private final List<Ability> loadout;
 	private final AbilityCombiner combiner;
 
-    public ArsenalModel() {
-        arsenal = new AbilityRegistry();
+    public ArsenalModel(Map<Integer, Ability> unlocked) {
+        arsenal = new HashMap<>(unlocked);
 		loadout = new LinkedList<>();
 		combiner = DefaultCombinations.create();
     }
@@ -24,7 +24,6 @@ public class ArsenalModel {
         if (arsenal.get(id) == null || loadout.size() > 2) {
             return false;
         }
-
         loadout.add(arsenal.get(id));
 		return true;
     }
@@ -43,6 +42,6 @@ public class ArsenalModel {
     }
 
     public List<Ability> getArsenal() {
-        return Collections.unmodifiableList(arsenal.getAll());
+        return Collections.unmodifiableList(arsenal.entrySet().stream().map(e -> e.getValue()).toList());
     }
 }
