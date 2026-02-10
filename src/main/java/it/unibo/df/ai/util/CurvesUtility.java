@@ -2,6 +2,8 @@ package it.unibo.df.ai.util;
 
 public class CurvesUtility {
 
+    private CurvesUtility() { }
+
     /**
      * Linear curve.
      * @param x input value (0.0 to 1.0)
@@ -64,7 +66,7 @@ public class CurvesUtility {
     /**
      * Helper to clamp values between 0.0 and 1.0.
      */
-    private static double clamp(double value) {
+    public static double clamp(double value) {
         return Math.max(0.0, Math.min(1.0, value));
     }
 }

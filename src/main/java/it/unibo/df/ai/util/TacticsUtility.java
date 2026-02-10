@@ -29,9 +29,16 @@ public final class TacticsUtility {
         return manhattanDist(a,b) == 1; 
     }
 
-    public static double normalizeDist(int value) {
+    public static double normalizeDist(int value) { //non normalizza bene, normalizza chebyshev
         return value / (double) BOARD_SIZE; //cast to double
     }
+
+    //FIX NORMALIZZAZIONE DISTANZA
+    public static double normalizeManhattanDist(int dist) {
+        int max = (BOARD_SIZE - 1) * 2; // 18 per 10x10
+        return Math.max(0.0, Math.min(1.0, dist / (double) max));
+    }
+
 
     //pressure
     public static List<Move> getMovesToApproach(final Vec2D start, final Vec2D target) {
@@ -85,12 +92,12 @@ public final class TacticsUtility {
     }
 
     //
-    private static boolean isValidPos(final Vec2D a) {
+    public static boolean isValidPos(final Vec2D a) {
         return a.x() >= 0 && a.x() < BOARD_SIZE
             && a.y() >= 0 && a.y() < BOARD_SIZE;
     }
 
-    //
+    //convert Move type to Vec2D
     public static Vec2D applyMove(Vec2D pos, Move move) {
         return switch (move) {
             case UP -> new Vec2D(pos.x(), pos.y() - 1);
@@ -115,8 +122,8 @@ public final class TacticsUtility {
             .map(area -> area.stream()
                 .map(cell -> manhattanDist(cell, target))
                 .min(Integer::compareTo)
-                .orElse(-1))
-            .orElse(-1);
+                .orElse(Integer.MAX_VALUE))
+            .orElse(Integer.MAX_VALUE);
     }
 
     //prendo le abilita in base al tipo
@@ -129,6 +136,7 @@ public final class TacticsUtility {
 }
 
 /**
+ * note personali
  * + metodo set mosse migliore x targettarlo
  * + metodo set mosse migliore x andare lontano(safe)
  * + metodo set mosse x restare in un range, se sono nel range magari sto fermo

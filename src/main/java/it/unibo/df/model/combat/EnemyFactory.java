@@ -20,9 +20,9 @@ public class EnemyFactory {
             position,
             100,
             List.of(
-                arsenal.get(1), // TODO: remove MAGIC NUMBERs!!
-                arsenal.get(2),
-                arsenal.get(3)
+                arsenal.get(9), // TODO: remove MAGIC NUMBERs!!
+                arsenal.get(1),
+                arsenal.get(15)
             ),
             List.of(
                 AiStrategyType.PRESSURE,
@@ -39,9 +39,9 @@ public class EnemyFactory {
             position,
             80, // Meno vita
             List.of(
-                arsenal.get(10), // Long Shot (LINE_R) - Attacco principale
-                arsenal.get(5),  // Arrow Burst (ARROW_R) - Attacco medio
-                arsenal.get(99)  // Quick Heal (SELF) - Cura piccola
+                arsenal.get(3), // Long Shot (LINE_R) - Attacco principale
+                arsenal.get(4),  // Arrow Burst (ARROW_R) - Attacco medio
+                arsenal.get(14)  // Quick Heal (SELF) - Cura piccola
             ),
             List.of(
                 AiStrategyType.ESCAPE,   // Scappa appena ti avvicini
@@ -58,8 +58,8 @@ public class EnemyFactory {
             150, // Tanta vita
             List.of(
                 arsenal.get(1),  // Close Strike (ADJ4)
-                arsenal.get(8),  // Fan Sweep (ARROWWIDE_U)
-                arsenal.get(20)  // Big Heal (SELF)
+                arsenal.get(5),  // Fan Sweep (ARROWWIDE_U)
+                arsenal.get(16)  // Big Heal (SELF)
             ),
             List.of(
                 AiStrategyType.PRESSURE, // Ti corre addosso

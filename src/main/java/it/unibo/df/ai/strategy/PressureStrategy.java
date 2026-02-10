@@ -2,14 +2,15 @@ package it.unibo.df.ai.strategy;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Random;
 
 import it.unibo.df.ai.AiStrategy;
+import it.unibo.df.ai.util.AiActions;
 import it.unibo.df.ai.util.CurvesUtility;
 import it.unibo.df.ai.util.TacticsUtility;
 import it.unibo.df.gs.CombatState;
 import it.unibo.df.input.Input;
 import it.unibo.df.model.abilities.Ability;
+import it.unibo.df.model.abilities.AbilityType;
 
 public class PressureStrategy implements AiStrategy{
 
@@ -20,60 +21,60 @@ public class PressureStrategy implements AiStrategy{
     }
 
     @Override
-    public Optional<Input> computeNextAction(CombatState gameContext, List<Ability> loadout) {
-        var me = gameContext.enemies().get(idEntity);
-        var player = gameContext.player();
-        Random rand = new Random();
+    public Optional<Input> computeNextAction(CombatState cs, List<Ability> loadout) {
+        var me = cs.enemies().get(idEntity);
+        var player = cs.player();
+       
+        //mena
+        Optional<Input> attack = AiActions.tryBestAttack(me, player, loadout);
+        if (attack.isPresent()) return attack;
 
+        //si riposiziona in modo corretto
+        Optional<Input> aimMove = AiActions.moveForBestAim(me, player, loadout);
+        if (aimMove.isPresent()) return aimMove;
+            
         System.out.println("pressure");
 
-        // provo a sparare
-
-        // mi sposto in una buona posizione per sparare
-
-        //mi avvicino alla peggio
-
-        return Optional.empty();        
+        //sta fermo/potrei andare addosso al player (?)
+        return Optional.empty();       
     }
 
-    @Override
-    public double calculateUtility(CombatState gameContext, List<Ability> loadout) {
-        var me = gameContext.enemies().get(idEntity);
-        var player = gameContext.player();
+    @Override //PRESSURE
+    public double calculateUtility(CombatState cs, List<Ability> loadout) {
+        var me = cs.enemies().get(idEntity);
+        var player = cs.player();
 
-        //usa con prob di 02 di usare attack anche se3 non attacco di 1 dist
 
-        // final double canHitSoon = switch (player.cooldownAbilities().) {  
-        //     case 1 -> 1.0;
-        //     case 2 -> 0.70;
-        //     case 3 -> 0.35;
-        //     default -> 0.10;
-        // };
+        // Se ho poca vita, la mia voglia di pressare DEVE crollare per far vincere Escape.
+        // HP 100% -> Confidence 1.0
+        // HP 50%  -> Confidence 0.25 Crollo rapido! attento che non sia TROPPO RAPIDO
+        double confidence = CurvesUtility.exponential(me.hpRatio(), 2);
 
-        //scappa a curarti, panic
-        if (me.hpRatio() < 0.2 && player.hpRatio() > 0.2) {
-            return 0.0;
+        var ammo = TacticsUtility.abilityByType(loadout, AbilityType.ATTACK);
+        
+        //mi calcolo i disponibili
+        double ammoScore = (double) ammo.stream().filter(x -> me.cooldownAbilities().get(x) == 0).count() / ammo.size();
+
+        double bloodlust = CurvesUtility.inverse(player.hpRatio()); //vita del nemico FORSE MEGLIO ESPONENZIALE
+
+        double utility = confidence * (ammoScore * 0.4 + ammo.size() * 0.1  + bloodlust * 0.4);
+
+        if (AiActions.tryBestAttack(me, player, loadout).isPresent()) {
+            utility += 0.3; //posso colpire ORA!!
         }
 
-        //kill potential TODO
-
-        //vantaggio hp
-        double hpAdvantage = CurvesUtility.logistic(me.hpRatio() - player.hpRatio(), 6, 0);
-        System.out.println(hpAdvantage);
-
-        // 2. Kill Potential (semplificato): Se il player ha poca vita, utility schizza a 1.
-        double bloodThirst = CurvesUtility.inverse(player.hpRatio()); //TODO
-
-        //piu sono vicino piu presso
-        double dist = TacticsUtility.normalizeDist(TacticsUtility.manhattanDist(me.position(), player.position()));
-        double closeRangeBonus = CurvesUtility.inverse(dist);
-
-        //bonus ai fattori
-        double utility = (hpAdvantage * 0.4) + (bloodThirst * 0.4) + (closeRangeBonus * 0.2);
-
-        //possibile ridurre la utility calcolandoci il rischio immediato!
-
-        return Math.max(0.0, Math.min(1.0, utility));
+        return CurvesUtility.clamp(utility);
     }
 
+    /** note personali
+     * fattori che considero
+     * 
+     * - posso colpire
+     *      - pronto e sottotiro!
+     * - pronto ma non sottotiro
+     * vantaggio hp
+     * posso killarlo
+     * - piccolo bonus se sono vicino
+     * 
+     */
 }

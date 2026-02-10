@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import it.unibo.df.ai.AiStrategy;
+import it.unibo.df.ai.util.AiActions;
 import it.unibo.df.ai.util.CurvesUtility;
 import it.unibo.df.ai.util.TacticsUtility;
 import it.unibo.df.gs.CombatState;
@@ -19,35 +20,38 @@ public class EscapeStrategy implements AiStrategy {
     }
 
     @Override
-    public Optional<Input> computeNextAction(CombatState gameContext, List<Ability> loadout) {
-        System.out.println("escape");
-        return Optional.empty();
+    public Optional<Input> computeNextAction(CombatState cs, List<Ability> loadout) {
+        var me = cs.enemies().get(idEntity);
+        var player = cs.player();
+
+        //si ritira
+        //System.out.println("escape");
+        return AiActions.fleeFromTarget(me, player);
     }
 
-    @Override
-    public double calculateUtility(CombatState gameContext, List<Ability> loadout) {
-        var me = gameContext.enemies().get(idEntity);
-        var player = gameContext.player();
+    @Override //ESCAPE
+    public double calculateUtility(CombatState cs, List<Ability> loadout) {
+        var me = cs.enemies().get(idEntity);
+        var player = cs.player();
 
-        // FATTORI DI AUMENTO
-        // 1. Rischio immediato: se sono vicino al player
+        // Se ho poca vita, voglio scappare, ho paura.
+        // Ma attenzione se è TROPPO bassa, vince Stabilize quindi questa curva è lineare/soft. DA BILANCIARE NEL CASO
+        double fear = CurvesUtility.inverse(me.hpRatio());  //+-
+
+        //Rischio immediato ovvero se sono vicino al player
         int dist = TacticsUtility.manhattanDist(me.position(), player.position());
-        double danger = switch (dist) {
-            case 1 -> 1.0; //panico sei vicino
-            case 2 -> 0.60; //allerta
-            case 3 -> 0.5; // allerta
-            default -> 0.0;
-        };
+        double dist01 = TacticsUtility.normalizeManhattanDist(dist);
+        //lineare mi sembra troppo terro esponenziale
+        double danger = CurvesUtility.exponential(CurvesUtility.inverse(dist01), 3.0); 
 
-        //meno vita ho più ho paura
-        double lowHp = CurvesUtility.inverse(me.hpRatio());
+        //DA RIVEDERE IL FATTO DEI HP BASSI, INTERFERISCE CON STABILIZE (?)
 
-        long cooldownSum = me.cooldownAbilities().stream().filter(c -> c > 0).count();
-        double helpless = cooldownSum / 3.0; //scappo se ho tutto in cooldown
+        long cooldownsActive = me.cooldownAbilities().stream().filter(c -> c > 0).count();
+        double helplessScore = cooldownsActive / loadout.size(); //scappo se ho tutto in cooldown
+
+        double score = Math.max(fear * danger, helplessScore * danger);
         
-        // Peso: HP bassi e "Helpless" contano molto
-        double utility = (lowHp * 0.3) + (danger * 0.3) + (helpless * 0.4);
-        return Math.max(0.0, Math.min(1.0, utility));
+        return CurvesUtility.clamp(score);
     }
 
 }
