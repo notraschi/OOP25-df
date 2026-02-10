@@ -3,7 +3,6 @@ package it.unibo.df;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import it.unibo.df.controller.CombatController;
@@ -18,7 +17,6 @@ final class UnlockAbilitiesTest {
     private Progress progress;
     private CombatModel model; 
 
-    @BeforeEach
     void setup() throws SecurityException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
         controller = new Controller();
         controller.handle(new Equip(1));
@@ -41,8 +39,10 @@ final class UnlockAbilitiesTest {
         assertEquals(1, ((CombatState) state.tick(0)).enemies().size());
     }
 
+    @SuppressWarnings("unchecked")
     @Test
-    void completeTest() throws NoSuchFieldException, IllegalAccessException {
+    void unlockAbility() throws NoSuchFieldException, IllegalAccessException {
+        setup();
         assertEquals(0, model.getKilledEnemies());
 
         var enemyField = model.getClass().getDeclaredField("enemies");
@@ -59,8 +59,20 @@ final class UnlockAbilitiesTest {
         
         controller.toArsenal();
 
-        assertEquals(4, progress.unlockedAbilities().size());
+        assertEquals(5, progress.unlockedAbilities().size());
+        
+        controller.saveOnClose();
+    }
 
-        // controller.saveOnClose();
+    @Test
+    void resetGame() throws SecurityException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException{
+        setup();
+        assertEquals(4, progress.unlockedAbilities().size());
+        unlockAbility();
+        assertEquals(5, progress.unlockedAbilities().size());
+        controller.resetProgress();
+        controller.saveOnClose();
+        setup();
+        assertEquals(4, progress.unlockedAbilities().size());
     }
 }

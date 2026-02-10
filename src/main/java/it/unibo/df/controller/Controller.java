@@ -58,6 +58,9 @@ public final class Controller {
 			throw new IllegalStateException("already in arsenal");
 		}
 	}
+	public void resetProgress() {
+		progress.reset();
+	}
 
 	public void saveOnClose() {
 		progress.write();

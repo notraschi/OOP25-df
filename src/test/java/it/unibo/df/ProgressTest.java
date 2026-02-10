@@ -2,7 +2,6 @@ package it.unibo.df;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-
 import org.junit.jupiter.api.Test;
 
 import it.unibo.df.controller.Progress;
@@ -12,7 +11,7 @@ import it.unibo.df.model.abilities.Ability;
  * Test class for AbilityRegistry.
  */
 final class ProgressTest {
-
+    
     @Test
     void testGetAbilityById() {
         final Progress registry = new Progress();
