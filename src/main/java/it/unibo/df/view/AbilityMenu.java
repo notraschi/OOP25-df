@@ -1,5 +1,6 @@
 package it.unibo.df.view;
 
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -56,7 +57,7 @@ public class AbilityMenu {
         menuArea.add(fillLowerArea(), 0, 1);
         SceneResizer resizer = new SceneResizer(menuArea, Double.valueOf(INVENTORY_WIDTH_PERC) / Double.valueOf(MAX_SIZE_PERC), MAX_SIZE_PERC / MAX_SIZE_PERC);
         menu = new Scene(resizer.getBorderPane());
-        menu.getStylesheets().add(getClass().getResource("/css/boardStyle.css").toExternalForm());
+        menu.getStylesheets().add(getClass().getResource("/css/menuStyle.css").toExternalForm());
     }
 
     private GridPane fillUpperArea() {
@@ -145,12 +146,12 @@ public class AbilityMenu {
 	 * 
      * @param gs 
 	 */
-    public void set(final ArsenalState gs) {
+    private void set(final ArsenalState gs) {
         for (final var e : gs.unlocked()) {
             unlocked.put(e.id(), e);
         }
         lost.addAll(gs.lost());
-        equipped.addAll(gs.equipped());      
+        equipped.addAll(gs.equipped());    
     }
 
     /**
@@ -160,18 +161,22 @@ public class AbilityMenu {
      */
     public void refresh(final ArsenalState gs) {
         set(gs);
-        final Iterator<AbilityView> unlockIt = unlocked.entrySet().stream()
-            .map(e -> e.getValue())
-            .iterator();
+        final List<Integer> unlockedList = new LinkedList<>(unlocked.keySet());
+        unlockedList.removeAll(lost);
+        final Iterator<Integer> unlockIt = unlockedList.iterator();
         final Iterator<Integer> lostIt = lost.iterator();
         final Iterator<Integer> equipIt = equipped.iterator();
+
         for (final var e : inventaryArea.getChildren()) {
             if (e instanceof ToggleButton button) {
-                button.setText(
-                    unlockIt.hasNext() 
-                    ? unlockIt.next().name() : lostIt.hasNext() 
-                    ? unlocked.get(lostIt.next()).name() : ""
-                );
+                button.getStyleClass().remove("lost");
+                if (unlockIt.hasNext()) {
+                    button.setText(unlocked.get(unlockIt.next()).name());
+                    //button.getStyleClass().add("unlocked");
+                } else if (lostIt.hasNext()) {
+                    button.setText(unlocked.get(lostIt.next()).name());
+                    button.getStyleClass().add("lost");
+                }
             }
         }
         for (final var e : equipment.getChildren()) {
@@ -185,6 +190,15 @@ public class AbilityMenu {
      */
     public void cleanEquipped() {
         equipped.clear();
+    }
+
+    public void clearCombiner(){
+        combiner.clear();
+        refreshCombine();
+    }
+
+    public void clearLost(){
+        lost.clear();
     }
 
     /**
@@ -223,6 +237,10 @@ public class AbilityMenu {
                 lbl.setText(combineIt.hasNext() ? unlocked.get(combineIt.next()).name() : "");
             }
         }
+    }
+
+    public List<Integer> getCombiner(){
+        return Collections.unmodifiableList(combiner);
     }
 
     public void refreshDescription(int id) {

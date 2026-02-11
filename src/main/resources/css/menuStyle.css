@@ -1,0 +1,20 @@
+StackPane {
+    
+    -fx-border-color: black;
+    -fx-border-width: 1px;
+    -fx-alignment: center;
+}
+.label{
+    -fx-alignment: center;
+    -fx-text-alignment: center;
+    -fx-font-weight: bold;
+}
+.unlocked{
+    -fx-background-color: lightgreen;
+}
+.unlocked:selected{
+    -fx-background-color: green;
+}
+.lost{
+    -fx-background-color: lightgrey;
+}

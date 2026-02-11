@@ -7,6 +7,7 @@ import it.unibo.df.controller.Controller;
 import it.unibo.df.gs.ArsenalState;
 import it.unibo.df.gs.CombatState;
 import it.unibo.df.input.Attack;
+import it.unibo.df.input.Combine;
 import it.unibo.df.input.Equip;
 import it.unibo.df.input.Move;
 import javafx.animation.KeyFrame;
@@ -26,7 +27,7 @@ import javafx.util.Duration;
  * 
  */
 public class MainStage extends Application {
-    private final int TICK = 500;
+    private final int TICK = 150;
     private final int LOADOUT_SIZE = 3;
     private final double MIN_SCREEN_WIDTH = (Double.min(
             Screen.getPrimary().getBounds().getHeight(),
@@ -129,7 +130,9 @@ public class MainStage extends Application {
                         menu.refreshCombine();
                     }
                     case KeyCode.ENTER -> {
-
+                        controller.handle(new Combine(menu.getCombiner().get(0), menu.getCombiner().get(1)));
+                        menu.refresh((ArsenalState) controller.tick(TICK));
+                        menu.clearCombiner();
                     }
                     default -> { }
                 }
@@ -180,6 +183,7 @@ public class MainStage extends Application {
             board.refreshAbility(menu.getEquipped());
             stage.setScene(board.getScene());
         } else if (stage.getScene().equals(board.getScene())) {
+            menu.clearLost();
             timeline.stop();
             controller.toArsenal();
             menu.cleanEquipped();

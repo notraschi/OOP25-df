@@ -127,6 +127,7 @@ public class GameBoard {
             .map(e -> e.getValue().position())
             .toList()
         );
+        //gs.matchStatus()
         for (int i = 0; i < this.boardSize; i++) {
             for (int j = 0; j < this.boardSize; j++) {
                 if (gs.player().position().equals(new Vec2D(i, j))) {

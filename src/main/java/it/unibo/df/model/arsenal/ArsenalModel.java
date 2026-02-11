@@ -6,6 +6,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+
 import it.unibo.df.dto.AbilityView;
 import it.unibo.df.model.abilities.Ability;
 
@@ -34,6 +35,7 @@ public class ArsenalModel {
         }
 
 		var result = combiner.combine(arsenal.get(id1), arsenal.get(id2));
+        result.ifPresent(res -> arsenal.put(res.id(), res));
 		return result.map(Ability::asView);
     }
 
