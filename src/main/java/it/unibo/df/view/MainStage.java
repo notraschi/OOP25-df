@@ -51,6 +51,7 @@ public class MainStage extends Application {
         List.of(
             "ENTER \nto combine abilities",
             "Z \nto add to loadout",
+            "D \nto see description",
             "I \nBack to play",
             "1 \nselect in mixer",
             "Q \nquit"
@@ -119,6 +120,9 @@ public class MainStage extends Application {
                     case KeyCode.Z -> {
                         controller.handle(new Equip(menu.getId(btn.getText())));
                         menu.refresh((ArsenalState) controller.tick(0));
+                    }
+                    case KeyCode.D -> {
+                        menu.refreshDescription(menu.getId(btn.getText()));
                     }
                     case KeyCode.DIGIT1 -> {
                         menu.addAbilityToCombine(btn.getText());

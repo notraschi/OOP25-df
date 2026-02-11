@@ -34,6 +34,7 @@ public class AbilityMenu {
     private final List<Integer> lost = new LinkedList<>();
     private final List<Integer> equipped = new LinkedList<>();
     private final List<Integer> combiner = new LinkedList<>();
+    private Label descriptionLabel;
     private final ToggleGroup group = new ToggleGroup();
     private Scene menu;
 
@@ -119,9 +120,9 @@ public class AbilityMenu {
     }
 
     private Label fillDescriptionArea() {
-        final Label lbl = new Label("This area is for descriptions");
-        lbl.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
-        return lbl;
+        descriptionLabel = new Label("");
+        descriptionLabel.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
+        return descriptionLabel;
     }
 
     private GridPane fillKeysArea() {
@@ -222,6 +223,15 @@ public class AbilityMenu {
                 lbl.setText(combineIt.hasNext() ? unlocked.get(combineIt.next()).name() : "");
             }
         }
+    }
+
+    public void refreshDescription(int id) {
+        final AbilityView ab = unlocked.get(id);
+        descriptionLabel.setText(
+            "NAME: " + ab.name() 
+            + "\nHEAL: " + ab.casterHpDelta() 
+            + "\nDAMAGE: " + ab.targetHpDelta()
+        );
     }
 
     /**
