@@ -1,9 +1,11 @@
 package it.unibo.df.model.combat;
 
 import java.util.List;
+import java.util.Map;
 
 import it.unibo.df.ai.AiStrategyType;
 import it.unibo.df.controller.Progress;
+import it.unibo.df.model.abilities.Ability;
 import it.unibo.df.model.abilities.Vec2D;
 import it.unibo.df.model.special.SpecialAbilities;
 
@@ -12,7 +14,7 @@ import it.unibo.df.model.special.SpecialAbilities;
  */
 public class EnemyFactory {
 
-    private static final Progress arsenal = new Progress();
+    private static final Map<Integer, Ability> arsenal = Progress.allRegisteredAbilities();
     private EnemyFactory() {}
 
     public static EnemyDefinition basicEnemy(Vec2D position) {

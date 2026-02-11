@@ -75,4 +75,9 @@ final class UnlockAbilitiesTest {
         setup();
         assertEquals(4, progress.unlockedAbilities().size());
     }
+
+    @Test
+    void getAllAbilities() {
+        assertEquals(16, Progress.allRegisteredAbilities().size());
+    }
 }

@@ -140,6 +140,7 @@ public class CombatModel {
      * otherwise an optional containing the new input, or an empty optional, according to
      * disruption policy
      */
+    @SuppressWarnings("unchecked")
     private <T> Optional<T> applyDisruption(T input) {
         // guard
         if (disrupt.isEmpty() || !disrupt.get().ability.canHandle(input)) {
