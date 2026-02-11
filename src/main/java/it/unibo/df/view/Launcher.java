@@ -1,4 +1,4 @@
-package it.unibo.df.GUI;
+package it.unibo.df.view;
 /**
  * 
  */

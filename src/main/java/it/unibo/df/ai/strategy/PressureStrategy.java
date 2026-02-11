@@ -33,7 +33,7 @@ public class PressureStrategy implements AiStrategy{
         Optional<Input> aimMove = AiActions.moveForBestAim(me, player, loadout);
         if (aimMove.isPresent()) return aimMove;
             
-        System.out.println("pressure");
+        //System.out.println("pressure");
 
         //sta fermo/potrei andare addosso al player (?)
         return Optional.empty();       

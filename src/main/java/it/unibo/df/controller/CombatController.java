@@ -34,7 +34,7 @@ public final class CombatController implements ControllerState {
     public CombatController(List<Ability> loadout) {
 		model = new CombatModel(loadout);
 		spawnEnemy(EnemyFactory.basicEnemy(new Vec2D(3, 3)));
-		spawnEnemy(EnemyFactory.createSniper(new Vec2D(7, 7)));
+		//spawnEnemy(EnemyFactory.createSniper(new Vec2D(7, 7)));
 		effects = new LinkedList<>();
 		state = buildState();
     }

@@ -20,9 +20,9 @@ public class EnemyFactory {
             position,
             100,
             List.of(
-                arsenal.get(9), // TODO: remove MAGIC NUMBERs!!
-                arsenal.get(1),
-                arsenal.get(15)
+                arsenal.get(1), // TODO: remove MAGIC NUMBERs!!
+                arsenal.get(2),
+                arsenal.get(3)
             ),
             List.of(
                 AiStrategyType.PRESSURE,

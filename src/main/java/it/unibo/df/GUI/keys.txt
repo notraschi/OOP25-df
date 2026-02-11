@@ -1,7 +1,0 @@
-4 FRECCE per muovere il rettangolo verde
-Q per uscire dal gioco
-I per aprire e chiudere l'inventario delle mosse
-Z mossa 1
-X mossa 2
-C mossa 3
-SPACE pausa

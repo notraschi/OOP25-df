@@ -23,7 +23,7 @@ import it.unibo.df.model.abilities.AbilityType;
  * Loads abilities from a YAML file.
  */
 public final class Progress {
-    private static final List<Integer> DEFAULT_UNLOCKED_IDS = List.of(1, 2, 3, 4, 5);
+    private static final List<Integer> DEFAULT_UNLOCKED_IDS = List.of(1, 2, 3, 4);
     private Map<Integer, Ability> unlockedAbilitiesById = new LinkedHashMap<>();
     private final Map<Integer, Ability> lockedAbilitiesById = new LinkedHashMap<>();
     /**
@@ -119,7 +119,6 @@ public final class Progress {
     public void write() {
         try (InputStream input = getClass().getClassLoader().getResourceAsStream("abilities.yml");
                 FileWriter output = new FileWriter("src/main/resources/abilities.yml")) {
-            
             DumperOptions options = new DumperOptions(); 
             options.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK); 
             options.setPrettyFlow(true); 
