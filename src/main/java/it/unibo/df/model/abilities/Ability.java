@@ -16,7 +16,6 @@ import it.unibo.df.dto.AbilityView;
 public record Ability(
     int id,
     String name,
-    boolean unlocked,
     int cooldown,
     AbilityType type,
     int casterHpDelta,

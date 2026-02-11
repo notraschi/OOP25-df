@@ -3,6 +3,7 @@ package it.unibo.df.controller;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UncheckedIOException;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -10,6 +11,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
@@ -33,9 +35,14 @@ public final class Progress {
         loadCurrent();
     }
 
-    public void update(long killedEnemy) {
+    /**
+     * updates progress.
+     * 
+     * @param killedEnemies amount of enemies killed in battle, unlocks one new ability for each.
+     */
+    public void update(long killedEnemies) {
         final Random random = new Random();
-        for (int i= 0; i < killedEnemy; i++) {
+        for (int i= 0; i < killedEnemies; i++) {
             List<Integer> keys = List.copyOf(lockedAbilitiesById.keySet());
             int index = random.nextInt(0, keys.size()); // % keys.size();
             unlockedAbilitiesById.put(keys.get(index), lockedAbilitiesById.get(keys.get(index)));
@@ -43,6 +50,9 @@ public final class Progress {
         }
     }
 
+    /**
+     * resets progress to default.
+     */
     public void reset() {
         unlockedAbilitiesById.entrySet().stream()
             .filter(e -> !DEFAULT_UNLOCKED_IDS.contains(e.getKey()))
@@ -50,69 +60,6 @@ public final class Progress {
         unlockedAbilitiesById = unlockedAbilitiesById.entrySet().stream()
             .filter(e -> DEFAULT_UNLOCKED_IDS.contains(e.getKey()))
             .collect(Collectors.toMap(k -> k.getKey(),v -> v.getValue()));
-    }
-
-    public Map<Integer,Ability> unlockedAbilities() {
-        return Collections.unmodifiableMap(unlockedAbilitiesById);
-    }
-    
-    //queste 3 funxioni non servono piu 
-     /**
-      * Returns an ability by id.
-      *
-      * @param id ability id
-      * @return ability or null
-      */
-    public Ability get(final int id) {
-        return unlockedAbilitiesById.get(id);
-    }
-
-     /**
-      * Returns all registered abilities.
-      *
-      * @return list of abilities
-      */
-    public List<Ability> getAll() {
-        return List.copyOf(unlockedAbilitiesById.values());
-    }
-
-     /**
-      * Returns how many abilities are registered.
-      *
-      * @return number of abilities
-      */
-    public int size() {
-        return unlockedAbilitiesById.size();
-    }
-
-
-
-    private void loadCurrent() {
-        try (InputStream stream = getClass().getClassLoader().getResourceAsStream("abilities.yml")) {
-            if (stream == null) {
-                throw new IllegalStateException("abilities.yml not found");
-            }
-            loadFromStream(stream);
-        } catch (final IOException e) {
-            throw new IllegalStateException("Cannot read abilities.yml", e);
-        }
-    }
-
-    private void loadFromStream(final InputStream stream) {
-        final Object loaded = new Yaml().load(stream);
-        if (!(loaded instanceof Map<?, ?> root)) {
-            throw new IllegalStateException("Invalid abilities.yml format");
-        }
-
-        final Object listObj = root.get("abilities");
-        if (!(listObj instanceof List<?> list)) {
-            throw new IllegalStateException("Missing abilities list");
-        }
-        
-        
-        for (final Object entry : list) {
-            addAbility(entry);
-        }
     }
 
     @SuppressWarnings("unchecked")
@@ -131,16 +78,59 @@ public final class Progress {
                 }
             }
             file.dump(root, output);
-        }catch (IOException e) {
+        } catch (IOException e) {
             throw new IllegalStateException("Missing abilities list");
         }
     }
 
-    
+    /**
+     * gets all unlocked abilities.
+     * 
+     * @return all unlocked abilities
+     */
+    public Map<Integer,Ability> unlockedAbilities() {
+        return Collections.unmodifiableMap(unlockedAbilitiesById);
+    }
 
+    private void loadCurrent() {
+        loadGeneric().forEach(
+            p -> (p.unlocked ? unlockedAbilitiesById : lockedAbilitiesById).put(p.ability.id(), p.ability)
+        );
+    }
+
+    private static Stream<Pair> loadGeneric() {
+        // needs a "leading leash" in front of the file path.
+        InputStream stream = Progress.class.getResourceAsStream("/abilities.yml");
+        if (stream == null) {
+            throw new IllegalStateException("abilities.yml not found");
+        }
+
+        return loadFromStream(stream).onClose(() -> {
+            try {
+                stream.close();
+            }
+            catch (IOException ex) {
+                throw new AbilityLoadingException("could not close stream", ex);
+            }
+        });
+    }
+
+    private static Stream<Pair> loadFromStream(final InputStream stream) {
+        final Object loaded = new Yaml().load(stream);
+        if (!(loaded instanceof Map<?, ?> root)) {
+            throw new IllegalStateException("Invalid abilities.yml format");
+        }
+
+        final Object listObj = root.get("abilities");
+        if (!(listObj instanceof List<?> list)) {
+            throw new IllegalStateException("Missing abilities list");
+        }
+
+        return list.stream().map(entry -> getAbility(entry));
+    }
 
     @SuppressWarnings("unchecked")
-    private void addAbility(final Object entry) {
+    private static Pair getAbility(final Object entry) {
         if (!(entry instanceof Map<?, ?>)) {
             throw new IllegalStateException("Invalid ability entry: " + entry);
         }
@@ -161,16 +151,34 @@ public final class Progress {
             .toUpperCase(Locale.ROOT);
 
         final AbilityFn effect = AbilityAreas.fromString(area);
-        ((boolean) abilityData.get("unlocked") ? unlockedAbilitiesById : lockedAbilitiesById)
-            .put(id, new Ability(
+
+        return new Pair(
+            unlocked,
+            new Ability(
                 id,
                 name,
-                unlocked,
                 cooldown,
                 type,
                 casterHpDelta,
                 targetHpDelta,
                 effect
-            ));
+            )
+        );
+    }
+
+    public static Map<Integer, Ability> allRegisteredAbilities() {
+        return loadGeneric().collect(Collectors.toMap(
+            p -> p.ability.id(),
+            p -> p.ability
+        ));
+    }
+
+    private static record Pair(boolean unlocked, Ability ability) {}
+
+    public static class AbilityLoadingException extends UncheckedIOException {
+
+        public AbilityLoadingException(String message, IOException cause) {
+            super(message, cause);
+        }
     }
 }

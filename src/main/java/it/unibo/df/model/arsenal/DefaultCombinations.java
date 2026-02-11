@@ -37,7 +37,6 @@ public final class DefaultCombinations {
         return new Ability(
             newId,
             a.name() + "+" + b.name(),
-            a.unlocked(),
             a.cooldown() + b.cooldown(),
             pickType(a, b),
             a.casterHpDelta() + b.casterHpDelta(),
