@@ -1,15 +1,12 @@
 package it.unibo.df.ai;
 
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Queue;
 
 import it.unibo.df.gs.CombatState;
 import it.unibo.df.input.Input;
 import it.unibo.df.model.abilities.Ability;
-
 
 /**
  * Context of AiStrategy.

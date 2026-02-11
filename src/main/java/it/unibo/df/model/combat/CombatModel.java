@@ -58,11 +58,21 @@ public class CombatModel {
      */
     public boolean move(Optional<Integer> entityId, Vec2D delta) {
         return entityId.map(enemies::get)
-            .map(e -> e.move(delta, boardSize))
+            .map(e -> {
+                if(e.moveCooldown.isActive()) return true;
+                e.moveCooldown.begin();
+                e.move(delta, boardSize);
+                return true;
+            })
             .orElseGet(
-                () -> player.move(
-                    applyDisruption(delta).orElse(new Vec2D(0, 0)), boardSize
-                )
+                () -> {
+                    if(player.moveCooldown.isActive()) return true;
+                    player.moveCooldown.begin();
+                    player.move(
+                        applyDisruption(delta).orElse(new Vec2D(0, 0)), boardSize
+                    );
+                    return true;
+                }
             );
     }
 
@@ -188,7 +198,9 @@ public class CombatModel {
      */
     public void tick(long deltaTime) {
         player.cooldowns.forEach(c -> c.update(deltaTime));
+        player.moveCooldown.update(deltaTime);
         enemies.values().forEach(e -> e.cooldowns.forEach(c -> c.update(deltaTime)));
+        enemies.values().forEach(e -> e.moveCooldown.update(deltaTime));
         disrupt.ifPresent(ab -> ab.ability.timer().update(deltaTime));
         // remove disrupt if timer is done
         if (disrupt.isPresent() && !disrupt.get().ability.timer().isActive()) {
@@ -207,6 +219,7 @@ public class CombatModel {
         private final int maxHp;
         private final List<Ability> loadout;
         private final List<Cooldown> cooldowns;
+        private final Cooldown moveCooldown;
         private final Optional<SpecialAbilities> special;
 
         /**
@@ -229,6 +242,7 @@ public class CombatModel {
             this.cooldowns = loadout.stream()
                 .map(a -> new Cooldown(a.cooldown() * 1000))
                 .toList();
+            this.moveCooldown = new Cooldown(300);
             this.special = special;
         }
 
@@ -269,7 +283,7 @@ public class CombatModel {
         }
 
         EntityView asView() {
-            return new EntityView(maxHp, hp, position, cooldowns.stream().map(c -> (int) c.getRemaining()).toList(),0); //SISTEMARE COOLDOWN MOVE
+            return new EntityView(maxHp, hp, position, cooldowns.stream().map(c -> (int) c.getRemaining()).toList(),moveCooldown.getRemaining()); //SISTEMARE COOLDOWN MOVE
         }
     }
 

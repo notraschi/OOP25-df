@@ -9,7 +9,7 @@ public record EntityView(
     int hp,
     Vec2D position,
     List<Integer> cooldownAbilities,
-    Integer cooldownMove //int moveCooldownTicks //tempo rimanente TODO
+    long cooldownMove
 ) {
     public double hpRatio() {
         return hpMax <= 0 ? 0.0 : (double) hp / (double) hpMax;

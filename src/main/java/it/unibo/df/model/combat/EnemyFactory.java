@@ -24,7 +24,7 @@ public class EnemyFactory {
             List.of(
                 arsenal.get(1), // TODO: remove MAGIC NUMBERs!!
                 arsenal.get(2),
-                arsenal.get(3)
+                arsenal.get(15)
             ),
             List.of(
                 AiStrategyType.PRESSURE,
