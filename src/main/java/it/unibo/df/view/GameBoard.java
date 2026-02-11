@@ -1,81 +1,64 @@
-package it.unibo.df.GUI;
+package it.unibo.df.view;
 
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+
 import it.unibo.df.dto.AbilityView;
 import it.unibo.df.gs.CombatState;
 import it.unibo.df.model.abilities.Vec2D;
-import javafx.beans.value.ChangeListener;
+import static it.unibo.df.view.PaneFormatter.formatColumns;
+import static it.unibo.df.view.PaneFormatter.formatRows;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.Region;
-import javafx.scene.layout.RowConstraints;
 import javafx.scene.layout.StackPane;
 /**
  * 
  */
 public class GameBoard {
-    private int boardSize = 10;
-    private StackPane[][] playAreaMat = new StackPane[boardSize][boardSize];
+    private final int MAX_SIZE_PERC = 100;
+    private final int BOARD_SIZE_PERC = 80;
+    private final int KEYS_AREA_ROWS = 2;
+    private final int boardSize = 10;
+    private final int loadoutSize ;
+    private final StackPane[][] playAreaMat;
     private GridPane playArea;
     private GridPane abilityArea;
     private final List<String> keys;
-    private Scene board;
     private ProgressBar lifeBar;
+    private Scene board;
 
     /**
      * @param keys
      */
-    public GameBoard(final List<String> keys) {
+    public GameBoard(final List<String> keys, final int loadoutSize) {
+        playAreaMat = new StackPane[boardSize][boardSize];
+        this.loadoutSize = loadoutSize;
         this.keys = List.copyOf(keys);
         setupBoardScene();
     }
 
     private void setupBoardScene() {
-        final BorderPane borderPane = new BorderPane();
-        final StackPane externalWindowPane = new StackPane();
         final GridPane centerPane = new GridPane();
+
         playArea = new GridPane();
-        centerPane.setMaxSize(Region.USE_PREF_SIZE, Region.USE_PREF_SIZE);
-        formatColumns(centerPane, 1, 100);
-        formatRows(centerPane, 1, 80);
-        formatRows(centerPane, 1,20);
-        formatColumns(playArea, this.boardSize, 100 / this.boardSize);
-        formatRows(playArea,  this.boardSize, 100 / this.boardSize);
+        formatColumns(centerPane, 1, MAX_SIZE_PERC);
+        formatRows(centerPane, 1, BOARD_SIZE_PERC);
+        formatRows(centerPane, 1, MAX_SIZE_PERC - BOARD_SIZE_PERC);
+
+        formatColumns(playArea, this.boardSize, MAX_SIZE_PERC / this.boardSize);
+        formatRows(playArea,  this.boardSize, MAX_SIZE_PERC / this.boardSize);
+
         centerPane.add(fillPlayArea(playArea), 0, 0); 
         centerPane.add(fillLowBar(), 0, 1);
-        externalWindowPane.getChildren().add(centerPane);
-        borderPane.setCenter(externalWindowPane);
-        final ChangeListener<Number> resizebility = (obs, oldValue, newValue) -> {
-            final double size = Double.min(externalWindowPane.getWidth(), externalWindowPane.getHeight());
-            centerPane.setPrefSize(size - (size * 20) / 100, size);
-        };
-        externalWindowPane.widthProperty().addListener(resizebility);
-        externalWindowPane.heightProperty().addListener(resizebility);
-        board = new Scene(borderPane);
+
+        SceneResizer resizer = new SceneResizer(centerPane, Double.valueOf(BOARD_SIZE_PERC) / Double.valueOf(MAX_SIZE_PERC), MAX_SIZE_PERC / MAX_SIZE_PERC);
+        board = new Scene(resizer.getBorderPane());
+
         board.getStylesheets().add(getClass().getResource("/css/boardStyle.css").toExternalForm());
-    }
-
-    private void formatColumns(final GridPane grid, final int size, final double perc) {
-        final ColumnConstraints cc = new ColumnConstraints();
-        cc.setPercentWidth(perc);
-        for (int i = 0; i < size; i++) {
-            grid.getColumnConstraints().add(cc);
-        }
-    }
-
-    private void formatRows(final GridPane grid, final int size, final double perc) {
-        final RowConstraints cr = new RowConstraints();
-        cr.setPercentHeight(perc);
-        for (int i = 0; i < size; i++) {
-            grid.getRowConstraints().add(cr);
-        }
     }
 
     private GridPane fillPlayArea(final GridPane grid) {
@@ -92,11 +75,10 @@ public class GameBoard {
 
     private GridPane fillAbilityArea() {
         abilityArea = new GridPane();
-        formatColumns(abilityArea, 3, 33);
-        formatRows(abilityArea, 1, 70);
-        formatRows(abilityArea, 1, 30);
-        for (int i = 0; i < 3; i++) {
-            final Label lbl = new Label("Ability" + (i + 1));
+        formatColumns(abilityArea, loadoutSize, MAX_SIZE_PERC / loadoutSize);
+        formatRows(abilityArea, 1, MAX_SIZE_PERC);
+        for (int i = 0; i < loadoutSize; i++) {
+            final Label lbl = new Label();
             lbl.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
             abilityArea.add(lbl, i, 0);
         }
@@ -104,10 +86,10 @@ public class GameBoard {
     }
 
     private GridPane fillLifeBarArea() {
-        lifeBar = new ProgressBar(1.0);
+        lifeBar = new ProgressBar();
         final GridPane area = new GridPane();
-        formatColumns(area,1, 100);
-        formatRows(area, 1, 100);
+        formatColumns(area,1, MAX_SIZE_PERC);
+        formatRows(area, 1, MAX_SIZE_PERC);
         lifeBar.setMaxWidth(Double.MAX_VALUE);
         area.add(lifeBar, 0, 0);
         return area;
@@ -116,10 +98,10 @@ public class GameBoard {
     private GridPane fillKeysArea() {
         final GridPane area = new GridPane();
         final Iterator<String> keysIt = keys.iterator();
-        formatColumns(area, 4, 25);
-        formatRows(area, 2, 50);
-        for (int i = 0; i < 2; i++) {
-            for (int j = 0; j < 4; j++) {
+        formatRows(area, KEYS_AREA_ROWS, MAX_SIZE_PERC / KEYS_AREA_ROWS);
+        formatColumns(area, keys.size() / KEYS_AREA_ROWS, MAX_SIZE_PERC / (keys.size() / KEYS_AREA_ROWS));
+        for (int i = 0; i < KEYS_AREA_ROWS; i++) {
+            for (int j = 0; j < keys.size() / KEYS_AREA_ROWS; j++) {
                 final Label lbl = new Label(keysIt.hasNext() ? keysIt.next() : "");
                 lbl.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
                 area.add(lbl, j, i);
@@ -130,8 +112,9 @@ public class GameBoard {
 
     private GridPane fillLowBar() {
         final GridPane lowBar = new GridPane();
-        formatColumns(lowBar, 3, 33);
-        formatRows(lowBar, 1, 100);
+        final int nColumns = 3;
+        formatColumns(lowBar, nColumns, MAX_SIZE_PERC / nColumns);
+        formatRows(lowBar, 1, MAX_SIZE_PERC);
         lowBar.add(fillAbilityArea(), 0, 0);
         lowBar.add(fillLifeBarArea(), 1, 0);
         lowBar.add(fillKeysArea(), 2, 0);
