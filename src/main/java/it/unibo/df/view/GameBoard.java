@@ -1,16 +1,17 @@
 package it.unibo.df.view;
 
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import it.unibo.df.configurations.Constants;
 import it.unibo.df.dto.AbilityView;
 import it.unibo.df.dto.SpecialAbilityView;
 import it.unibo.df.gs.CombatState;
 import it.unibo.df.model.abilities.Vec2D;
+import it.unibo.df.model.combat.Cooldown;
 import static it.unibo.df.view.PaneFormatter.formatColumns;
 import static it.unibo.df.view.PaneFormatter.formatRows;
 import javafx.scene.Scene;
@@ -22,11 +23,13 @@ import javafx.scene.layout.StackPane;
  * 
  */
 public class GameBoard {
-    private final int MAX_SIZE_PERC = 100;
-    private final int BOARD_SIZE_PERC = 80;
-    private final int KEYS_AREA_ROWS = 2;
-    private final int ENEMY_NUMBER = 2;
-    private final int loadoutSize ;
+    private static final int MAX_SIZE_PERC = 100;
+    private static final int BOARD_SIZE_PERC = 80;
+    private static final int KEYS_AREA_ROWS = 2;
+    private static final int ENEMY_NUMBER = 2;
+    private static final int EFFECT_DISPLAY_DURATION = 200;
+
+    private final int loadoutSize;
     private final StackPane[][] playAreaMat;
     private GridPane playArea;
     private GridPane abilityArea;
@@ -34,6 +37,7 @@ public class GameBoard {
     private ProgressBar lifeBar;
     private List<AbilityView> equipped;
     private final List<ProgressBar> enemyBars = new LinkedList<>();
+    private final List<ActiveEffect> activeEffects = new LinkedList<>();
     private Scene board;
 
     /**
@@ -137,12 +141,11 @@ public class GameBoard {
         return lowBar;
     }
 
-    private void refreshMap(final CombatState gs, final Set<Vec2D> effects) {
-        final List<Vec2D> enemyPosition = List.copyOf(
-            gs.enemies().entrySet().stream()
-            .map(e -> e.getValue().position())
-            .toList()
-        );
+    private void refreshMap(final CombatState gs) {
+        final List<Vec2D> enemyPosition = gs.enemies().values().stream()
+            .map(enemy -> enemy.position())
+            .toList();
+
         for (int i = 0; i < Constants.BOARD_SIZE; i++) {
             for (int j = 0; j < Constants.BOARD_SIZE; j++) {
                 playAreaMat[i][j].getStyleClass().clear();
@@ -157,9 +160,10 @@ public class GameBoard {
         for (var e : enemyPosition) {
             playAreaMat[e.x()][e.y()].getStyleClass().add("enemy");
         }
-        for (var e : effects) {
-            playAreaMat[e.x()][e.y()].getStyleClass().add("move");
-        }
+
+        // activeEffects.forEach(set -> set.forEach(cell -> playAreaMat[cell.x()][cell.y()].getStyleClass().add("move")));
+        activeEffects.stream().map(ActiveEffect::effect)
+            .forEach(set -> set.forEach(cell -> playAreaMat[cell.x()][cell.y()].getStyleClass().add("move")));
     }
 
     private void refreshLife(final CombatState gs) {
@@ -205,13 +209,16 @@ public class GameBoard {
 	* refresh the game board, to move enemy player and color where an ability hit.
 	* @param gs
 	*/
-    public void refresh(final CombatState gs) {
-        final Set<Vec2D> eff = new HashSet<>();
-        //gs.activeDisrupt()
-        for (final var e : gs.effectsOnBoard()) {
-            eff.addAll(e);
-        }
-        refreshMap(gs, eff);
+    public void refresh(final CombatState gs, long deltaTime) {
+        activeEffects.forEach(ae -> ae.cooldown.update(deltaTime));
+        activeEffects.removeIf(ae -> !ae.cooldown.isActive());
+        activeEffects.addAll(
+            gs.effectsOnBoard().stream()
+                .map(eff -> new ActiveEffect(new Cooldown(EFFECT_DISPLAY_DURATION), eff))
+                .peek(ae -> ae.cooldown.begin())
+                .collect(Collectors.toSet())
+        );
+        refreshMap(gs);
         refreshLife(gs);
         refreshCooldown(gs);
     }
@@ -223,4 +230,5 @@ public class GameBoard {
         return board;
     }
 
+    private record ActiveEffect(Cooldown cooldown, Set<Vec2D> effect) {}
 }

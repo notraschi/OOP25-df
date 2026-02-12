@@ -30,12 +30,12 @@ import javafx.util.Duration;
  * 
  */
 public class MainStage extends Application {
-    private final int TICK = 60;
+    private final int TICK = 7;
     private final int LOADOUT_SIZE = 3;
     private final double MIN_SCREEN_WIDTH = (Double.min(
-            Screen.getPrimary().getBounds().getHeight(),
-            Screen.getPrimary().getBounds().getWidth()
-        )) / 2;
+        Screen.getPrimary().getBounds().getHeight(),
+        Screen.getPrimary().getBounds().getWidth()
+    )) / 2;
     private final GameBoard board = new GameBoard(
         List.of(
             "← \nleft",
@@ -101,12 +101,11 @@ public class MainStage extends Application {
 
     private void tick(){
         var cs = (CombatState) controller.tick(TICK);
-        board.refresh(cs);
+        board.refresh(cs, TICK);
         switch (cs.matchStatus()) {
             case CombatStatus.WON -> {
                 matchEnd(" WON ");
                 visualChange();
-                
             }
             case CombatStatus.LOST -> {
                 matchEnd(" LOST ");
