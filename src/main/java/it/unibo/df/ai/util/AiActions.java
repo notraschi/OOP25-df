@@ -1,5 +1,6 @@
 package it.unibo.df.ai.util;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
@@ -113,11 +114,21 @@ public class AiActions {
     public static Optional<Input> fleeFromTarget(EntityView me, EntityView target) {
 
         var retreatMoves = TacticsUtility.getMovesToRetreat(me.position(), target.position());
+        Random rand = new Random();
 
         if (!retreatMoves.isEmpty()) {
-            Random rand = new Random();
             return Optional.of(retreatMoves.get(rand.nextInt(0,retreatMoves.size())));
         }
+
+        var retreatMovesStepTwo = new ArrayList<>();
+        for (Move move : Move.values()) {
+            boolean validMove = !TacticsUtility.getMovesToRetreat(TacticsUtility.applyMove(me.position(), move), target.position()).isEmpty();
+            if(validMove) {
+                retreatMovesStepTwo.add(move);
+            }
+        }
+
+        if(!retreatMovesStepTwo.isEmpty()) Optional.of(retreatMovesStepTwo.get(rand.nextInt(0,retreatMovesStepTwo.size())));
         return Optional.empty();
     }
 

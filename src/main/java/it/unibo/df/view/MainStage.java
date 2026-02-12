@@ -104,11 +104,12 @@ public class MainStage extends Application {
         switch (cs.matchStatus()) {
             case CombatStatus.WON -> {
                 matchEnd(" WON ");
+                visualChange();
                 
             }
             case CombatStatus.LOST -> {
                 matchEnd(" LOST ");
-               
+                visualChange();
             }
             default -> { }
         }

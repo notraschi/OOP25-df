@@ -96,7 +96,7 @@ public class PressureStrategy implements AiStrategy{
             utility += 0.3; //posso colpire ORA allora gli do questo bonus !!
         }
 
-        //System.out.println(utility +"--"+idEntity+"--PRESSURE");
+        System.out.println(utility +"--"+idEntity+"--PRESSURE");
 
         return CurvesUtility.clamp(utility);
     }

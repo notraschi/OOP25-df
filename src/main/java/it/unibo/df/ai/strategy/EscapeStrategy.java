@@ -57,16 +57,15 @@ public class EscapeStrategy implements AiStrategy {
         // double helplessScore = (double) cooldownsActive / (double) loadout.size();
 
         var ammo = TacticsUtility.abilityByType(loadout, AbilityType.ATTACK); //abilita con cui attacco
-        
         //se ho cooldown attivi allora ho paura, SOLO PER ATTACK
         //mi calcolo i disponibili sui totali 
         // 0 / 2 -> 0
         // 1 / 2 -> 0.5
         // 2 / 2 -> 1
-        double ammoScore = (double) ammo.stream().filter(x -> me.cooldownAbilities().get(x) > 0).count() / (double) ammo.size();
+        double helplessScore = (double) ammo.stream().filter(x -> me.cooldownAbilities().get(x) > 0).count() / (double) ammo.size();
 
 
-        double score = ammoScore * danger * fear;//Math.max(fear * danger, helplessScore * danger);
+        double score = helplessScore * danger * fear;//Math.max(fear * danger, helplessScore * danger);
         //System.out.println(score +"--"+idEntity+"--ESCAPE--danger: "+danger+"--activecooldown--"+cooldownsActive+"--helplessScore--"+helplessScore);
 
         return CurvesUtility.clamp(score);
