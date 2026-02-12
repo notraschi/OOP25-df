@@ -28,6 +28,7 @@ public final class Progress {
     private static final List<Integer> DEFAULT_UNLOCKED_IDS = List.of(1, 2, 3, 4);
     private Map<Integer, Ability> unlockedAbilitiesById = new LinkedHashMap<>();
     private final Map<Integer, Ability> lockedAbilitiesById = new LinkedHashMap<>();
+
     /**
      * Creates a registry loading abilities.yml from resources.
      */
@@ -38,11 +39,12 @@ public final class Progress {
     /**
      * updates progress.
      * 
-     * @param killedEnemies amount of enemies killed in battle, unlocks one new ability for each.
+     * @param killedEnemies amount of enemies killed in battle, unlocks one new
+     *                      ability for each.
      */
     public void update(long killedEnemies) {
         final Random random = new Random();
-        for (int i= 0; i < killedEnemies; i++) {
+        for (int i = 0; i < killedEnemies; i++) {
             List<Integer> keys = List.copyOf(lockedAbilitiesById.keySet());
             int index = random.nextInt(0, keys.size()); // % keys.size();
             unlockedAbilitiesById.put(keys.get(index), lockedAbilitiesById.get(keys.get(index)));
@@ -55,23 +57,23 @@ public final class Progress {
      */
     public void reset() {
         unlockedAbilitiesById.entrySet().stream()
-            .filter(e -> !DEFAULT_UNLOCKED_IDS.contains(e.getKey()))
-            .forEach(a -> lockedAbilitiesById.put(a.getKey(), a.getValue()));
+                .filter(e -> !DEFAULT_UNLOCKED_IDS.contains(e.getKey()))
+                .forEach(a -> lockedAbilitiesById.put(a.getKey(), a.getValue()));
         unlockedAbilitiesById = unlockedAbilitiesById.entrySet().stream()
-            .filter(e -> DEFAULT_UNLOCKED_IDS.contains(e.getKey()))
-            .collect(Collectors.toMap(k -> k.getKey(),v -> v.getValue()));
+                .filter(e -> DEFAULT_UNLOCKED_IDS.contains(e.getKey()))
+                .collect(Collectors.toMap(k -> k.getKey(), v -> v.getValue()));
     }
 
     @SuppressWarnings("unchecked")
     public void write() {
         try (InputStream input = getClass().getClassLoader().getResourceAsStream("abilities.yml");
                 FileWriter output = new FileWriter("src/main/resources/abilities.yml")) {
-            DumperOptions options = new DumperOptions(); 
-            options.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK); 
-            options.setPrettyFlow(true); 
+            DumperOptions options = new DumperOptions();
+            options.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
+            options.setPrettyFlow(true);
             Yaml file = new Yaml(options);
             Map<String, Object> root = file.load(input);
-            List<Map<String,Object>> abilities = (List<Map<String, Object>>) root.get("abilities");
+            List<Map<String, Object>> abilities = (List<Map<String, Object>>) root.get("abilities");
             for (Map<String, Object> ability : abilities) {
                 if (unlockedAbilitiesById.keySet().contains((int) ability.get("id"))) {
                     ability.put("unlocked", true);
@@ -88,14 +90,13 @@ public final class Progress {
      * 
      * @return all unlocked abilities
      */
-    public Map<Integer,Ability> unlockedAbilities() {
+    public Map<Integer, Ability> unlockedAbilities() {
         return Collections.unmodifiableMap(unlockedAbilitiesById);
     }
 
     private void loadCurrent() {
         loadGeneric().forEach(
-            p -> (p.unlocked ? unlockedAbilitiesById : lockedAbilitiesById).put(p.ability.id(), p.ability)
-        );
+                p -> (p.unlocked ? unlockedAbilitiesById : lockedAbilitiesById).put(p.ability.id(), p.ability));
     }
 
     private static Stream<Pair> loadGeneric() {
@@ -108,8 +109,7 @@ public final class Progress {
         return loadFromStream(stream).onClose(() -> {
             try {
                 stream.close();
-            }
-            catch (IOException ex) {
+            } catch (IOException ex) {
                 throw new AbilityLoadingException("could not close stream", ex);
             }
         });
@@ -141,39 +141,33 @@ public final class Progress {
         final String name = String.valueOf(abilityData.get("name"));
         final boolean unlocked = (boolean) abilityData.get("unlocked");
         final int cooldown = (int) abilityData.get("cooldown");
-        final AbilityType type = AbilityType.valueOf(
-            String.valueOf(abilityData.get("type")).toUpperCase(Locale.ROOT)
-        );
         final int casterHpDelta = (int) abilityData.get("casterHpDelta");
         final int targetHpDelta = (int) abilityData.get("targetHpDelta");
 
         final String area = String.valueOf(abilityData.getOrDefault("area", "NONE"))
-            .toUpperCase(Locale.ROOT);
+                .toUpperCase(Locale.ROOT);
 
         final AbilityFn effect = AbilityAreas.fromString(area);
 
         return new Pair(
-            unlocked,
-            new Ability(
-                id,
-                name,
-                cooldown,
-                type,
-                casterHpDelta,
-                targetHpDelta,
-                effect
-            )
-        );
+                unlocked,
+                new Ability(
+                        id,
+                        name,
+                        cooldown,
+                        casterHpDelta,
+                        targetHpDelta,
+                        effect));
     }
 
     public static Map<Integer, Ability> allRegisteredAbilities() {
         return loadGeneric().collect(Collectors.toMap(
-            p -> p.ability.id(),
-            p -> p.ability
-        ));
+                p -> p.ability.id(),
+                p -> p.ability));
     }
 
-    private static record Pair(boolean unlocked, Ability ability) {}
+    private static record Pair(boolean unlocked, Ability ability) {
+    }
 
     public static class AbilityLoadingException extends UncheckedIOException {
 

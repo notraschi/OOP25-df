@@ -20,7 +20,7 @@ class AbilityTest {
     @Test
     void abilityAndEffectAreCreated() {
         AbilityFn fn = (caster) -> Optional.empty();
-        Ability a = new Ability(1, "BasicHeal", 3, AbilityType.HEAL, 5, 0, fn);
+        Ability a = new Ability(1, "BasicHeal", 3, 5, 0, fn);
 
         assertEquals(1, a.id());
         assertNotNull(a.effect());
@@ -29,18 +29,14 @@ class AbilityTest {
     @Test
     void lifestealProducesDamageAndHeal() {
         Ability a = new Ability(
-            2,
-            "BasicLifeSteal",
-            10,
-            AbilityType.LIFESTEAL,
-            4,
-            -8,
-            (caster) -> Optional.of(Set.of(new Vec2D(1, 1)))
-        );
+                2,
+                "BasicLifeSteal",
+                10,
+                4,
+                -8,
+                (caster) -> Optional.of(Set.of(new Vec2D(1, 1))));
 
         assertEquals(-8, a.targetHpDelta());
         assertEquals(4, a.casterHpDelta());
     }
 }
-
-    

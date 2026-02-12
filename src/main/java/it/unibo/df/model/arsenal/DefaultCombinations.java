@@ -28,16 +28,16 @@ public final class DefaultCombinations {
         // Ex: 1 + 2 -> new ability (id 100)
         c.register(1, 2, (a, b) -> buildCombined(100, a, b));
         c.register(3, 4, (a, b) -> buildCombined(101, a, b));
-        c.register(3, 7, (a, b) -> buildCombined(101, a, b));
-        c.register(6, 8, (a, b) -> buildCombined(101, a, b));
-        c.register(11, 14, (a, b) -> buildCombined(101, a, b));
-        c.register(11, 12, (a, b) -> buildCombined(101, a, b));
-        c.register(14, 15, (a, b) -> buildCombined(101, a, b));
-        c.register(7, 10, (a, b) -> buildCombined(101, a, b));
-        c.register(3, 9, (a, b) -> buildCombined(101, a, b));
-        c.register(2, 8, (a, b) -> buildCombined(101, a, b));
-        c.register(4, 7, (a, b) -> buildCombined(101, a, b));
-        c.register(5, 10, (a, b) -> buildCombined(101, a, b));
+        c.register(3, 7, (a, b) -> buildCombined(102, a, b));
+        c.register(6, 8, (a, b) -> buildCombined(103, a, b));
+        c.register(11, 14, (a, b) -> buildCombined(104, a, b));
+        c.register(11, 12, (a, b) -> buildCombined(105, a, b));
+        c.register(14, 15, (a, b) -> buildCombined(106, a, b));
+        c.register(7, 10, (a, b) -> buildCombined(107, a, b));
+        c.register(3, 9, (a, b) -> buildCombined(108, a, b));
+        c.register(2, 8, (a, b) -> buildCombined(109, a, b));
+        c.register(4, 7, (a, b) -> buildCombined(110, a, b));
+        c.register(5, 10, (a, b) -> buildCombined(111, a, b));
 
         return c;
     }
@@ -52,14 +52,12 @@ public final class DefaultCombinations {
      */
     private static Ability buildCombined(final int newId, final Ability a, final Ability b) {
         return new Ability(
-            newId,
-            a.name() + "+" + b.name(),
-            a.cooldown() + b.cooldown(),
-            pickType(a, b),
-            a.casterHpDelta() + b.casterHpDelta(),
-            a.targetHpDelta() + b.targetHpDelta(),
-            fuseEffects(a.effect(), b.effect())
-        );
+                newId,
+                a.name() + "+" + b.name(),
+                a.cooldown() + b.cooldown(),
+                a.casterHpDelta() + b.casterHpDelta(),
+                a.targetHpDelta() + b.targetHpDelta(),
+                fuseEffects(a.effect(), b.effect()));
     }
 
     private static AbilityFn fuseEffects(final AbilityFn first, final AbilityFn second) {
@@ -76,13 +74,4 @@ public final class DefaultCombinations {
         };
     }
 
-    private static AbilityType pickType(final Ability a, final Ability b) {
-        if (a.type() == AbilityType.LIFESTEAL || b.type() == AbilityType.LIFESTEAL) {
-            return AbilityType.LIFESTEAL;
-        }
-        if (a.type() == AbilityType.HEAL && b.type() == AbilityType.HEAL) {
-            return AbilityType.HEAL;
-        }
-        return AbilityType.ATTACK;
-    }
 }
