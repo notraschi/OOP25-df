@@ -35,7 +35,7 @@ public class PressureStrategy implements AiStrategy{
         if (me.hpRatio() < momentToCastSpecial && special > 0) {
             special -= 1;
             momentToCastSpecial = 0.3;
-            System.out.println("cast SPECIAL by "+idEntity);
+            //System.out.println("cast SPECIAL by "+idEntity);
             return Optional.of(Attack.SPECIAL);
         }
 
@@ -54,7 +54,7 @@ public class PressureStrategy implements AiStrategy{
         Optional<Input> aimMove = AiActions.moveForBestAim(me, aimFocus, loadout);
         if (aimMove.isPresent()) return aimMove;
             
-        System.out.println("pressure" + idEntity +"--"+ me.hp());
+        //System.out.println("pressure" + idEntity +"--"+ me.hp());
 
         return Optional.empty();       
     }

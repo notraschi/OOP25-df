@@ -26,7 +26,7 @@ public class EscapeStrategy implements AiStrategy {
         var player = cs.player();
 
         //si ritira
-        System.out.println("escape" + idEntity +"--"+ me.hp());
+        //System.out.println("escape" + idEntity +"--"+ me.hp());
         return AiActions.fleeFromTarget(me, player);
     }
 
