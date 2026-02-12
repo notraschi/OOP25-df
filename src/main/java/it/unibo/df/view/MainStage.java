@@ -6,6 +6,7 @@ import java.util.Optional;
 import it.unibo.df.controller.Controller;
 import it.unibo.df.gs.ArsenalState;
 import it.unibo.df.gs.CombatState;
+import it.unibo.df.dto.CombatStatus;
 import it.unibo.df.input.Attack;
 import it.unibo.df.input.Combine;
 import it.unibo.df.input.Equip;
@@ -78,13 +79,36 @@ public class MainStage extends Application {
         stage.setScene(menu.getScene());
 
         timeline = new Timeline(
-            new KeyFrame(Duration.millis(TICK), e -> board.refresh((CombatState) controller.tick(TICK)))
+            new KeyFrame(Duration.millis(TICK), e -> tick())
         );
         timeline.setCycleCount(Timeline.INDEFINITE);
         
         stage.setMinHeight(MIN_SCREEN_WIDTH);
         stage.setMinWidth(MIN_SCREEN_WIDTH);
         stage.show();
+    }
+    private void matchEnd(String matchResult) {
+        final Alert alert = new Alert(Alert.AlertType.NONE);
+        final ButtonType ok = new ButtonType("OK");
+        alert.setTitle("END of BATTLE");
+        alert.setContentText("YOU"+matchResult+"THE GAME");
+        alert.getButtonTypes().setAll(ok);
+        alert.show();
+    }
+
+    private void tick(){
+        var cs = (CombatState) controller.tick(TICK);
+        board.refresh(cs);
+        switch (cs.matchStatus()) {
+            case CombatStatus.WON -> {
+                matchEnd(" WON ");
+                visualChange();
+            }
+            case CombatStatus.LOST -> {
+                matchEnd(" LOST ");
+            }
+            default -> { }
+        }
     }
 
     private void addKeysListenersToBoard(final Scene boardScene){
@@ -166,7 +190,7 @@ public class MainStage extends Application {
         alert.getButtonTypes().setAll(resume, reset, quit);
         timeline.pause();
         final Optional<ButtonType> result = alert.showAndWait();
-        if (result.isPresent() && result.get() == resume) {
+        if (result.isPresent() && result.get() == resume && stage.getScene().equals(board.getScene())) {
             timeline.play();
         } else if (result.isPresent() && result.get() == reset) {
             controller.resetProgress();
@@ -183,8 +207,9 @@ public class MainStage extends Application {
             board.refreshAbility(menu.getEquipped());
             stage.setScene(board.getScene());
         } else if (stage.getScene().equals(board.getScene())) {
-            menu.clearLost();
-            timeline.stop();
+            //menu.clearLost();
+            //menu.clearUnlocked();
+            timeline.pause();
             controller.toArsenal();
             menu.cleanEquipped();
             menu.refresh((ArsenalState) controller.tick(TICK));

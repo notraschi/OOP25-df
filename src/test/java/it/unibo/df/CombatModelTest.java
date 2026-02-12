@@ -9,7 +9,6 @@ import org.junit.jupiter.api.Test;
 
 import it.unibo.df.dto.SpecialAbilityView;
 import it.unibo.df.model.abilities.Ability;
-import it.unibo.df.model.abilities.AbilityType;
 import it.unibo.df.model.abilities.Vec2D;
 import it.unibo.df.model.combat.CombatModel;
 import it.unibo.df.model.combat.EnemyDefinition;
@@ -23,10 +22,9 @@ final class CombatModelTest {
 
     void setup(SpecialAbilities sa) {
         var defaultLoadout = List.of(
-            new Ability(1, "", 1, AbilityType.HEAL, 5, 0, pos -> Optional.empty()),
-            new Ability(2, "", 1, AbilityType.HEAL, 5, 0, pos -> Optional.empty()),
-            new Ability(3, "", 1, AbilityType.HEAL, 5, 0, pos -> Optional.empty())
-        );
+                new Ability(1, "", 1, 5, 0, pos -> Optional.empty()),
+                new Ability(2, "", 1, 5, 0, pos -> Optional.empty()),
+                new Ability(3, "", 1, 5, 0, pos -> Optional.empty()));
         // filling the loadout with garbage
         model = new CombatModel(defaultLoadout);
         // basic test
@@ -34,10 +32,8 @@ final class CombatModelTest {
         assertEquals(new Vec2D(0, 0), model.playerView().position());
         // adding an enemy that can deny the movement
         model.addEnemy(
-            new EnemyDefinition(
-                new Vec2D(0, 0), 100, defaultLoadout, List.of(), sa
-            )
-        );
+                new EnemyDefinition(
+                        new Vec2D(0, 0), 100, defaultLoadout, List.of(), sa));
         assertTrue(model.enemyView().size() == 1);
     }
 
@@ -75,6 +71,7 @@ final class CombatModelTest {
         assertEquals(SpecialAbilityView.INVERT_MOVEMENT, model.getDisrupt());
 
         // now movement should be inverted
+        model.tick(100); // expire movement cooldown
         model.move(Optional.empty(), new Vec2D(1, 0));
         assertEquals(new Vec2D(0, 0), model.playerView().position()); // old location
 

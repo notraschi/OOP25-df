@@ -1,6 +1,7 @@
 package it.unibo.df.gs;
 
 import java.util.List;
+import java.util.Optional;
 
 import it.unibo.df.dto.AbilityView;
 
@@ -12,17 +13,18 @@ public record ArsenalState(
     List<AbilityView> unlocked,
     // ids of abilities lost after combine
     List<Integer> lost,
-    // ids of abilities (ability) just equipped
-    List<Integer> equipped
+    // id of just-equipped ability
+    Optional<Integer> equipped,
+    // id of just-unequipped ability
+    Optional<Integer> unequipped
 ) implements GameState {
 
-    public void clear() {
-        unlocked.clear();
-        lost.clear();
-        equipped.clear();
-    }
-
     public static ArsenalState copyOf(ArsenalState as) {
-        return new ArsenalState(List.copyOf(as.unlocked), List.copyOf(as.lost), List.copyOf(as.equipped));
+        return new ArsenalState(
+            List.copyOf(as.unlocked),
+            List.copyOf(as.lost),
+            as.equipped,
+            as.unequipped
+        );
     }
 }

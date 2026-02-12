@@ -1,33 +1,36 @@
 package it.unibo.df.controller;
 
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Reader;
 import java.io.UncheckedIOException;
-import java.util.Collections;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import java.io.Writer;
 
-import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 
 import it.unibo.df.model.abilities.Ability;
 import it.unibo.df.model.abilities.AbilityAreas;
 import it.unibo.df.model.abilities.AbilityFn;
-import it.unibo.df.model.abilities.AbilityType;
 
 /**
  * Loads abilities from a YAML file.
  */
 public final class Progress {
-    private static final List<Integer> DEFAULT_UNLOCKED_IDS = List.of(1, 2, 3, 4);
+    private static final Set<Integer> DEFAULT_UNLOCKED_IDS = Set.of(1, 2, 3, 4, 5);
     private Map<Integer, Ability> unlockedAbilitiesById = new LinkedHashMap<>();
-    private final Map<Integer, Ability> lockedAbilitiesById = new LinkedHashMap<>();
+    private Map<Integer, Ability> lockedAbilitiesById = new LinkedHashMap<>();
+
     /**
      * Creates a registry loading abilities.yml from resources.
      */
@@ -38,11 +41,12 @@ public final class Progress {
     /**
      * updates progress.
      * 
-     * @param killedEnemies amount of enemies killed in battle, unlocks one new ability for each.
+     * @param killedEnemies amount of enemies killed in battle, unlocks one new
+     *                      ability for each.
      */
-    public void update(long killedEnemies) {
+    public void update(int killedEnemies) {
         final Random random = new Random();
-        for (int i= 0; i < killedEnemies; i++) {
+        for (int i = 0; i < killedEnemies; i++) {
             List<Integer> keys = List.copyOf(lockedAbilitiesById.keySet());
             int index = random.nextInt(0, keys.size()); // % keys.size();
             unlockedAbilitiesById.put(keys.get(index), lockedAbilitiesById.get(keys.get(index)));
@@ -54,32 +58,27 @@ public final class Progress {
      * resets progress to default.
      */
     public void reset() {
-        unlockedAbilitiesById.entrySet().stream()
-            .filter(e -> !DEFAULT_UNLOCKED_IDS.contains(e.getKey()))
-            .forEach(a -> lockedAbilitiesById.put(a.getKey(), a.getValue()));
-        unlockedAbilitiesById = unlockedAbilitiesById.entrySet().stream()
-            .filter(e -> DEFAULT_UNLOCKED_IDS.contains(e.getKey()))
-            .collect(Collectors.toMap(k -> k.getKey(),v -> v.getValue()));
+        var allAbilities = new LinkedHashMap<>(unlockedAbilitiesById);
+        allAbilities.putAll(lockedAbilitiesById);
+
+        unlockedAbilitiesById = allAbilities.values().stream()
+            .filter(ab -> DEFAULT_UNLOCKED_IDS.contains(ab.id()))
+            .collect(Collectors.toMap(ab -> ab.id(), ab -> ab));
+        lockedAbilitiesById = allAbilities.values().stream()
+            .filter(ab -> !DEFAULT_UNLOCKED_IDS.contains(ab.id()))
+            .collect(Collectors.toMap(ab -> ab.id(), ab -> ab));
     }
 
-    @SuppressWarnings("unchecked")
+    /**
+     * writes progress to file.
+     * @throws IOException 
+     */
     public void write() {
-        try (InputStream input = getClass().getClassLoader().getResourceAsStream("abilities.yml");
-                FileWriter output = new FileWriter("src/main/resources/abilities.yml")) {
-            DumperOptions options = new DumperOptions(); 
-            options.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK); 
-            options.setPrettyFlow(true); 
-            Yaml file = new Yaml(options);
-            Map<String, Object> root = file.load(input);
-            List<Map<String,Object>> abilities = (List<Map<String, Object>>) root.get("abilities");
-            for (Map<String, Object> ability : abilities) {
-                if (unlockedAbilitiesById.keySet().contains((int) ability.get("id"))) {
-                    ability.put("unlocked", true);
-                }
-            }
-            file.dump(root, output);
-        } catch (IOException e) {
-            throw new IllegalStateException("Missing abilities list");
+        Path path = Paths.get(System.getProperty("user.home"), "save.yml");
+        try (Writer writer = Files.newBufferedWriter(path)){
+            Yaml file = new Yaml();
+            file.dump(unlockedAbilitiesById.keySet(), writer);
+        }catch (IOException e){
         }
     }
 
@@ -88,18 +87,42 @@ public final class Progress {
      * 
      * @return all unlocked abilities
      */
-    public Map<Integer,Ability> unlockedAbilities() {
-        return Collections.unmodifiableMap(unlockedAbilitiesById);
+    public Map<Integer, Ability> unlockedAbilities() {
+        return Map.copyOf(unlockedAbilitiesById);
     }
 
+    /**
+     * loads file as current progress.
+     */
     private void loadCurrent() {
-        loadGeneric().forEach(
-            p -> (p.unlocked ? unlockedAbilitiesById : lockedAbilitiesById).put(p.ability.id(), p.ability)
+        final var all = allRegisteredAbilities();
+        final var unlockedIdsRead = readFileUnlocked();
+        final var unlockedIds = unlockedIdsRead.size() < DEFAULT_UNLOCKED_IDS.size() ? DEFAULT_UNLOCKED_IDS : unlockedIdsRead;
+        all.values().stream().forEach(
+            a -> (unlockedIds.contains(a.id()) ? unlockedAbilitiesById : lockedAbilitiesById).put(a.id(), a)
         );
     }
 
-    private static Stream<Pair> loadGeneric() {
-        // needs a "leading leash" in front of the file path.
+    @SuppressWarnings("unchecked")
+    private Set<Integer> readFileUnlocked(){
+        Path path = Paths.get(System.getProperty("user.home"), "save.yml");
+        try (Reader reader = Files.newBufferedReader(path)){
+            Yaml file = new Yaml();
+            ;
+            return (Set<Integer>)file.load(reader);
+        }catch (IOException e){
+            return Set.of();
+        }
+
+    }
+
+    /**
+     * helper to load a generic progress
+     * 
+     * @return a stream of pairs containig an ability and a boolean to signify whether it's unlocked
+     */
+    private static Stream<Ability> loadGeneric() {
+        // needs a "leading leash" ('/') in front of the file path.
         InputStream stream = Progress.class.getResourceAsStream("/abilities.yml");
         if (stream == null) {
             throw new IllegalStateException("abilities.yml not found");
@@ -108,14 +131,19 @@ public final class Progress {
         return loadFromStream(stream).onClose(() -> {
             try {
                 stream.close();
-            }
-            catch (IOException ex) {
+            } catch (IOException ex) {
                 throw new AbilityLoadingException("could not close stream", ex);
             }
         });
     }
 
-    private static Stream<Pair> loadFromStream(final InputStream stream) {
+    /**
+     * helper to load a generic progress from a input stream
+     * 
+     * @param stream the input stream
+     * @return similar to {@link loadGeneric}
+     */
+    private static Stream<Ability> loadFromStream(final InputStream stream) {
         final Object loaded = new Yaml().load(stream);
         if (!(loaded instanceof Map<?, ?> root)) {
             throw new IllegalStateException("Invalid abilities.yml format");
@@ -129,8 +157,14 @@ public final class Progress {
         return list.stream().map(entry -> getAbility(entry));
     }
 
+    /**
+     * reads a single ability from the file.
+     * 
+     * @param entry the entry to read
+     * @return a pair of the ability read a boolean to signify whether it's unlocked
+     */
     @SuppressWarnings("unchecked")
-    private static Pair getAbility(final Object entry) {
+    private static Ability getAbility(final Object entry) {
         if (!(entry instanceof Map<?, ?>)) {
             throw new IllegalStateException("Invalid ability entry: " + entry);
         }
@@ -139,11 +173,7 @@ public final class Progress {
 
         final int id = (int) abilityData.get("id");
         final String name = String.valueOf(abilityData.get("name"));
-        final boolean unlocked = (boolean) abilityData.get("unlocked");
         final int cooldown = (int) abilityData.get("cooldown");
-        final AbilityType type = AbilityType.valueOf(
-            String.valueOf(abilityData.get("type")).toUpperCase(Locale.ROOT)
-        );
         final int casterHpDelta = (int) abilityData.get("casterHpDelta");
         final int targetHpDelta = (int) abilityData.get("targetHpDelta");
 
@@ -152,29 +182,35 @@ public final class Progress {
 
         final AbilityFn effect = AbilityAreas.fromString(area);
 
-        return new Pair(
-            unlocked,
-            new Ability(
-                id,
-                name,
-                cooldown,
-                type,
-                casterHpDelta,
-                targetHpDelta,
-                effect
-            )
-        );
+        return new Ability(
+                        id,
+                        name,
+                        cooldown,
+                        casterHpDelta,
+                        targetHpDelta,
+                        effect);
     }
 
+    /**
+     * gets all abilities in the file.
+     * 
+     * @return a map id-ability
+     */
     public static Map<Integer, Ability> allRegisteredAbilities() {
         return loadGeneric().collect(Collectors.toMap(
-            p -> p.ability.id(),
-            p -> p.ability
-        ));
+                a -> a.id(),
+                a -> a));
     }
 
-    private static record Pair(boolean unlocked, Ability ability) {}
+    /**
+     * simple pair to hold information about the ability, easier to move around.
+     */
+    //private static record Pair(boolean unlocked, Ability ability) {
+    //}
 
+    /**
+     * custo exception to be more explicit during error handling.
+     */
     public static class AbilityLoadingException extends UncheckedIOException {
 
         public AbilityLoadingException(String message, IOException cause) {

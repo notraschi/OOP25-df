@@ -25,7 +25,6 @@ import it.unibo.df.model.combat.EnemyFactory;
  * combat state.
  */
 public final class CombatController implements ControllerState {
-	//private final AiController aiController;
 	private final Map<Integer,AiController> aiControllers = new HashMap<>();
 	private final CombatModel model;
 	private final List<Set<Vec2D>> effects;
@@ -121,6 +120,7 @@ public final class CombatController implements ControllerState {
 	public GameState tick(long deltaTime) {
 		model.tick(deltaTime);
 		aiControllers.entrySet().stream()
+			.filter(e -> model.isEnemyAlive(e.getKey()))
 			.forEach(e -> e.getValue().computeNextInput(state).ifPresent(in -> {
 				switch ((CombatInput) in) {
 					case Move moveAction -> handleMove(Optional.of(e.getKey()), moveAction);
@@ -133,7 +133,7 @@ public final class CombatController implements ControllerState {
 		return state;
 	}
 
-	public long killedEnemies() {
+	public int killedEnemies() {
 		return model.getKilledEnemies();
 	}
 }
