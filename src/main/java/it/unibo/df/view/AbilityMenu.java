@@ -250,6 +250,10 @@ public class AbilityMenu {
         );
     }
 
+    public void unequip(int id){
+        equipped.remove(Integer.valueOf(id));
+    }
+
     /**
      * @return group
      */
