@@ -4,9 +4,10 @@ import java.util.List;
 import java.util.Optional;
 
 import it.unibo.df.controller.Controller;
+import it.unibo.df.controller.GameConfig;
+import it.unibo.df.dto.CombatStatus;
 import it.unibo.df.gs.ArsenalState;
 import it.unibo.df.gs.CombatState;
-import it.unibo.df.dto.CombatStatus;
 import it.unibo.df.input.Attack;
 import it.unibo.df.input.Combine;
 import it.unibo.df.input.Equip;
@@ -62,7 +63,7 @@ public class MainStage extends Application {
         ),
         LOADOUT_SIZE
     );
-    private final Controller controller = new Controller();
+    private final Controller controller = new Controller(GameConfig.defaultConfig());
     private Timeline timeline;
     private Stage stage;
     

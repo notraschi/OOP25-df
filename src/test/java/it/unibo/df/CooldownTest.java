@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
 
 import it.unibo.df.controller.Controller;
+import it.unibo.df.controller.GameConfig;
 import it.unibo.df.gs.CombatState;
 import it.unibo.df.input.Attack;
 import it.unibo.df.input.Equip;
@@ -16,7 +17,7 @@ public class CooldownTest {
 
     @Test
     void completeTest() {
-        final Controller controller = new Controller(); // now in arsenal mode
+        final Controller controller = new Controller(GameConfig.testingConfig()); // now in arsenal mode
 
         assertTrue(controller.handle(new Equip(1)));
         assertTrue(controller.handle(new Equip(3)));

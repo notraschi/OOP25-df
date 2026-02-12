@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.IntStream;
 
 import it.unibo.df.ai.AiController;
 import it.unibo.df.ai.AiControllerBuilder;
@@ -25,15 +26,22 @@ import it.unibo.df.model.combat.EnemyFactory;
  * combat state.
  */
 public final class CombatController implements ControllerState {
+	private static final List<EnemyDefinition> DEFAULT_SPAWNABLE_ENEMIES = List.of(
+		EnemyFactory.basicEnemy(new Vec2D(3, 3)),
+		EnemyFactory.createSniper(new Vec2D(7, 7))
+	);
+
 	private final Map<Integer,AiController> aiControllers = new HashMap<>();
 	private final CombatModel model;
 	private final List<Set<Vec2D>> effects;
 	private CombatState state;
 
-    public CombatController(List<Ability> loadout) {
+    public CombatController(final List<Ability> loadout, int numberOfEnemies) {
+		if (numberOfEnemies < 0 || numberOfEnemies > DEFAULT_SPAWNABLE_ENEMIES.size()) {
+			throw new IllegalArgumentException("illegal number of enemies");
+		}
 		model = new CombatModel(loadout);
-		spawnEnemy(EnemyFactory.basicEnemy(new Vec2D(3, 3)));
-		spawnEnemy(EnemyFactory.createSniper(new Vec2D(7, 7)));
+		IntStream.range(0, numberOfEnemies).forEach(i -> spawnEnemy(DEFAULT_SPAWNABLE_ENEMIES.get(i)));
 		effects = new LinkedList<>();
 		state = buildState();
     }

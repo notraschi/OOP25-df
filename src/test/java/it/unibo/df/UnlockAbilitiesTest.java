@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 
 import it.unibo.df.controller.CombatController;
 import it.unibo.df.controller.Controller;
+import it.unibo.df.controller.GameConfig;
 import it.unibo.df.controller.Progress;
 import it.unibo.df.gs.CombatState;
 import it.unibo.df.input.Equip;
@@ -18,7 +19,7 @@ final class UnlockAbilitiesTest {
     private CombatModel model; 
 
     void setup() throws SecurityException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
-        controller = new Controller();
+        controller = new Controller(GameConfig.defaultConfig());
         controller.resetProgress();
 
         controller.handle(new Equip(1));
@@ -38,7 +39,7 @@ final class UnlockAbilitiesTest {
         modelField.setAccessible(true);
         model = (CombatModel) modelField.get(state);
 
-        assertEquals(1, ((CombatState) state.tick(0)).enemies().size());
+        assertEquals(2, ((CombatState) state.tick(0)).enemies().size());
     }
 
     @SuppressWarnings("unchecked")
@@ -77,7 +78,7 @@ final class UnlockAbilitiesTest {
         assertEquals(9, progress.unlockedAbilities().size());
         controller.saveOnClose();
         // new game
-        controller = new Controller();
+        controller = new Controller(GameConfig.testingConfig());
         // gets Progress
         var progressField = controller.getClass().getDeclaredField("progress");
         progressField.setAccessible(true);
@@ -92,7 +93,4 @@ final class UnlockAbilitiesTest {
     void getAllAbilities() {
         assertEquals(16, Progress.allRegisteredAbilities().size());
     }
-
-    
-
 }
