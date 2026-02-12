@@ -19,3 +19,17 @@ StackPane {
     -fx-border-color: yellow;
 }
 
+
+
+
+
+
+.playerLifeBar > .bar {
+    -fx-background-insets: 0;
+    -fx-background-color: green;
+}
+
+.enemyLifeBar > .bar {
+    -fx-background-insets: 0;
+    -fx-background-color: red;
+}
