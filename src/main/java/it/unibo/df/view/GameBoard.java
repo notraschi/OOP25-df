@@ -92,7 +92,6 @@ public class GameBoard {
         final GridPane area = new GridPane();
         formatColumns(area,1, MAX_SIZE_PERC);
         formatRows(area, ENEMY_NUMBER+1, MAX_SIZE_PERC);
-
         lifeBar = new ProgressBar(1.0);
         lifeBar.setMaxWidth(Double.MAX_VALUE);
         lifeBar.getStyleClass().add("playerLifeBar");

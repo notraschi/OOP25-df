@@ -188,17 +188,15 @@ public class AbilityMenu {
 
     /**
      */
-    public void cleanEquipped() {
+    public void clearMenus() {
+        unlocked.clear();
         equipped.clear();
+        lost.clear();
     }
 
     public void clearCombiner(){
         combiner.clear();
         refreshCombine();
-    }
-
-    public void clearLost(){
-        lost.clear();
     }
 
     /**

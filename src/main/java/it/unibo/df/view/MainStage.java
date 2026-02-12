@@ -106,6 +106,7 @@ public class MainStage extends Application {
             }
             case CombatStatus.LOST -> {
                 matchEnd(" LOST ");
+                visualChange();
             }
             default -> { }
         }
@@ -207,11 +208,9 @@ public class MainStage extends Application {
             board.refreshAbility(menu.getEquipped());
             stage.setScene(board.getScene());
         } else if (stage.getScene().equals(board.getScene())) {
-            //menu.clearLost();
-            //menu.clearUnlocked();
+            menu.clearMenus();
             timeline.pause();
             controller.toArsenal();
-            menu.cleanEquipped();
             menu.refresh((ArsenalState) controller.tick(TICK));
             stage.setScene(menu.getScene());
         }
