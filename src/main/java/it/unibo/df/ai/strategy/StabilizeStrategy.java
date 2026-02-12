@@ -34,7 +34,7 @@ public class StabilizeStrategy implements AiStrategy {
             return healInput;
         }
 
-        //System.out.println("stabilize" + idEntity +"--"+ me.hp());
+        System.out.println("stabilize" + idEntity +"--"+ me.hp());
 
 
         return AiActions.fleeFromTarget(me, player);

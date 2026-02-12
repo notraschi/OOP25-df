@@ -54,7 +54,7 @@ public class PressureStrategy implements AiStrategy{
         Optional<Input> aimMove = AiActions.moveForBestAim(me, aimFocus, loadout);
         if (aimMove.isPresent()) return aimMove;
             
-        //System.out.println("pressure" + idEntity +"--"+ me.hp());
+        System.out.println("pressure" + idEntity +"--"+ me.hp());
 
         return Optional.empty();       
     }
@@ -96,7 +96,7 @@ public class PressureStrategy implements AiStrategy{
             utility += 0.3; //posso colpire ORA allora gli do questo bonus !!
         }
 
-        System.out.println(utility +"--"+idEntity+"--PRESSURE");
+        //System.out.println(utility +"--"+idEntity+"--PRESSURE");
 
         return CurvesUtility.clamp(utility);
     }

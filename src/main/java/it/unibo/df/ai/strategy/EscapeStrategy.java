@@ -26,7 +26,7 @@ public class EscapeStrategy implements AiStrategy {
         var player = cs.player();
 
         //si ritira
-        //System.out.println("escape" + idEntity +"--"+ me.hp());
+        System.out.println("escape" + idEntity +"--"+ me.hp());
         return AiActions.fleeFromTarget(me, player);
     }
 
@@ -46,7 +46,7 @@ public class EscapeStrategy implements AiStrategy {
         // 9 -> 0.5 (meta mappa)  danger -> 0.25
         int dist = TacticsUtility.manhattanDist(me.position(), player.position());
         double dist01 = TacticsUtility.normalizeManhattanDist(dist);
-        double danger = CurvesUtility.logistic(CurvesUtility.inverse(dist01), 10, 0.8);
+        double danger = CurvesUtility.logistic(CurvesUtility.inverse(dist01), 10, 0.7);
 
         //se ho cooldown attivi allora ho paura, PER TUTTI I COOLDOWN
         // 3 -> 1

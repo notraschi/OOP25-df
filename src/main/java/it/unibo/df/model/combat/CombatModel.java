@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -57,13 +58,28 @@ public class CombatModel {
      * @param delta how much to move
      */
     public boolean move(Optional<Integer> entityId, Vec2D delta) {
-        return entityId.map(enemies::get)
-            .map(e -> e.move(delta, boardSize))
-            .orElseGet(
-                () -> player.move(
-                    applyDisruption(delta).orElse(new Vec2D(0, 0)), boardSize
-                )
+        var mover = entityId.map(enemies::get).orElse(player);
+        var targetPos = entityId.isPresent()
+            ? mover.calculateMove(delta)
+            : mover.calculateMove(
+                applyDisruption(delta).orElse(new Vec2D(0, 0))
             );
+        if(!mover.validMove(targetPos, boardSize)) {
+            return false;
+        }
+        return canMove(targetPos) ? mover.move(targetPos) : false;
+    }
+
+    /**
+     * check nobody in this position.
+     * 
+     * @param entityId to filter recognise entity
+     * @return if the targetPos is allowed
+     */
+    private boolean canMove(Vec2D targetPos) {
+        return !enemies.values().stream()
+            .anyMatch(e -> e.position.equals(targetPos)) 
+            && !player.position.equals(targetPos);
     }
 
     /**
@@ -225,7 +241,7 @@ public class CombatModel {
      * Represents an entity in the game with position, health, and abilities.
      */
     private static class Entity {
-        private static final int MOVEMENT_COOLDOWN_TIME = 100;
+        private static final int MOVEMENT_COOLDOWN_TIME = 200;
         private Vec2D position;
         private int hp;
         private final int maxHp;
@@ -277,24 +293,37 @@ public class CombatModel {
         }
 
         /**
-         * moves.
+         * calculate the new position.
          * 
-         * @param delta contatins deltaX and deltaY
-         * @return if it moved
+         * @param delta delta contatins deltaX and deltaY
+         * @return return the new position
          */
-        boolean move(Vec2D delta, int bound) {
-            if (movementCooldown.isActive()) {
-                return false;
-            }
-
+        Vec2D calculateMove(Vec2D delta) {
             final int newX = this.position.x() + delta.x();
             final int newY = this.position.y() + delta.y();
-            
-            if (newX < 0 || newX >= bound || newY < 0 || newY >= bound) {
-                return false;
-            }
-            
-            this.position = new Vec2D(newX, newY);
+            return new Vec2D(newX, newY);
+        }
+
+        /**
+         * validate the position.
+         * 
+         * @param position to validate
+         * @return true if the position is valid or the cooldown is inactive
+         */
+        boolean validMove(Vec2D position, int bound) {
+            if (movementCooldown.isActive()) return false;
+            if (position.x() < 0 || position.x() >= bound || position.y() < 0 || position.y() >= bound) return false;
+            return true;
+        }
+
+        /**
+         * move.
+         * 
+         * @param position is the new position.
+         * @return true
+         */
+        boolean move(Vec2D position) {
+            this.position = position;
             movementCooldown.begin();
             return true;
         }
