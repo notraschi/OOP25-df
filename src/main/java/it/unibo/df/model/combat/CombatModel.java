@@ -188,7 +188,11 @@ public class CombatModel {
      */
     public void tick(long deltaTime) {
         player.cooldowns.forEach(c -> c.update(deltaTime));
-        enemies.values().forEach(e -> e.cooldowns.forEach(c -> c.update(deltaTime)));
+        player.movementCooldown.update(deltaTime);
+        enemies.values().forEach(e -> {
+            e.cooldowns.forEach(c -> c.update(deltaTime));
+            e.movementCooldown.update(deltaTime);
+        });
         disrupt.ifPresent(ab -> ab.ability.timer().update(deltaTime));
         // remove disrupt if timer is done
         if (disrupt.isPresent() && !disrupt.get().ability.timer().isActive()) {
@@ -202,11 +206,13 @@ public class CombatModel {
      * Represents an entity in the game with position, health, and abilities.
      */
     private static class Entity {
+        private static final int MOVEMENT_COOLDOWN_TIME = 100;
         private Vec2D position;
         private int hp;
         private final int maxHp;
         private final List<Ability> loadout;
         private final List<Cooldown> cooldowns;
+        private final Cooldown movementCooldown;
         private final Optional<SpecialAbilities> special;
 
         /**
@@ -229,6 +235,7 @@ public class CombatModel {
             this.cooldowns = loadout.stream()
                 .map(a -> new Cooldown(a.cooldown() * 1000))
                 .toList();
+            this.movementCooldown = new Cooldown(MOVEMENT_COOLDOWN_TIME);
             this.special = special;
         }
 
@@ -257,6 +264,10 @@ public class CombatModel {
          * @return if it moved
          */
         boolean move(Vec2D delta, int bound) {
+            if (movementCooldown.isActive()) {
+                return false;
+            }
+
             final int newX = this.position.x() + delta.x();
             final int newY = this.position.y() + delta.y();
             
@@ -265,11 +276,18 @@ public class CombatModel {
             }
             
             this.position = new Vec2D(newX, newY);
+            movementCooldown.begin();
             return true;
         }
 
         EntityView asView() {
-            return new EntityView(maxHp, hp, position, cooldowns.stream().map(c -> (int) c.getRemaining()).toList(),0); //SISTEMARE COOLDOWN MOVE
+            return new EntityView(
+                maxHp,
+                hp,
+                position,
+                cooldowns.stream().map(Cooldown::getRemaining).toList(),
+                (int) movementCooldown.getRemaining()
+            );
         }
     }
 
