@@ -6,16 +6,13 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import it.unibo.df.configurations.Constants;
 import it.unibo.df.dto.AbilityView;
 import it.unibo.df.dto.SpecialAbilityView;
 import it.unibo.df.gs.CombatState;
 import it.unibo.df.model.abilities.Vec2D;
-import it.unibo.df.model.special.SpecialAbilities;
-import it.unibo.df.model.special.SpecialAbility;
-
 import static it.unibo.df.view.PaneFormatter.formatColumns;
 import static it.unibo.df.view.PaneFormatter.formatRows;
-
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
@@ -29,7 +26,6 @@ public class GameBoard {
     private final int BOARD_SIZE_PERC = 80;
     private final int KEYS_AREA_ROWS = 2;
     private final int ENEMY_NUMBER = 2;
-    private final int boardSize = 10;
     private final int loadoutSize ;
     private final StackPane[][] playAreaMat;
     private GridPane playArea;
@@ -37,14 +33,14 @@ public class GameBoard {
     private final List<String> keys;
     private ProgressBar lifeBar;
     private List<AbilityView> equipped;
-    private List<ProgressBar> enemyBars = new LinkedList<>();
+    private final List<ProgressBar> enemyBars = new LinkedList<>();
     private Scene board;
 
     /**
      * @param keys
      */
     public GameBoard(final List<String> keys, final int loadoutSize) {
-        playAreaMat = new StackPane[boardSize][boardSize];
+        playAreaMat = new StackPane[Constants.BOARD_SIZE][Constants.BOARD_SIZE];
         this.loadoutSize = loadoutSize;
         this.keys = List.copyOf(keys);
         setupBoardScene();
@@ -61,8 +57,8 @@ public class GameBoard {
         formatRows(centerPane, 1, BOARD_SIZE_PERC);
         formatRows(centerPane, 1, MAX_SIZE_PERC - BOARD_SIZE_PERC);
 
-        formatColumns(playArea, this.boardSize, MAX_SIZE_PERC / this.boardSize);
-        formatRows(playArea,  this.boardSize, MAX_SIZE_PERC / this.boardSize);
+        formatColumns(playArea, Constants.BOARD_SIZE, MAX_SIZE_PERC / Constants.BOARD_SIZE);
+        formatRows(playArea,  Constants.BOARD_SIZE, MAX_SIZE_PERC / Constants.BOARD_SIZE);
 
         centerPane.add(fillPlayArea(playArea), 0, 0); 
         centerPane.add(fillLowBar(), 0, 1);
@@ -147,8 +143,8 @@ public class GameBoard {
             .map(e -> e.getValue().position())
             .toList()
         );
-        for (int i = 0; i < this.boardSize; i++) {
-            for (int j = 0; j < this.boardSize; j++) {
+        for (int i = 0; i < Constants.BOARD_SIZE; i++) {
+            for (int j = 0; j < Constants.BOARD_SIZE; j++) {
                 playAreaMat[i][j].getStyleClass().clear();
             }
         }
@@ -212,7 +208,7 @@ public class GameBoard {
     public void refresh(final CombatState gs) {
         final Set<Vec2D> eff = new HashSet<>();
         //gs.activeDisrupt()
-        for (final var e : gs.effects()) {
+        for (final var e : gs.effectsOnBoard()) {
             eff.addAll(e);
         }
         refreshMap(gs, eff);

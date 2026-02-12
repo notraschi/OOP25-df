@@ -4,8 +4,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
 
+import it.unibo.df.configurations.GameConfig;
 import it.unibo.df.controller.Controller;
-import it.unibo.df.controller.GameConfig;
 import it.unibo.df.gs.CombatState;
 import it.unibo.df.input.Attack;
 import it.unibo.df.input.Equip;

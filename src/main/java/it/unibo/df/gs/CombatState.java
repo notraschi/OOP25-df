@@ -3,7 +3,9 @@ package it.unibo.df.gs;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
+import it.unibo.df.configurations.Constants;
 import it.unibo.df.dto.CombatStatus;
 import it.unibo.df.dto.EntityView;
 import it.unibo.df.dto.SpecialAbilityView;
@@ -21,6 +23,11 @@ public record CombatState(
     SpecialAbilityView activeDisrupt
 ) implements GameState {
 
+    /**
+     * calculates current match status.
+     * 
+     * @return the match status as an enum
+     */
     public CombatStatus matchStatus() {
         if (player.hp() == 0) {
             return CombatStatus.LOST;
@@ -29,5 +36,20 @@ public record CombatState(
         } else {
             return CombatStatus.RUNNING;
         }
+    }
+
+    /**
+     * same as effects, but only the cells that are actually on the board.
+     * 
+     * @return a list of sets of the affected cells
+     */
+    public List<Set<Vec2D>> effectsOnBoard() {
+        return effects.stream()
+            .map(set -> set.stream()
+                .filter(pos -> pos.x() >= 0 && pos.x() < Constants.BOARD_SIZE)
+                .filter(pos -> pos.y() >= 0 && pos.y() < Constants.BOARD_SIZE)
+                .collect(Collectors.toSet())
+            )
+            .toList();
     }
 }

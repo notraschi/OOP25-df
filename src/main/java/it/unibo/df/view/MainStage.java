@@ -3,8 +3,8 @@ package it.unibo.df.view;
 import java.util.List;
 import java.util.Optional;
 
+import it.unibo.df.configurations.GameConfig;
 import it.unibo.df.controller.Controller;
-import it.unibo.df.controller.GameConfig;
 import it.unibo.df.dto.CombatStatus;
 import it.unibo.df.gs.ArsenalState;
 import it.unibo.df.gs.CombatState;
@@ -229,7 +229,6 @@ public class MainStage extends Application {
         controller.saveOnClose();
         stage.close();
     }
-
 
     /**
      * 

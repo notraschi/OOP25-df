@@ -1,5 +1,6 @@
 package it.unibo.df.controller;
 
+import it.unibo.df.configurations.GameConfig;
 import it.unibo.df.gs.GameState;
 import it.unibo.df.input.Input;
 

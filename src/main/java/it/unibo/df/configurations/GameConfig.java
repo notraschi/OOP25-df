@@ -1,4 +1,4 @@
-package it.unibo.df.controller;
+package it.unibo.df.configurations;
 
 public record GameConfig(
     int numberOfEnemies

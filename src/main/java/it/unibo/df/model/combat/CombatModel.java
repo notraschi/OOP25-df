@@ -5,10 +5,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import it.unibo.df.configurations.Constants;
 import it.unibo.df.dto.EntityView;
 import it.unibo.df.dto.SpecialAbilityView;
 import it.unibo.df.model.abilities.Ability;
@@ -22,15 +22,12 @@ import it.unibo.df.model.special.SpecialAbility;
 public class CombatModel {
     private final Entity player;
     private final Map<Integer, Entity> enemies;
-    private final int boardSize;
     private int nextEnemyId = 0;
     private Optional<SpecialAbilities> disrupt;
 
     public CombatModel(List<Ability> playerLoadout) {
         player = new Entity(new Vec2D(0, 0), 1500, playerLoadout, Optional.empty());
         enemies = new LinkedHashMap<>();
-        // TODO: fix boardsize
-        boardSize = 10;
         disrupt = Optional.empty();
     }
 
@@ -64,7 +61,7 @@ public class CombatModel {
             : mover.calculateMove(
                 applyDisruption(delta).orElse(new Vec2D(0, 0))
             );
-        if(!mover.validMove(targetPos, boardSize)) {
+        if (!mover.validMove(targetPos, Constants.BOARD_SIZE)) {
             return false;
         }
         return canMove(targetPos) ? mover.move(targetPos) : false;
@@ -311,8 +308,11 @@ public class CombatModel {
          * @return true if the position is valid or the cooldown is inactive
          */
         boolean validMove(Vec2D position, int bound) {
-            if (movementCooldown.isActive()) return false;
-            if (position.x() < 0 || position.x() >= bound || position.y() < 0 || position.y() >= bound) return false;
+            if (movementCooldown.isActive()) {
+                return false;
+            } else if (position.x() < 0 || position.x() >= bound || position.y() < 0 || position.y() >= bound) {
+                return false;
+            }
             return true;
         }
 
