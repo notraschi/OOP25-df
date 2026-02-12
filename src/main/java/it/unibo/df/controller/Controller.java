@@ -8,9 +8,15 @@ import it.unibo.df.input.Input;
  * uses: state pattern, (strategy pattern obv), inversion of control
  */
 public final class Controller {
-	private final Progress progress = new Progress();
-	private ControllerState state = new ArsenalController(progress.unlockedAbilities());
-	
+	private final Progress progress;
+	private final GameConfig config;
+	private ControllerState state;
+
+	public Controller(GameConfig configuration) {
+		progress = new Progress();
+		config = configuration;
+		state = new ArsenalController(progress.unlockedAbilities());
+	}
 
 	/**
 	 * handles user input.
@@ -41,7 +47,7 @@ public final class Controller {
 			if (loadout.size() != 3) {
 				throw new IllegalStateException("going to the battle unprepared isn't wise...");
 			}
-			state = new CombatController(loadout);
+			state = new CombatController(loadout, config.numberOfEnemies());
 		} else {
 			throw new IllegalStateException("already in battle");
 		}

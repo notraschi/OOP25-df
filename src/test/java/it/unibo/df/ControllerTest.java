@@ -10,6 +10,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
 
 import it.unibo.df.controller.Controller;
+import it.unibo.df.controller.GameConfig;
 import it.unibo.df.gs.CombatState;
 import it.unibo.df.input.Attack;
 import it.unibo.df.input.Equip;
@@ -24,7 +25,7 @@ final class ControllerTest {
 
     @Test
     void completeTest() {
-        controller = new Controller();
+        controller = new Controller(GameConfig.testingConfig());
 
         // a valid move id is 1 for example.
         assertTrue(controller.handle(new Equip(1)));
