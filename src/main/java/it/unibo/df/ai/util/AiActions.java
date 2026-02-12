@@ -3,7 +3,6 @@ package it.unibo.df.ai.util;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
-import java.util.stream.Stream;
 
 import it.unibo.df.dto.EntityView;
 import it.unibo.df.input.Attack;
@@ -97,10 +96,10 @@ public class AiActions {
 
     //
     public static Optional<Input> tryToHeal(EntityView me, List<Ability> loadout) {
-        var healAbIdx = TacticsUtility.abilityByType(loadout, AbilityType.HEAL);
-        if(healAbIdx.isEmpty()) return Optional.empty();
 
-        for (Integer idx : healAbIdx) {
+        for (Ability ab: loadout) {
+            if(ab.type() == AbilityType.ATTACK) continue;
+            int idx = loadout.indexOf(ab);
             if(me.cooldownAbilities().get(idx) == 0) {
                 return Optional.of(Attack.values()[idx]);
             }

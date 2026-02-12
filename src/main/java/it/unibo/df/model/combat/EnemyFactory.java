@@ -15,23 +15,29 @@ import it.unibo.df.model.special.SpecialAbilities;
 public class EnemyFactory {
 
     private static final Map<Integer, Ability> arsenal = Progress.allRegisteredAbilities();
-    private EnemyFactory() {}
+    private EnemyFactory() { }
+
+    private static Ability getByName(String name) {
+        return arsenal.values().stream()
+            .filter(a -> a.name().equalsIgnoreCase(name))
+            .findFirst()
+            .orElseThrow(() -> new IllegalStateException("Ability not found: " + name));
+    }
 
     public static EnemyDefinition basicEnemy(Vec2D position) {
         return new EnemyDefinition(
             position,
             100,
             List.of(
-                arsenal.get(1), // TODO: remove MAGIC NUMBERs!!
-                arsenal.get(2),
-                arsenal.get(15)
+                getByName("Close Strike"),
+                getByName("Cross Cut"),
+                getByName("Medium Heal")
             ),
             List.of(
                 AiStrategyType.PRESSURE,
                 AiStrategyType.STABILIZE,
                 AiStrategyType.ESCAPE
             ),
-            // TODO: remove this, this is tmp
             SpecialAbilities.DENY_ATTACK
         );
     }
@@ -41,36 +47,36 @@ public class EnemyFactory {
             position,
             80, // Meno vita
             List.of(
-                arsenal.get(3), // Long Shot (LINE_R) - Attacco principale
-                arsenal.get(4),  // Arrow Burst (ARROW_R) - Attacco medio
-                arsenal.get(14)  // Quick Heal (SELF) - Cura piccola
+                getByName("Long Shot"), // Long Shot - Attacco principale
+                getByName("Arrow Burst"),  // Arrow Burst - Attacco medio
+                getByName("Small Heal")  // Quick Heal - Cura piccola
             ),
             List.of(
                 AiStrategyType.ESCAPE,   // Scappa appena ti avvicini
                 AiStrategyType.PRESSURE, // Ti spara da lontano
                 AiStrategyType.STABILIZE // Si cura se serve
             ),
-            SpecialAbilities.DENY_MOVEMENT // Ti blocca per mirare meglio
+            SpecialAbilities.DENY_MOVEMENT
         );
     }
 
     public static EnemyDefinition createTank(Vec2D position) {
         return new EnemyDefinition(
             position,
-            150, // Tanta vita
+            150,
             List.of(
-                arsenal.get(1),  // Close Strike (ADJ4)
-                arsenal.get(5),  // Fan Sweep (ARROWWIDE_U)
-                arsenal.get(16)  // Big Heal (SELF)
+                getByName("Close Strike"),
+                getByName("Fan Sweep"),
+                getByName("Big Heal")
             ),
             List.of(
-                AiStrategyType.PRESSURE, // Ti corre addosso
-                AiStrategyType.STABILIZE // Si cura spesso
+                AiStrategyType.PRESSURE,
+                AiStrategyType.STABILIZE
                 // Niente Escape: il tank non scappa!
             ),
-            SpecialAbilities.INVERT_MOVEMENT // Ti confonde mentre ti è vicino
+            SpecialAbilities.INVERT_MOVEMENT
         );
     }
 
-    //BERSERKER ONLY ATTACCO RAVVICINATO
+    //BERSERKER
 }

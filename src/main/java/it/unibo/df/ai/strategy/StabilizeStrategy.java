@@ -29,13 +29,13 @@ public class StabilizeStrategy implements AiStrategy {
         
         Optional<Input> healInput = AiActions.tryToHeal(me, loadout);
         if (healInput.isPresent() && healResource > 0) {
-            System.out.println("AI: Stabilize -> Healing! -> "+idEntity);
+            System.out.println("AI: "+ idEntity + " -> Healing!");
             healResource -= 1;
             return healInput;
         }
 
         System.out.println("stabilize" + idEntity +"--"+ me.hp());
-        //indietreggio aspettando la cura
+
 
         return AiActions.fleeFromTarget(me, player);
     }
@@ -43,7 +43,6 @@ public class StabilizeStrategy implements AiStrategy {
     @Override //STABILIZE
     public double calculateUtility(CombatState cs, List<Ability> loadout) {
         var me = cs.enemies().get(idEntity);
-        var player = cs.player();
 
         //CONTROLLARE SE HO CURE
         boolean hasHeal = !TacticsUtility.abilityByType(loadout, AbilityType.HEAL).isEmpty();

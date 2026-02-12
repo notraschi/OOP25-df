@@ -30,8 +30,6 @@ public class PressureStrategy implements AiStrategy{
     public Optional<Input> computeNextAction(CombatState cs, List<Ability> loadout) {
         var me = cs.enemies().get(idEntity);
         var player = cs.player();
-
-
        
         //momento di castare special
         if (me.hpRatio() < momentToCastSpecial && special > 0) {
@@ -41,25 +39,23 @@ public class PressureStrategy implements AiStrategy{
             return Optional.of(Attack.SPECIAL);
         }
 
-        // 60% di probabilità di aggiornare la mira
+        // 30% di probabilità di aggiornare la mira
         double reflexChance = 0.30;
         if (Math.random() < reflexChance) {
-            System.out.println("aggiorno");
             //aggiunta disturbo
             aimFocus = applyNoise(player.position()); 
         }
 
-        //mena troppo, devono missare, 
+        //mena
         Optional<Input> attack = AiActions.tryBestAttack(me, aimFocus, loadout);
         if (attack.isPresent()) return attack;
 
-        //si riposiziona in modo corretto
+        //si riposiziona in base al focus
         Optional<Input> aimMove = AiActions.moveForBestAim(me, aimFocus, loadout);
         if (aimMove.isPresent()) return aimMove;
             
         System.out.println("pressure" + idEntity +"--"+ me.hp());
 
-        //sta fermo/potrei andare addosso al player (?)
         return Optional.empty();       
     }
 
@@ -68,7 +64,6 @@ public class PressureStrategy implements AiStrategy{
         var me = cs.enemies().get(idEntity);
         var player = cs.player();
         if(aimFocus == null) aimFocus = player.position();
-
 
         // Se ho poca vita, la mia voglia di pressare cala.
         // hp 100% -> 0.98

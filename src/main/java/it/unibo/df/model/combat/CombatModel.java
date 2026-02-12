@@ -26,7 +26,7 @@ public class CombatModel {
     private Optional<SpecialAbilities> disrupt;
 
     public CombatModel(List<Ability> playerLoadout) {
-        player = new Entity(new Vec2D(0, 0), 100, playerLoadout, Optional.empty());
+        player = new Entity(new Vec2D(0, 0), 1500, playerLoadout, Optional.empty());
         enemies = new LinkedHashMap<>();
         // TODO: fix boardsize
         boardSize = 10;

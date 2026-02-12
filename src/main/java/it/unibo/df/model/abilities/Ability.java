@@ -32,7 +32,7 @@ public record Ability(
     }
 
     public AbilityView asView() {
-        return new AbilityView(this.name, this.id, this.casterHpDelta, this.targetHpDelta);
+        return new AbilityView(this.name, this.id, this.casterHpDelta, this.targetHpDelta, this.cooldown);
     }
 
 }
