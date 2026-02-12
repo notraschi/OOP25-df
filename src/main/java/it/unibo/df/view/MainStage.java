@@ -11,6 +11,7 @@ import it.unibo.df.input.Attack;
 import it.unibo.df.input.Combine;
 import it.unibo.df.input.Equip;
 import it.unibo.df.input.Move;
+import it.unibo.df.input.Unequip;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
@@ -54,6 +55,7 @@ public class MainStage extends Application {
             "ENTER \nto combine abilities",
             "Z \nto add to loadout",
             "D \nto see description",
+            "X \nto unequip",
             "I \nBack to play",
             "1 \nselect in mixer",
             "Q \nquit"
@@ -102,11 +104,11 @@ public class MainStage extends Application {
         switch (cs.matchStatus()) {
             case CombatStatus.WON -> {
                 matchEnd(" WON ");
-                visualChange();
+                
             }
             case CombatStatus.LOST -> {
                 matchEnd(" LOST ");
-                visualChange();
+               
             }
             default -> { }
         }
@@ -145,6 +147,11 @@ public class MainStage extends Application {
                 switch (event.getCode()) {
                     case KeyCode.Z -> {
                         controller.handle(new Equip(menu.getId(btn.getText())));
+                        menu.refresh((ArsenalState) controller.tick(0));
+                    }
+                    case KeyCode.X -> {
+                        controller.handle(new Unequip(menu.getId(btn.getText())));
+                        menu.unequip(menu.getId(btn.getText()));
                         menu.refresh((ArsenalState) controller.tick(0));
                     }
                     case KeyCode.D -> {
