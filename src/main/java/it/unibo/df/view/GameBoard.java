@@ -2,6 +2,7 @@ package it.unibo.df.view;
 
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
@@ -22,6 +23,7 @@ public class GameBoard {
     private final int MAX_SIZE_PERC = 100;
     private final int BOARD_SIZE_PERC = 80;
     private final int KEYS_AREA_ROWS = 2;
+    private final int ENEMY_NUMBER = 2;
     private final int boardSize = 10;
     private final int loadoutSize ;
     private final StackPane[][] playAreaMat;
@@ -29,7 +31,7 @@ public class GameBoard {
     private GridPane abilityArea;
     private final List<String> keys;
     private ProgressBar lifeBar;
-    private List<ProgressBar> enemyBars;
+    private List<ProgressBar> enemyBars = new LinkedList<>();
     private Scene board;
 
     /**
@@ -87,12 +89,21 @@ public class GameBoard {
     }
 
     private GridPane fillLifeBarArea() {
-        lifeBar = new ProgressBar();
         final GridPane area = new GridPane();
         formatColumns(area,1, MAX_SIZE_PERC);
-        formatRows(area, 1, MAX_SIZE_PERC);
+        formatRows(area, ENEMY_NUMBER+1, MAX_SIZE_PERC);
+
+        lifeBar = new ProgressBar(1.0);
         lifeBar.setMaxWidth(Double.MAX_VALUE);
+        lifeBar.getStyleClass().add("playerLifeBar");
         area.add(lifeBar, 0, 0);
+        for (int i = 1; i <= ENEMY_NUMBER; i++){
+            final ProgressBar enemyBar = new ProgressBar(1.0);
+            enemyBar.setMaxWidth(Double.MAX_VALUE);
+            enemyBar.getStyleClass().add("enemyLifeBar");
+            area.add(enemyBar, 0, i);
+            enemyBars.add(enemyBar);
+        }
         return area;
     }
 
@@ -146,6 +157,13 @@ public class GameBoard {
 
     private void refreshLife(final CombatState gs) {
         lifeBar.setProgress(gs.player().hpRatio());
+        int index = 0;
+        
+        for (var e : gs.enemies().values()){
+            enemyBars.get(index).setProgress((double)e.hp()/100);
+            index ++;
+            //System.out.print("PP"+);
+        }
     }
 
     /**
