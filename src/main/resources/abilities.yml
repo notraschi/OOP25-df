@@ -1,112 +1,96 @@
 abilities:
 - id: 1
   name: Close Strike
-  unlocked: true
   cooldown: 2
   casterHpDelta: 0
   targetHpDelta: 8
   area: ADJ4
 - id: 2
   name: Cross Cut
-  unlocked: true
   cooldown: 7
   casterHpDelta: 0
   targetHpDelta: 16
   area: DIAGX
 - id: 3
   name: Long Shot
-  unlocked: true
   cooldown: 20
   casterHpDelta: 0
   targetHpDelta: 28
   area: LINE_R
 - id: 4
   name: Arrow Burst
-  unlocked: true
   cooldown: 20
   casterHpDelta: 0
   targetHpDelta: 30
   area: ARROW_R
 - id: 5
   name: Fan Sweep
-  unlocked: true
   cooldown: 8
   casterHpDelta: 0
   targetHpDelta: 15
   area: ARROWWIDE_U
 - id: 6
   name: Tight Hit
-  unlocked: false
   cooldown: 20
   casterHpDelta: 0
   targetHpDelta: 32
   area: P3_U
 - id: 7
   name: Triple Push
-  unlocked: false
   cooldown: 7
   casterHpDelta: 0
   targetHpDelta: 14
   area: COLUMNS3_D
 - id: 8
   name: Side Sweep
-  unlocked: false
   cooldown: 7
   casterHpDelta: 0
   targetHpDelta: 14
   area: P2_L
 - id: 9
   name: V Slash
-  unlocked: false
   cooldown: 7
   casterHpDelta: 0
   targetHpDelta: 15
   area: P1_R
 - id: 10
   name: Wide Smash
-  unlocked: false
   cooldown: 8
   casterHpDelta: 0
   targetHpDelta: 18
   area: P4_D
 - id: 11
   name: Drain Close
-  unlocked: false
   cooldown: 3
   casterHpDelta: 6
   targetHpDelta: 10
   area: ADJ4
 - id: 12
   name: Drain Cross
-  unlocked: false
   cooldown: 7
   casterHpDelta: 8
   targetHpDelta: 16
   area: DIAGX
 - id: 13
   name: Drain Arrow
-  unlocked: false
   cooldown: 20
   casterHpDelta: 12
   targetHpDelta: 24
   area: ARROW_R
 - id: 14
   name: Small Heal
-  unlocked: false
   cooldown: 3
   casterHpDelta: 12
   targetHpDelta: 0
   area: NONE
 - id: 15
   name: Medium Heal
-  unlocked: false
   cooldown: 7
   casterHpDelta: 20
   targetHpDelta: 0
   area: NONE
 - id: 16
   name: Big Heal
-  unlocked: false
   cooldown: 20
   casterHpDelta: 30
   targetHpDelta: 0

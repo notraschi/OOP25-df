@@ -29,6 +29,7 @@ public class GameBoard {
     private GridPane abilityArea;
     private final List<String> keys;
     private ProgressBar lifeBar;
+    private List<ProgressBar> enemyBars;
     private Scene board;
 
     /**
@@ -127,7 +128,6 @@ public class GameBoard {
             .map(e -> e.getValue().position())
             .toList()
         );
-        //gs.matchStatus()
         for (int i = 0; i < this.boardSize; i++) {
             for (int j = 0; j < this.boardSize; j++) {
                 if (gs.player().position().equals(new Vec2D(i, j))) {

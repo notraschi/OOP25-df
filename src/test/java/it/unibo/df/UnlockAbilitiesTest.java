@@ -92,4 +92,7 @@ final class UnlockAbilitiesTest {
     void getAllAbilities() {
         assertEquals(16, Progress.allRegisteredAbilities().size());
     }
+
+    
+
 }
