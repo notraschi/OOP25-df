@@ -146,7 +146,7 @@ public class AbilityMenu {
 	 * 
      * @param gs 
 	 */
-    private void set(final ArsenalState gs) {
+    private void addNews(final ArsenalState gs) {
         for (final var e : gs.unlocked()) {
             unlocked.put(e.id(), e);
         }
@@ -154,18 +154,11 @@ public class AbilityMenu {
         gs.equipped().ifPresent(e -> equipped.add(e));
     }
 
-    /**
-	 * refresh the inventary page and write the equipment, unlocked an locked moves.
-     * 
-     * @param gs
-     */
-    public void refresh(final ArsenalState gs) {
-        set(gs);
+    private void refreshAbilities() {
         final List<Integer> unlockedList = new LinkedList<>(unlocked.keySet());
         unlockedList.removeAll(lost);
         final Iterator<Integer> unlockIt = unlockedList.iterator();
         final Iterator<Integer> lostIt = lost.iterator();
-        final Iterator<Integer> equipIt = equipped.iterator();
 
         for (final var e : inventaryArea.getChildren()) {
             if (e instanceof ToggleButton button) {
@@ -179,11 +172,63 @@ public class AbilityMenu {
                 }
             }
         }
+
+    }
+
+    private void refreshEquipped(){
+        final Iterator<Integer> equipIt = equipped.iterator();
         for (final var e : equipment.getChildren()) {
             if (e instanceof Label label) {
                 label.setText(equipIt.hasNext() ? unlocked.get(equipIt.next()).name() : "");
             }
         }
+    }
+
+    public void refreshDescription(int id) {
+        final AbilityView ab = unlocked.get(id);
+        descriptionLabel.setText(
+            "NAME: " + ab.name() 
+            + "\nHEAL: " + ab.casterHpDelta() 
+            + "\nDAMAGE: " + ab.targetHpDelta()
+        );
+    }
+
+    /**
+     */
+    public void refreshCombine() {
+        final Iterator<Integer> combineIt = combiner.iterator();
+        for (final var e : combineArea.getChildren()) {
+            if (e instanceof Label lbl) {
+                lbl.setText(combineIt.hasNext() ? unlocked.get(combineIt.next()).name() : "");
+            }
+        }
+    }
+
+    
+    /**
+	 * refresh the inventary page and write the equipment, unlocked an locked moves.
+     * 
+     * @param gs
+     */
+    public void refresh(final ArsenalState gs) {
+        addNews(gs);
+        refreshAbilities();
+        refreshEquipped();   
+    }
+
+    public void addAbilityToCombine(final String name) {
+        if (combiner.size() >= MIXER_ABILITY_SIZE) {
+            combiner.removeFirst();
+        }
+        for (final var e : unlocked.entrySet()) {
+            if (e.getValue().name().equals(name) && !lost.contains(e.getValue().id())) {
+                combiner.add(e.getKey());
+            }
+        }
+    }
+
+    public void unequip(int id){
+        equipped.remove(Integer.valueOf(id));
     }
 
     /**
@@ -212,47 +257,8 @@ public class AbilityMenu {
         return 0;
     }
 
-    /**
-     * @param name
-     */
-    //fixare per fare in modo che non si possano mixare abilita vecchie
-    public void addAbilityToCombine(final String name) {
-        if (combiner.size() >= MIXER_ABILITY_SIZE) {
-            combiner.removeFirst();
-        }
-        for (final var e : unlocked.entrySet()) {
-            if (e.getValue().name().equals(name)) {
-                combiner.add(e.getKey());
-            }
-        }
-    }
-
-    /**
-     */
-    public void refreshCombine() {
-        final Iterator<Integer> combineIt = combiner.iterator();
-        for (final var e : combineArea.getChildren()) {
-            if (e instanceof Label lbl) {
-                lbl.setText(combineIt.hasNext() ? unlocked.get(combineIt.next()).name() : "");
-            }
-        }
-    }
-
     public List<Integer> getCombiner(){
         return Collections.unmodifiableList(combiner);
-    }
-
-    public void refreshDescription(int id) {
-        final AbilityView ab = unlocked.get(id);
-        descriptionLabel.setText(
-            "NAME: " + ab.name() 
-            + "\nHEAL: " + ab.casterHpDelta() 
-            + "\nDAMAGE: " + ab.targetHpDelta()
-        );
-    }
-
-    public void unequip(int id){
-        equipped.remove(Integer.valueOf(id));
     }
 
     /**

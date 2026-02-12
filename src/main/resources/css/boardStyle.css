@@ -1,22 +1,31 @@
 StackPane {
     
-    -fx-border-color: black;
-    -fx-border-width: 1px;
+    
     -fx-alignment: center;
+}
+.board {
+    -fx-border-color: black;
+    -fx-border-width: 2px;
 }
 .label{
     -fx-alignment: center;
     -fx-text-alignment: center;
     -fx-font-weight: bold;
 }
-.casellaplayer{
+.player{
     -fx-background-color: darkgreen;
 }
-.casellaenemy{
-    -fx-background-color: red;
+.playerSpecial{
+    -fx-background-color: darkgreen;
+    -fx-border-color: purple;
+    -fx-border-width: 2px;
+
 }
-.caselladanno{
-    -fx-border-color: yellow;
+.enemy{
+    -fx-background-color: darkred;
+}
+.move{
+    -fx-border-color: darkblue;
 }
 
 

@@ -7,12 +7,15 @@ import java.util.List;
 import java.util.Set;
 
 import it.unibo.df.dto.AbilityView;
+import it.unibo.df.dto.SpecialAbilityView;
 import it.unibo.df.gs.CombatState;
 import it.unibo.df.model.abilities.Vec2D;
+import it.unibo.df.model.special.SpecialAbilities;
+import it.unibo.df.model.special.SpecialAbility;
+
 import static it.unibo.df.view.PaneFormatter.formatColumns;
 import static it.unibo.df.view.PaneFormatter.formatRows;
 
-import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
@@ -49,8 +52,11 @@ public class GameBoard {
 
     private void setupBoardScene() {
         final GridPane centerPane = new GridPane();
+        centerPane.getStyleClass().add("board");
+        
 
         playArea = new GridPane();
+        playArea.getStyleClass().add("board");
         formatColumns(centerPane, 1, MAX_SIZE_PERC);
         formatRows(centerPane, 1, BOARD_SIZE_PERC);
         formatRows(centerPane, 1, MAX_SIZE_PERC - BOARD_SIZE_PERC);
@@ -91,8 +97,6 @@ public class GameBoard {
         return abilityArea;
     }
     
-
-
     private GridPane fillLifeBarArea() {
         final GridPane area = new GridPane();
         formatColumns(area,1, MAX_SIZE_PERC);
@@ -145,17 +149,20 @@ public class GameBoard {
         );
         for (int i = 0; i < this.boardSize; i++) {
             for (int j = 0; j < this.boardSize; j++) {
-                if (gs.player().position().equals(new Vec2D(i, j))) {
-                    playAreaMat[i][j].getStyleClass().add("casellaplayer");
-                } else if (enemyPosition.contains(new Vec2D(i, j))) {
-                    playAreaMat[i][j].getStyleClass().add("casellaenemy");
-                } else if (effects.contains(new Vec2D(i, j))) {
-                    playAreaMat[i][j].getStyleClass().add("caselladanno");
-                } else {
-                    playAreaMat[i][j].getStyleClass().clear();
-                }
-
+                playAreaMat[i][j].getStyleClass().clear();
             }
+        }
+        playAreaMat[gs.player().position().x()][gs.player().position().y()].getStyleClass().add(
+            gs.activeDisrupt().equals(SpecialAbilityView.NONE) ? 
+            "player" : 
+            "playerSpecial"
+        );
+        
+        for (var e : enemyPosition) {
+            playAreaMat[e.x()][e.y()].getStyleClass().add("enemy");
+        }
+        for (var e : effects) {
+            playAreaMat[e.x()][e.y()].getStyleClass().add("move");
         }
     }
 
@@ -204,6 +211,7 @@ public class GameBoard {
 	*/
     public void refresh(final CombatState gs) {
         final Set<Vec2D> eff = new HashSet<>();
+        //gs.activeDisrupt()
         for (final var e : gs.effects()) {
             eff.addAll(e);
         }
