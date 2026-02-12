@@ -59,8 +59,8 @@ public class CombatModel {
     public boolean move(Optional<Integer> entityId, Vec2D delta) {
         return entityId.map(enemies::get)
             .map(e -> e.move(delta, boardSize))
-            .orElse(
-                player.move(
+            .orElseGet(
+                () -> player.move(
                     applyDisruption(delta).orElse(new Vec2D(0, 0)), boardSize
                 )
             );
