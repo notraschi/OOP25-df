@@ -199,8 +199,27 @@ public class CombatModel {
             disrupt = Optional.empty();
         }
     }
-    public long getKilledEnemies() {
-        return enemies.values().stream().filter(e -> e.hp == 0).count();
+
+    /**
+     * checks if enemy is still alive.
+     * 
+     * @param id the id of the enemy
+     * @return a boolean, true if hp > 0
+     */
+    public boolean isEnemyAlive(int id) {
+        if (!enemies.containsKey(id)) {
+            throw new IllegalArgumentException("unknown id, this enemy does not exist");
+        }
+        return enemies.get(id).hp > 0;
+    }
+
+    /**
+     * gets number of dead enemies.
+     * 
+     * @return amount of killed enemies
+     */
+    public int getKilledEnemies() {
+        return (int) enemies.values().stream().filter(e -> e.hp == 0).count();
     }
     /**
      * Represents an entity in the game with position, health, and abilities.
@@ -290,6 +309,4 @@ public class CombatModel {
             );
         }
     }
-
-   
 }
