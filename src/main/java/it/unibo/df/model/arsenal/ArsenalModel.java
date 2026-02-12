@@ -33,8 +33,18 @@ public class ArsenalModel {
         return loadout.stream().anyMatch(a -> a.id() == id);
     }
 
+    public boolean unequip(int id) {
+        if (arsenal.get(id) == null || !isEquipped(id)) {
+            return false;
+        }
+        loadout.remove(arsenal.get(id));
+        return true;
+    }
+
     public Optional<AbilityView> combine(int id1, int id2) {
         if (arsenal.get(id1) == null || arsenal.get(id2) == null) {
+            return Optional.empty();
+        } else if (isEquipped(id1) || isEquipped(id2)) {
             return Optional.empty();
         }
 

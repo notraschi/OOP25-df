@@ -16,6 +16,7 @@ import it.unibo.df.dto.AbilityView;
 import it.unibo.df.gs.ArsenalState;
 import it.unibo.df.input.Combine;
 import it.unibo.df.input.Equip;
+import it.unibo.df.input.Unequip;
 import it.unibo.df.model.abilities.Ability;
 
 /**
@@ -69,6 +70,24 @@ class ArsenalTest {
         assertFalse(controller.handle(new Equip(100)));
         // cannot combine lost abilities
         assertFalse(controller.handle(new Combine(1, 2)));
+    }
+
+    @Test
+    void unequipTest() {
+        assertFalse(controller.handle(new Unequip(-1)));
+        assertFalse(controller.handle(new Unequip(1)));
+        assertTrue(controller.handle(new Equip(1)));
+        // check i cannot combine using an equipped ability
+        assertFalse(controller.handle(new Combine(1, 2)));
+        assertTrue(controller.handle(new Unequip(1)));
+        // now unequip combined abilities
+        assertTrue(controller.handle(new Combine(1, 2)));
+        assertFalse(controller.handle(new Unequip(100)));
+        assertTrue(controller.handle(new Equip(100)));
+        controller.tick(0); // flush
+        assertTrue(controller.handle(new Unequip(100)));
+        var gs = (ArsenalState) controller.tick(0);
+        assertEquals(100, gs.unequipped().get());
     }
 }
 

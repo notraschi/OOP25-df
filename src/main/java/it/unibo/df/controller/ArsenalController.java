@@ -12,6 +12,7 @@ import it.unibo.df.input.ArsenalInput;
 import it.unibo.df.input.Combine;
 import it.unibo.df.input.Equip;
 import it.unibo.df.input.Input;
+import it.unibo.df.input.Unequip;
 import it.unibo.df.model.abilities.Ability;
 import it.unibo.df.model.arsenal.ArsenalModel;
 
@@ -34,7 +35,7 @@ public final class ArsenalController implements ControllerState {
 			case ArsenalInput in -> 
 				switch (in) {
 					case Equip equip -> handleEquip(equip);
-					// case Unequip unequip -> handleUnequip(unequip)
+					case Unequip unequip -> handleUnequip(unequip);
 					case Combine combine -> handleCombine(combine);
 				};
 			default -> false;
@@ -49,8 +50,12 @@ public final class ArsenalController implements ControllerState {
 		return result;
 	}
 
-	private boolean handleUnequip(/*Unequip input*/) {
-		return false;
+	private boolean handleUnequip(Unequip input) {
+		var result = model.unequip(input.id());
+		if (result) {
+			builder.setUnequip(input.id());
+		}
+		return result;
 	}
 
     private boolean handleCombine(Combine input) {
