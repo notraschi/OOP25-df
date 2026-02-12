@@ -29,7 +29,7 @@ abilities:
   area: ARROW_R
 - id: 5
   name: Fan Sweep
-  unlocked: false
+  unlocked: true
   cooldown: 8
   casterHpDelta: 0
   targetHpDelta: 15

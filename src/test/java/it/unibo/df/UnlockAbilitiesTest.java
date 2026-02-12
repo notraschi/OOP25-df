@@ -19,6 +19,8 @@ final class UnlockAbilitiesTest {
 
     void setup() throws SecurityException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
         controller = new Controller();
+        controller.resetProgress();
+
         controller.handle(new Equip(1));
         controller.handle(new Equip(2));
         controller.handle(new Equip(3));
@@ -59,7 +61,7 @@ final class UnlockAbilitiesTest {
         
         controller.toArsenal();
 
-        assertEquals(5, progress.unlockedAbilities().size());
+        assertEquals(6, progress.unlockedAbilities().size());
         
         controller.saveOnClose();
     }
@@ -67,13 +69,23 @@ final class UnlockAbilitiesTest {
     @Test
     void resetGame() throws SecurityException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException{
         setup();
-        assertEquals(4, progress.unlockedAbilities().size());
-        unlockAbility();
+        controller.toArsenal();
+
+        controller.resetProgress();
         assertEquals(5, progress.unlockedAbilities().size());
+        progress.update(4);
+        assertEquals(9, progress.unlockedAbilities().size());
+        controller.saveOnClose();
+        // new game
+        controller = new Controller();
+        // gets Progress
+        var progressField = controller.getClass().getDeclaredField("progress");
+        progressField.setAccessible(true);
+        progress = (Progress) progressField.get(controller);
+        // cleanup
+        assertEquals(9, progress.unlockedAbilities().size());
         controller.resetProgress();
         controller.saveOnClose();
-        setup();
-        assertEquals(4, progress.unlockedAbilities().size());
     }
 
     @Test
