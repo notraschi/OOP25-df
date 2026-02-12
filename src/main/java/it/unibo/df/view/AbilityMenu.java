@@ -151,7 +151,7 @@ public class AbilityMenu {
             unlocked.put(e.id(), e);
         }
         lost.addAll(gs.lost());
-        equipped.addAll(gs.equipped());    
+        gs.equipped().ifPresent(e -> equipped.add(e));
     }
 
     /**

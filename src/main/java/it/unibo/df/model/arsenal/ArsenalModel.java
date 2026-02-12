@@ -22,11 +22,15 @@ public class ArsenalModel {
     }
 
     public boolean equip(int id) {
-        if (arsenal.get(id) == null || loadout.size() > 2) {
+        if (arsenal.get(id) == null || loadout.size() > 2 || isEquipped(id)) {
             return false;
         }
         loadout.add(arsenal.get(id));
 		return true;
+    }
+
+    private boolean isEquipped(int id) {
+        return loadout.stream().anyMatch(a -> a.id() == id);
     }
 
     public Optional<AbilityView> combine(int id1, int id2) {
@@ -35,7 +39,11 @@ public class ArsenalModel {
         }
 
 		var result = combiner.combine(arsenal.get(id1), arsenal.get(id2));
-        result.ifPresent(res -> arsenal.put(res.id(), res));
+        result.ifPresent(res -> {
+            arsenal.put(res.id(), res);
+            arsenal.remove(id1);
+            arsenal.remove(id2);
+        });
 		return result.map(Ability::asView);
     }
 
