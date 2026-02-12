@@ -75,6 +75,7 @@ final class CombatModelTest {
         assertEquals(SpecialAbilityView.INVERT_MOVEMENT, model.getDisrupt());
 
         // now movement should be inverted
+        model.tick(100); // expire movement cooldown
         model.move(Optional.empty(), new Vec2D(1, 0));
         assertEquals(new Vec2D(0, 0), model.playerView().position()); // old location
 
