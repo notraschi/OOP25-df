@@ -150,7 +150,7 @@ public class AbilityMenu {
         for (final var e : gs.unlocked()) {
             unlocked.put(e.id(), e);
         }
-        lost.addAll(gs.lost());
+        lost.addAll(gs.lost()); 
         gs.equipped().ifPresent(e -> equipped.add(e));
     }
 
@@ -215,6 +215,7 @@ public class AbilityMenu {
     /**
      * @param name
      */
+    //fixare per fare in modo che non si possano mixare abilita vecchie
     public void addAbilityToCombine(final String name) {
         if (combiner.size() >= MIXER_ABILITY_SIZE) {
             combiner.removeFirst();

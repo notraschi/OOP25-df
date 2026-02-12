@@ -11,6 +11,8 @@ import it.unibo.df.gs.CombatState;
 import it.unibo.df.model.abilities.Vec2D;
 import static it.unibo.df.view.PaneFormatter.formatColumns;
 import static it.unibo.df.view.PaneFormatter.formatRows;
+
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
@@ -31,6 +33,7 @@ public class GameBoard {
     private GridPane abilityArea;
     private final List<String> keys;
     private ProgressBar lifeBar;
+    private List<AbilityView> equipped;
     private List<ProgressBar> enemyBars = new LinkedList<>();
     private Scene board;
 
@@ -87,6 +90,8 @@ public class GameBoard {
         }
         return abilityArea;
     }
+    
+
 
     private GridPane fillLifeBarArea() {
         final GridPane area = new GridPane();
@@ -159,9 +164,24 @@ public class GameBoard {
         int index = 0;
         
         for (var e : gs.enemies().values()){
-            enemyBars.get(index).setProgress((double)e.hp()/100);
+            enemyBars.get(index).setProgress(e.hpRatio());
             index ++;
-            //System.out.print("PP"+);
+        }
+    }
+
+    private void refreshCooldown(CombatState gs) {
+        Iterator<Long> abColIt = gs.player().cooldownAbilities().iterator();
+        Iterator<AbilityView> abIt = equipped.iterator();
+        for (final var ab : abilityArea.getChildren()) {
+            
+            if (ab instanceof Label lbl && abColIt.hasNext()){
+                double ratio = Math.max(0, Math.min(1, ((double)abColIt.next()) / (abIt.next().cooldown())));
+                lbl.setStyle(
+                    "-fx-background-color: linear-gradient(to top, " +
+                    "gray " + (ratio * 100) + "%, " +
+                    "white " + (ratio * 100) + "%);" +
+                    "-fx-border-color: black;");
+            }
         }
     }
 
@@ -169,6 +189,7 @@ public class GameBoard {
     * @param equipment
     */
     public void refreshAbility(final List<AbilityView> equipment){
+        equipped = equipment;
         final Iterator<AbilityView> equipIt = equipment.iterator();
         for (final var e : abilityArea.getChildren()) {
             if (e instanceof Label content) {
@@ -188,6 +209,7 @@ public class GameBoard {
         }
         refreshMap(gs, eff);
         refreshLife(gs);
+        refreshCooldown(gs);
     }
 
     /**

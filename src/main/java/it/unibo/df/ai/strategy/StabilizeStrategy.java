@@ -29,12 +29,12 @@ public class StabilizeStrategy implements AiStrategy {
         
         Optional<Input> healInput = AiActions.tryToHeal(me, loadout);
         if (healInput.isPresent() && healResource > 0) {
-            System.out.println("AI: "+ idEntity + " -> Healing!");
+            //System.out.println("AI: "+ idEntity + " -> Healing!");
             healResource -= 1;
             return healInput;
         }
 
-        System.out.println("stabilize" + idEntity +"--"+ me.hp());
+        //System.out.println("stabilize" + idEntity +"--"+ me.hp());
 
 
         return AiActions.fleeFromTarget(me, player);

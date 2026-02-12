@@ -1,5 +1,7 @@
 package it.unibo.df.model.abilities;
 
+import java.util.concurrent.TimeUnit;
+
 import it.unibo.df.dto.AbilityView;
 
 /**
@@ -32,7 +34,7 @@ public record Ability(
     }
 
     public AbilityView asView() {
-        return new AbilityView(this.name, this.id, this.casterHpDelta, this.targetHpDelta, this.cooldown);
+        return new AbilityView(this.name, this.id, this.casterHpDelta, this.targetHpDelta, (int)TimeUnit.SECONDS.toMillis(this.cooldown));
     }
 
 }
