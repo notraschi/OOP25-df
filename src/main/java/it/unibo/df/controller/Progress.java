@@ -19,7 +19,6 @@ import org.yaml.snakeyaml.Yaml;
 import it.unibo.df.model.abilities.Ability;
 import it.unibo.df.model.abilities.AbilityAreas;
 import it.unibo.df.model.abilities.AbilityFn;
-import it.unibo.df.model.abilities.AbilityType;
 
 /**
  * Loads abilities from a YAML file.
