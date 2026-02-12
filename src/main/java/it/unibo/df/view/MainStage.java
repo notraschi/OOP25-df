@@ -30,7 +30,7 @@ import javafx.util.Duration;
  * 
  */
 public class MainStage extends Application {
-    private final int TICK = 60;
+    private final int TICK = 7;
     private final int LOADOUT_SIZE = 3;
     private final double MIN_SCREEN_WIDTH = (Double.min(
             Screen.getPrimary().getBounds().getHeight(),
@@ -164,9 +164,11 @@ public class MainStage extends Application {
                         menu.refreshCombine();
                     }
                     case KeyCode.ENTER -> {
-                        controller.handle(new Combine(menu.getCombiner().get(0), menu.getCombiner().get(1)));
-                        menu.refresh((ArsenalState) controller.tick(TICK));
-                        menu.clearCombiner();
+                        if(menu.getCombiner().size() > 1) {
+                            controller.handle(new Combine(menu.getCombiner().get(0), menu.getCombiner().get(1)));
+                            menu.refresh((ArsenalState) controller.tick(TICK));
+                            menu.clearCombiner();
+                        }
                     }
                     default -> { }
                 }

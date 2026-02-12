@@ -238,7 +238,7 @@ public class CombatModel {
      * Represents an entity in the game with position, health, and abilities.
      */
     private static class Entity {
-        private static final int MOVEMENT_COOLDOWN_TIME = 200;
+        private static final int MOVEMENT_COOLDOWN_TIME = 175;
         private Vec2D position;
         private int hp;
         private final int maxHp;
