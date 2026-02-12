@@ -11,16 +11,17 @@ import it.unibo.df.input.Input;
 import it.unibo.df.input.Move;
 import it.unibo.df.model.abilities.Ability;
 import it.unibo.df.model.abilities.AbilityType;
+import it.unibo.df.model.abilities.Vec2D;
 
 public class AiActions {
 
     private AiActions() { }
 
-    public static Optional<Input> tryBestAttack(EntityView me, EntityView player, List<Ability> loadout) {
+    public static Optional<Input> tryBestAttack(EntityView me, Vec2D target, List<Ability> loadout) {
 
         for(int i = 0; i < loadout.size(); i++) {
             if(me.cooldownAbilities().get(i) == 0) { //ready?
-                if(TacticsUtility.canHit(me.position(), player.position(), loadout.get(i))) { //can hit?
+                if(TacticsUtility.canHit(me.position(), target, loadout.get(i))) { //can hit?
                     return Optional.of(Attack.values()[i]); //hit!
                 }
             }
@@ -30,7 +31,7 @@ public class AiActions {
     }
 
     //l'idea è che io devo attaccare, quindi mi metto in una posizione in cui mi avvicino per poter attaccare
-    public static Optional<Input> moveForBestAim(EntityView me, EntityView player, List<Ability> loadout) {
+    public static Optional<Input> moveForBestAim(EntityView me, Vec2D target, List<Ability> loadout) {
 
         var readyAttacks = loadout.stream()
             .filter(a -> a.type() == AbilityType.ATTACK) //o LIFESTEAL  
@@ -38,22 +39,22 @@ public class AiActions {
             .toList();
 
         if(!readyAttacks.isEmpty()) {
-            Move bestMove = moveForBestAimfromLoadout(me, player, readyAttacks);
+            Move bestMove = moveForBestAimfromLoadout(me, target, readyAttacks);
             return Optional.ofNullable(bestMove);
         }
 
         for (Ability ab : loadout) {
-            if(TacticsUtility.canHit(me.position(), player.position(), ab)) return Optional.empty();
+            if(TacticsUtility.canHit(me.position(), target, ab)) return Optional.empty();
         }
 
-        Move bestMove = moveForBestAimfromLoadout(me, player, loadout);
+        Move bestMove = moveForBestAimfromLoadout(me, target, loadout);
 
 
         return Optional.ofNullable(bestMove);
     }
 
     //migliorabile
-    private static Move moveForBestAimfromLoadout(EntityView me, EntityView player, List<Ability> subsetLoadout) {
+    private static Move moveForBestAimfromLoadout(EntityView me, Vec2D target, List<Ability> subsetLoadout) {
         
         Move bestMove = null;
 
@@ -62,7 +63,7 @@ public class AiActions {
         for (Ability ab : subsetLoadout) {
             if (ab.type() != AbilityType.ATTACK) continue;
             // Calcolo distanza dalla posizione ATTUALE
-            int dist = TacticsUtility.distFromHit(me.position(), player.position(), ab);
+            int dist = TacticsUtility.distFromHit(me.position(), target, ab);
             if (dist < currentBestDist) {
                 currentBestDist = dist;
             }
@@ -83,7 +84,7 @@ public class AiActions {
             for (Ability ab : subsetLoadout) {
                 if (ab.type() != AbilityType.ATTACK) continue;
                 
-                int dist = TacticsUtility.distFromHit(posToEvaluate, player.position(), ab);
+                int dist = TacticsUtility.distFromHit(posToEvaluate, target, ab);
                 
                 if( dist < minHitDistance ) {
                     minHitDistance = dist;

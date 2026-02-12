@@ -40,7 +40,7 @@ public class AiController {
         AiStrategy bestStrategy = this.currentStrategy;
         double maxUtility = (Objects.isNull(bestStrategy)) 
                         ? Double.NEGATIVE_INFINITY
-                        : currentStrategy.calculateUtility(gameState, loadout) + 0.05; //the best candidate must exceed it by 0.10
+                        : currentStrategy.calculateUtility(gameState, loadout) + 0.10; //the best candidate must exceed it by 0.10
 
         for (AiStrategy strategy: avaiableStrategies) { //use continue to skipp calculation of current strategy, brutto
             double utility = strategy.calculateUtility(gameState, loadout);

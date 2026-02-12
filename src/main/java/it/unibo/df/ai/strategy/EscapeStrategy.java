@@ -10,10 +10,11 @@ import it.unibo.df.ai.util.TacticsUtility;
 import it.unibo.df.gs.CombatState;
 import it.unibo.df.input.Input;
 import it.unibo.df.model.abilities.Ability;
+import it.unibo.df.model.abilities.AbilityType;
 
 public class EscapeStrategy implements AiStrategy {
 
-    private final int idEntity; 
+    private final int idEntity;
 
     public EscapeStrategy(int idEntity) {
         this.idEntity = idEntity;
@@ -25,7 +26,7 @@ public class EscapeStrategy implements AiStrategy {
         var player = cs.player();
 
         //si ritira
-        //System.out.println("escape");
+        System.out.println("escape" + idEntity +"--"+ me.hp());
         return AiActions.fleeFromTarget(me, player);
     }
 
@@ -34,24 +35,46 @@ public class EscapeStrategy implements AiStrategy {
         var me = cs.enemies().get(idEntity);
         var player = cs.player();
 
-        // Se ho poca vita, voglio scappare, ho paura.
-        // Ma attenzione se è TROPPO bassa, vince Stabilize quindi questa curva è lineare/soft. DA BILANCIARE NEL CASO
-        double fear = CurvesUtility.inverse(me.hpRatio());  //+-
+        //all'inizio non scappo tanto, alla fine non scappo tanto do il tutto per tutto, scappo di piu a mid game
+        double fear = CurvesUtility.gaussian(me.hpRatio(), 0.4, 0.3);
 
         //Rischio immediato ovvero se sono vicino al player
+        //normalizzazion mi da fuori questo
+        // 0 -> 0.0
+        // 1 -> 0.055             danger -> 1
+        // 6 -> 0.333             danger -> 0.70
+        // 9 -> 0.5 (meta mappa)  danger -> 0.25
         int dist = TacticsUtility.manhattanDist(me.position(), player.position());
         double dist01 = TacticsUtility.normalizeManhattanDist(dist);
-        //lineare mi sembra troppo terro esponenziale
-        double danger = CurvesUtility.exponential(CurvesUtility.inverse(dist01), 3.0); 
+        double danger = CurvesUtility.logistic(CurvesUtility.inverse(dist01), 10, 0.8);
 
-        //DA RIVEDERE IL FATTO DEI HP BASSI, INTERFERISCE CON STABILIZE (?)
+        //se ho cooldown attivi allora ho paura, PER TUTTI I COOLDOWN
+        // 3 -> 1
+        // 2 -> 0.6
+        // 1 -> 0.3 
+        //quando finisco le cure, cura sempre attiva, questo 0.3 costante
+        // long cooldownsActive = me.cooldownAbilities().stream().filter(c -> c > 0).count();
+        // double helplessScore = (double) cooldownsActive / (double) loadout.size();
 
-        long cooldownsActive = me.cooldownAbilities().stream().filter(c -> c > 0).count();
-        double helplessScore = cooldownsActive / loadout.size(); //scappo se ho tutto in cooldown
-
-        double score = Math.max(fear * danger, helplessScore * danger);
+        var ammo = TacticsUtility.abilityByType(loadout, AbilityType.ATTACK); //abilita con cui attacco
         
+        //se ho cooldown attivi allora ho paura, SOLO PER ATTACK
+        //mi calcolo i disponibili sui totali 
+        // 0 / 2 -> 0
+        // 1 / 2 -> 0.5
+        // 2 / 2 -> 1
+        double ammoScore = (double) ammo.stream().filter(x -> me.cooldownAbilities().get(x) > 0).count() / (double) ammo.size();
+
+
+        double score = ammoScore * danger * fear;//Math.max(fear * danger, helplessScore * danger);
+        //System.out.println(score +"--"+idEntity+"--ESCAPE--danger: "+danger+"--activecooldown--"+cooldownsActive+"--helplessScore--"+helplessScore);
+
         return CurvesUtility.clamp(score);
     }
+
+    /**
+     * l'idea è
+     * me ne voglio andare se abilita di attacco sono in cooldown e sono vicino, e se ho poca vita il peso del ho abilita in cooldown è maggiore
+     */
 
 }
