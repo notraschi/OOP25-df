@@ -18,15 +18,16 @@ import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.GridPane;
 
 /**
+ * The Scene of the menu where the user select abilities.
  */
 public class AbilityMenu {
     private final int MAX_SIZE_PERC = 100;
     private final int INVENTORY_WIDTH_PERC = 80;
     private final int MIXER_ABILITY_SIZE = 2;
-    private final int INVENTORY_WIDTH = 5;
+    private final int INVENTORY_WIDTH = 3;
     private final int INVENTORY_HEIGHT = 8;
     private final int KEYS_AREA_ROWS = 2;
-    private final int  loadoutSize;
+    private final int loadoutSize;
     private GridPane inventaryArea;
     private GridPane equipment;
     private GridPane combineArea;
@@ -40,9 +41,12 @@ public class AbilityMenu {
     private Scene menu;
 
     /**
-     * @param keys
+     * Setup the menu and creates the view.
+     * 
+     * @param keys List of command to show to the user
+     * @param loadoutSize size of ability can be equipped
      */
-    public AbilityMenu(final List<String> keys, int loadoutSize) {
+    public AbilityMenu(final List<String> keys, final int loadoutSize) {
         this.loadoutSize = loadoutSize;
         this.keys = List.copyOf(keys);
         setupAbilityMenuScene();
@@ -55,7 +59,11 @@ public class AbilityMenu {
         formatRows(menuArea, 1, MAX_SIZE_PERC - INVENTORY_WIDTH_PERC);
         menuArea.add(fillUpperArea(), 0, 0);
         menuArea.add(fillLowerArea(), 0, 1);
-        SceneResizer resizer = new SceneResizer(menuArea, Double.valueOf(INVENTORY_WIDTH_PERC) / Double.valueOf(MAX_SIZE_PERC), MAX_SIZE_PERC / MAX_SIZE_PERC);
+        final SceneResizer resizer = new SceneResizer(
+            menuArea,
+            Double.valueOf(INVENTORY_WIDTH_PERC) / Double.valueOf(MAX_SIZE_PERC),
+            MAX_SIZE_PERC / MAX_SIZE_PERC
+        );
         menu = new Scene(resizer.getBorderPane());
         menu.getStylesheets().add(getClass().getResource("/css/menuStyle.css").toExternalForm());
     }
@@ -75,7 +83,7 @@ public class AbilityMenu {
         combineArea = new GridPane();
         formatColumns(combineArea, 1, MAX_SIZE_PERC);
         formatRows(combineArea, MIXER_ABILITY_SIZE, MAX_SIZE_PERC / MIXER_ABILITY_SIZE);
-        for (int i = 0; i < MIXER_ABILITY_SIZE; i++){
+        for (int i = 0; i < MIXER_ABILITY_SIZE; i++) {
             final Label lbl = new Label("");
             lbl.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
             combineArea.add(lbl, 0, i);
@@ -92,6 +100,7 @@ public class AbilityMenu {
             for (int j = 0; j < INVENTORY_HEIGHT; j++) {
                 final ToggleButton btn = new ToggleButton();
                 btn.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
+                btn.getStyleClass().add("lost");
                 inventaryArea.add(btn, i, j);
                 btn.setToggleGroup(group);
             }
@@ -141,11 +150,6 @@ public class AbilityMenu {
         return area;
     }
 
-    /**
-	 * refresh the inventary page and write the equipment, unlocked an locked moves.
-	 * 
-     * @param gs 
-	 */
     private void addNews(final ArsenalState gs) {
         for (final var e : gs.unlocked()) {
             unlocked.put(e.id(), e);
@@ -162,10 +166,11 @@ public class AbilityMenu {
 
         for (final var e : inventaryArea.getChildren()) {
             if (e instanceof ToggleButton button) {
-                button.getStyleClass().remove("lost");
+                button.getStyleClass().remove("unlocked");
                 if (unlockIt.hasNext()) {
                     button.setText(unlocked.get(unlockIt.next()).name());
-                    //button.getStyleClass().add("unlocked");
+                    button.getStyleClass().remove("lost");
+                    button.getStyleClass().add("unlocked");
                 } else if (lostIt.hasNext()) {
                     button.setText(unlocked.get(lostIt.next()).name());
                     button.getStyleClass().add("lost");
@@ -175,7 +180,7 @@ public class AbilityMenu {
 
     }
 
-    private void refreshEquipped(){
+    private void refreshEquipped() {
         final Iterator<Integer> equipIt = equipped.iterator();
         for (final var e : equipment.getChildren()) {
             if (e instanceof Label label) {
@@ -184,7 +189,12 @@ public class AbilityMenu {
         }
     }
 
-    public void refreshDescription(int id) {
+    /**
+     * refresh the description area to display it.
+     * 
+     * @param id of the ability to take the description
+     */
+    public void refreshDescription(final int id) {
         final AbilityView ab = unlocked.get(id);
         descriptionLabel.setText(
             "NAME: " + ab.name() 
@@ -194,6 +204,7 @@ public class AbilityMenu {
     }
 
     /**
+     * refresh the combiner area to display it.
      */
     public void refreshCombine() {
         final Iterator<Integer> combineIt = combiner.iterator();
@@ -204,34 +215,48 @@ public class AbilityMenu {
         }
     }
 
-    
     /**
-	 * refresh the inventary page and write the equipment, unlocked an locked moves.
+	 * Refresh the inventary page and write the equipment, unlocked an locked moves.
      * 
-     * @param gs
+     * @param gs Arsenal state
      */
     public void refresh(final ArsenalState gs) {
         addNews(gs);
         refreshAbilities();
-        refreshEquipped();   
+        refreshEquipped();
     }
 
-    public void addAbilityToCombine(final String name) {
-        if (combiner.size() >= MIXER_ABILITY_SIZE) {
-            combiner.removeFirst();
-        }
-        for (final var e : unlocked.entrySet()) {
-            if (e.getValue().name().equals(name) && !lost.contains(e.getValue().id())) {
-                combiner.add(e.getKey());
-            }
+    /**
+     * add an ability to the combiner.
+     * 
+     * @param id to add it to the combiner
+     */
+    public void addAbilityToCombine(final int id) {
+        if (combiner.size() <= MIXER_ABILITY_SIZE && !(lost.contains(id))) {
+           combiner.add(id);
         }
     }
 
-    public void unequip(int id){
+    /**
+     * remove an ability from the combiner.
+     * 
+     * @param id to remove it to the combiner
+     */
+    public void removeFromCombine(final int id) {
+        combiner.remove(Integer.valueOf(id));
+    }
+
+    /**
+     * unequip an ability.
+     * 
+     * @param id to unequip it
+     */
+    public void unequip(final int id) {
         equipped.remove(Integer.valueOf(id));
     }
 
     /**
+     * clear all lists of abilities to refill it.
      */
     public void clearMenus() {
         unlocked.clear();
@@ -239,14 +264,17 @@ public class AbilityMenu {
         lost.clear();
     }
 
-    public void clearCombiner(){
+    /**
+     * clear the combiner list and refresh the scene.
+     */
+    public void clearCombiner() {
         combiner.clear();
         refreshCombine();
     }
 
     /**
-     * @param name
-     * @return key or 0
+     * @param name to find the id of the ability
+     * @return the id of the ability
      */
     public int getId(final String name) {
         for (final var e : unlocked.entrySet()) {
@@ -257,26 +285,29 @@ public class AbilityMenu {
         return 0;
     }
 
-    public List<Integer> getCombiner(){
+    /**
+     * @return a List of ids to combine.
+     */
+    public List<Integer> getCombiner() {
         return Collections.unmodifiableList(combiner);
     }
 
     /**
-     * @return group
+     * @return group of button of Abilities
      */
     public ToggleGroup getGroup() {
         return group;
     }
 
     /**
-     * @return equipment 
+     * @return the equipment 
      */
     public List<AbilityView> getEquipped() {
         return equipped.stream().map(e -> unlocked.get(e)).toList();
     }
 
     /**
-     * @return Scene
+     * @return the scene
      */
     public Scene getScene() {
         return menu;

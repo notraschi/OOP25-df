@@ -32,8 +32,10 @@ final class CombatModelTest {
         assertEquals(new Vec2D(0, 0), model.playerView().position());
         // adding an enemy that can deny the movement
         model.addEnemy(
-                new EnemyDefinition(
-                        new Vec2D(0, 0), 100, defaultLoadout, List.of(), sa));
+            new EnemyDefinition(
+                new Vec2D(9, 9), 100, defaultLoadout, List.of(), sa
+            )
+        );
         assertTrue(model.enemyView().size() == 1);
     }
 
@@ -71,7 +73,7 @@ final class CombatModelTest {
         assertEquals(SpecialAbilityView.INVERT_MOVEMENT, model.getDisrupt());
 
         // now movement should be inverted
-        model.tick(100); // expire movement cooldown
+        model.tick(175); // expire movement cooldown
         model.move(Optional.empty(), new Vec2D(1, 0));
         assertEquals(new Vec2D(0, 0), model.playerView().position()); // old location
 

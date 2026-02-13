@@ -55,16 +55,17 @@ public class CombatModel {
      * @param delta how much to move
      */
     public boolean move(Optional<Integer> entityId, Vec2D delta) {
-        var mover = entityId.map(enemies::get).orElse(player);
-        var targetPos = entityId.isPresent()
+        final var mover = entityId.map(enemies::get).orElse(player);
+        final var targetPos = entityId.isPresent()
             ? mover.calculateMove(delta)
             : mover.calculateMove(
                 applyDisruption(delta).orElse(new Vec2D(0, 0))
             );
-        if (!mover.validMove(targetPos, Constants.BOARD_SIZE)) {
-            return false;
+        final var tmp = mover.validMove(targetPos, Constants.BOARD_SIZE) && canMove(targetPos);
+        if (tmp) {
+            mover.move(targetPos);
         }
-        return canMove(targetPos) ? mover.move(targetPos) : false;
+        return tmp;
     }
 
     /**
@@ -292,8 +293,8 @@ public class CombatModel {
         /**
          * calculate the new position.
          * 
-         * @param delta delta contatins deltaX and deltaY
-         * @return return the new position
+         * @param delta contatins deltaX and deltaY
+         * @return the new position
          */
         Vec2D calculateMove(Vec2D delta) {
             final int newX = this.position.x() + delta.x();
@@ -302,30 +303,24 @@ public class CombatModel {
         }
 
         /**
-         * validate the position.
+         * validate the movement.
          * 
-         * @param position to validate
-         * @return true if the position is valid or the cooldown is inactive
+         * @param position to move to
+         * @return true if the position is valid and the cooldown is inactive
          */
         boolean validMove(Vec2D position, int bound) {
-            if (movementCooldown.isActive()) {
-                return false;
-            } else if (position.x() < 0 || position.x() >= bound || position.y() < 0 || position.y() >= bound) {
-                return false;
-            }
-            return true;
+            return !(movementCooldown.isActive()
+                || (position.x() < 0 || position.x() >= bound || position.y() < 0 || position.y() >= bound));
         }
 
         /**
-         * move.
+         * moves entity.
          * 
-         * @param position is the new position.
-         * @return true
+         * @param position the new position
          */
-        boolean move(Vec2D position) {
+        void move(Vec2D position) {
             this.position = position;
             movementCooldown.begin();
-            return true;
         }
 
         EntityView asView() {
