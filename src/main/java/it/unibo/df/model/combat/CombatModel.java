@@ -76,7 +76,7 @@ public class CombatModel {
      */
     private boolean canMove(Vec2D targetPos) {
         return !enemies.values().stream()
-            .anyMatch(e -> e.position.equals(targetPos)) 
+            .anyMatch(e -> e.position.equals(targetPos) && e.hp > 0) 
             && !player.position.equals(targetPos);
     }
 

@@ -17,6 +17,15 @@ import it.unibo.df.model.abilities.AbilityType;
  */
 public class StabilizeStrategy implements AiStrategy {
 
+    private static final int INITIAL_HEAL_RESOURCE = 3;
+
+    private static final double HP_THRESHOLD_SAFE = 0.8;
+    private static final double SCORE_HEAL_READY = 1.0;
+    private static final double SCORE_HEAL_COOLDOWN = 0.5;
+
+    private static final double PANIC_TARGET = 0.3;
+    private static final double PANIC_DEVIATION = 0.21;
+
     private final int idEntity;
     private int healResource;
 
@@ -27,7 +36,7 @@ public class StabilizeStrategy implements AiStrategy {
      */
     public StabilizeStrategy(final int idEntity) {
         this.idEntity = idEntity;
-        this.healResource = 3;
+        this.healResource = INITIAL_HEAL_RESOURCE;
     }
 
     /**
@@ -62,14 +71,17 @@ public class StabilizeStrategy implements AiStrategy {
         }
 
         //hp alti, non mi curo o cure finite
-        if (me.hpRatio() > 0.8 || healResource <= 0) {
+        if (me.hpRatio() > HP_THRESHOLD_SAFE || healResource <= 0) {
             return 0.0;
         }
         final var healIdx = TacticsUtility.abilityByType(loadout, AbilityType.HEAL);
-        final double healReady = healIdx.stream().anyMatch(i -> me.cooldownAbilities().get(i) == 0) ? 1.0 : 0.5;
+        final double healReady = healIdx.stream()
+            .anyMatch(i -> me.cooldownAbilities().get(i) == 0) 
+                ? SCORE_HEAL_READY 
+                : SCORE_HEAL_COOLDOWN;
 
         //mi curo maggiormente nel renge tra 20% e 40% di vita
-        final double panic = CurvesUtility.gaussian(me.hpRatio(), 0.3, 0.21);
+        final double panic = CurvesUtility.gaussian(me.hpRatio(), PANIC_TARGET, PANIC_DEVIATION);
         final double utility = panic * healReady;
 
         return CurvesUtility.clamp(utility);

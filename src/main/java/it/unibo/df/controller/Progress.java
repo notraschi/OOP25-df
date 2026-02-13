@@ -44,11 +44,11 @@ public final class Progress {
      * @param killedEnemies amount of enemies killed in battle, unlocks one new
      *                      ability for each.
      */
-    public void update(int killedEnemies) {
+    public void update(final int killedEnemies) {
         final Random random = new Random();
         for (int i = 0; i < killedEnemies; i++) {
-            List<Integer> keys = List.copyOf(lockedAbilitiesById.keySet());
-            int index = random.nextInt(0, keys.size()); // % keys.size();
+            final List<Integer> keys = List.copyOf(lockedAbilitiesById.keySet());
+            final int index = random.nextInt(0, keys.size()); // % keys.size();
             unlockedAbilitiesById.put(keys.get(index), lockedAbilitiesById.get(keys.get(index)));
             lockedAbilitiesById.remove(keys.get(index));
         }
@@ -58,7 +58,7 @@ public final class Progress {
      * resets progress to default.
      */
     public void reset() {
-        var allAbilities = new LinkedHashMap<>(unlockedAbilitiesById);
+        final var allAbilities = new LinkedHashMap<>(unlockedAbilitiesById);
         allAbilities.putAll(lockedAbilitiesById);
 
         unlockedAbilitiesById = allAbilities.values().stream()
@@ -71,14 +71,16 @@ public final class Progress {
 
     /**
      * writes progress to file.
-     * @throws IOException 
+     * 
+     * @throws IOException write error
      */
     public void write() {
-        Path path = Paths.get(System.getProperty("user.home"), "save.yml");
-        try (Writer writer = Files.newBufferedWriter(path)){
-            Yaml file = new Yaml();
+        final Path path = Paths.get(System.getProperty("user.home"), "save.yml");
+        try (Writer writer = Files.newBufferedWriter(path)) {
+            final Yaml file = new Yaml();
             file.dump(unlockedAbilitiesById.keySet(), writer);
-        }catch (IOException e){
+        } catch (final IOException e) {
+            throw new AbilityLoadingException("write error", e);
         }
     }
 
@@ -104,26 +106,23 @@ public final class Progress {
     }
 
     @SuppressWarnings("unchecked")
-    private Set<Integer> readFileUnlocked(){
-        Path path = Paths.get(System.getProperty("user.home"), "save.yml");
-        try (Reader reader = Files.newBufferedReader(path)){
-            Yaml file = new Yaml();
-            ;
-            return (Set<Integer>)file.load(reader);
-        }catch (IOException e){
+    private Set<Integer> readFileUnlocked() {
+        final Path path = Paths.get(System.getProperty("user.home"), "save.yml");
+        try (Reader reader = Files.newBufferedReader(path)) {
+            final Yaml file = new Yaml();
+            return (Set<Integer>) file.load(reader);
+        } catch (final IOException e) {
             return Set.of();
         }
-
     }
 
     /**
-     * helper to load a generic progress
+     * helper to load a generic progress.
      * 
      * @return a stream of pairs containig an ability and a boolean to signify whether it's unlocked
      */
     private static Stream<Ability> loadGeneric() {
-        // needs a "leading leash" ('/') in front of the file path.
-        InputStream stream = Progress.class.getResourceAsStream("/abilities.yml");
+        final InputStream stream = Progress.class.getResourceAsStream("/abilities.yml");
         if (stream == null) {
             throw new IllegalStateException("abilities.yml not found");
         }
@@ -131,14 +130,14 @@ public final class Progress {
         return loadFromStream(stream).onClose(() -> {
             try {
                 stream.close();
-            } catch (IOException ex) {
+            } catch (final IOException ex) {
                 throw new AbilityLoadingException("could not close stream", ex);
             }
         });
     }
 
     /**
-     * helper to load a generic progress from a input stream
+     * helper to load a generic progress from a input stream.
      * 
      * @param stream the input stream
      * @return similar to {@link loadGeneric}
@@ -203,17 +202,11 @@ public final class Progress {
     }
 
     /**
-     * simple pair to hold information about the ability, easier to move around.
-     */
-    //private static record Pair(boolean unlocked, Ability ability) {
-    //}
-
-    /**
      * custo exception to be more explicit during error handling.
      */
     public static class AbilityLoadingException extends UncheckedIOException {
 
-        public AbilityLoadingException(String message, IOException cause) {
+        public AbilityLoadingException(final String message, final IOException cause) {
             super(message, cause);
         }
     }

@@ -17,6 +17,11 @@ import it.unibo.df.model.abilities.AbilityType;
  */
 public class EscapeStrategy implements AiStrategy {
 
+    private static final double FEAR_TARGET = 0.4;
+    private static final double FEAR_DEVIATION = 0.3;
+
+    private static final double DANGER_STEEPNESS = 10.0;
+    private static final double DANGER_MIDPOINT = 0.7;
     private final int idEntity;
 
     /**
@@ -49,7 +54,7 @@ public class EscapeStrategy implements AiStrategy {
         final var player = cs.player();
 
         //all'inizio non scappo tanto, alla fine non scappo tanto do il tutto per tutto, scappo di piu a mid game
-        final double fear = CurvesUtility.gaussian(me.hpRatio(), 0.4, 0.3);
+        final double fear = CurvesUtility.gaussian(me.hpRatio(), FEAR_TARGET, FEAR_DEVIATION);
 
         //Rischio immediato ovvero se sono vicino al player
         //normalizzazion mi da fuori questo
@@ -59,7 +64,7 @@ public class EscapeStrategy implements AiStrategy {
         // 9 -> 0.5 (meta mappa)  danger -> 0.25
         final int dist = TacticsUtility.manhattanDist(me.position(), player.position());
         final double dist01 = TacticsUtility.normalizeManhattanDist(dist);
-        final double danger = CurvesUtility.logistic(CurvesUtility.inverse(dist01), 10, 0.7);
+        final double danger = CurvesUtility.logistic(CurvesUtility.inverse(dist01), DANGER_STEEPNESS, DANGER_MIDPOINT);
 
         //se ho cooldown attivi allora ho paura, SOLO PER ATTACK
         //mi calcolo i disponibili sui totali
