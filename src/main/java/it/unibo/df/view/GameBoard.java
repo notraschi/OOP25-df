@@ -19,8 +19,9 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
+
 /**
- * 
+ * The Scene of the area where the user play.
  */
 public class GameBoard {
     private static final int MAX_SIZE_PERC = 100;
@@ -28,7 +29,6 @@ public class GameBoard {
     private static final int KEYS_AREA_ROWS = 2;
     private static final int ENEMY_NUMBER = 2;
     private static final int EFFECT_DISPLAY_DURATION = 200;
-
     private final int loadoutSize;
     private final StackPane[][] playAreaMat;
     private GridPane playArea;
@@ -41,7 +41,10 @@ public class GameBoard {
     private Scene board;
 
     /**
-     * @param keys
+     * Setup the board and creates the view.
+     * 
+     * @param keys List of command to show to the user
+     * @param loadoutSize size of ability can be equipped
      */
     public GameBoard(final List<String> keys, final int loadoutSize) {
         playAreaMat = new StackPane[Constants.BOARD_SIZE][Constants.BOARD_SIZE];
@@ -53,23 +56,21 @@ public class GameBoard {
     private void setupBoardScene() {
         final GridPane centerPane = new GridPane();
         centerPane.getStyleClass().add("board");
-        
-
         playArea = new GridPane();
         playArea.getStyleClass().add("board");
         formatColumns(centerPane, 1, MAX_SIZE_PERC);
         formatRows(centerPane, 1, BOARD_SIZE_PERC);
         formatRows(centerPane, 1, MAX_SIZE_PERC - BOARD_SIZE_PERC);
-
         formatColumns(playArea, Constants.BOARD_SIZE, MAX_SIZE_PERC / Constants.BOARD_SIZE);
-        formatRows(playArea,  Constants.BOARD_SIZE, MAX_SIZE_PERC / Constants.BOARD_SIZE);
-
+        formatRows(playArea, Constants.BOARD_SIZE, MAX_SIZE_PERC / Constants.BOARD_SIZE);
         centerPane.add(fillPlayArea(playArea), 0, 0); 
         centerPane.add(fillLowBar(), 0, 1);
-
-        SceneResizer resizer = new SceneResizer(centerPane, Double.valueOf(BOARD_SIZE_PERC) / Double.valueOf(MAX_SIZE_PERC), MAX_SIZE_PERC / MAX_SIZE_PERC);
+        final SceneResizer resizer = new SceneResizer(
+            centerPane,
+            Double.valueOf(BOARD_SIZE_PERC) / Double.valueOf(MAX_SIZE_PERC),
+            MAX_SIZE_PERC / MAX_SIZE_PERC
+        );
         board = new Scene(resizer.getBorderPane());
-
         board.getStylesheets().add(getClass().getResource("/css/boardStyle.css").toExternalForm());
     }
 
@@ -96,16 +97,16 @@ public class GameBoard {
         }
         return abilityArea;
     }
-    
+
     private GridPane fillLifeBarArea() {
         final GridPane area = new GridPane();
-        formatColumns(area,1, MAX_SIZE_PERC);
-        formatRows(area, ENEMY_NUMBER+1, MAX_SIZE_PERC);
+        formatColumns(area, 1, MAX_SIZE_PERC);
+        formatRows(area, ENEMY_NUMBER + 1, MAX_SIZE_PERC);
         lifeBar = new ProgressBar(1.0);
         lifeBar.setMaxWidth(Double.MAX_VALUE);
         lifeBar.getStyleClass().add("playerLifeBar");
         area.add(lifeBar, 0, 0);
-        for (int i = 1; i <= ENEMY_NUMBER; i++){
+        for (int i = 1; i <= ENEMY_NUMBER; i++) {
             final ProgressBar enemyBar = new ProgressBar(1.0);
             enemyBar.setMaxWidth(Double.MAX_VALUE);
             enemyBar.getStyleClass().add("enemyLifeBar");
@@ -152,50 +153,48 @@ public class GameBoard {
             }
         }
         playAreaMat[gs.player().position().x()][gs.player().position().y()].getStyleClass().add(
-            gs.activeDisrupt().equals(SpecialAbilityView.NONE) ? 
-            "player" : 
-            "playerSpecial"
+            gs.activeDisrupt().equals(SpecialAbilityView.NONE) 
+            ? "player"
+            : "playerSpecial"
         );
-        
-        for (var e : enemyPosition) {
+        for (final var e : enemyPosition) {
             playAreaMat[e.x()][e.y()].getStyleClass().add("enemy");
         }
-
-        // activeEffects.forEach(set -> set.forEach(cell -> playAreaMat[cell.x()][cell.y()].getStyleClass().add("move")));
         activeEffects.stream().map(ActiveEffect::effect)
             .forEach(set -> set.forEach(cell -> playAreaMat[cell.x()][cell.y()].getStyleClass().add("move")));
     }
+    // activeEffects.forEach(set -> set.forEach(cell -> playAreaMat[cell.x()][cell.y()].getStyleClass().add("move")));
 
     private void refreshLife(final CombatState gs) {
         lifeBar.setProgress(gs.player().hpRatio());
-        int index = 0;
-        
-        for (var e : gs.enemies().values()){
-            enemyBars.get(index).setProgress(e.hpRatio());
-            index ++;
+        final Iterator<ProgressBar> enemyBarsIt = enemyBars.iterator();
+        for (final var e : gs.enemies().values()) {
+            enemyBarsIt.next().setProgress(e.hpRatio());
         }
     }
 
-    private void refreshCooldown(CombatState gs) {
-        Iterator<Long> abColIt = gs.player().cooldownAbilities().iterator();
-        Iterator<AbilityView> abIt = equipped.iterator();
+    private void refreshCooldown(final CombatState gs) {
+        final Iterator<Long> abColIt = gs.player().cooldownAbilities().iterator();
+        final Iterator<AbilityView> abIt = equipped.iterator();
         for (final var ab : abilityArea.getChildren()) {
-            
-            if (ab instanceof Label lbl && abColIt.hasNext()){
-                double ratio = Math.max(0, Math.min(1, ((double)abColIt.next()) / (abIt.next().cooldown())));
+            if (ab instanceof Label lbl && abColIt.hasNext()) {
+                final double ratio = ((double) abColIt.next()) / (abIt.next().cooldown());
                 lbl.setStyle(
-                    "-fx-background-color: linear-gradient(to top, " +
-                    "gray " + (ratio * 100) + "%, " +
-                    "white " + (ratio * 100) + "%);" +
-                    "-fx-border-color: black;");
+                    "-fx-background-color: linear-gradient(to top, " 
+                    + "gray " + (ratio * 100) + "%, "
+                    + "white " + (ratio * 100) + "%);"
+                    + "-fx-border-color: black;"
+                );
             }
         }
     }
 
     /**
-    * @param equipment
-    */
-    public void refreshAbility(final List<AbilityView> equipment){
+     * refresh the ability area to add the equipment to it.
+     * 
+     * @param equipment list of abilities equipped
+     */
+    public void refreshAbility(final List<AbilityView> equipment) {
         equipped = equipment;
         final Iterator<AbilityView> equipIt = equipment.iterator();
         for (final var e : abilityArea.getChildren()) {
@@ -206,10 +205,12 @@ public class GameBoard {
     }
 
     /**
-	* refresh the game board, to move enemy player and color where an ability hit.
-	* @param gs
-	*/
-    public void refresh(final CombatState gs, long deltaTime) {
+	 * refresh the game board, to move enemy player and color where an ability hit.
+     * 
+	 * @param gs combat state
+     * @param deltaTime time passed from last tick
+	 */
+    public void refresh(final CombatState gs, final long deltaTime) {
         activeEffects.forEach(ae -> ae.cooldown.update(deltaTime));
         activeEffects.removeIf(ae -> !ae.cooldown.isActive());
         activeEffects.addAll(
@@ -224,11 +225,11 @@ public class GameBoard {
     }
 
     /**
-	* @return a scene of the board
-	*/
+     * @return a scene of the board
+     */
     public Scene getScene() {
         return board;
     }
 
-    private record ActiveEffect(Cooldown cooldown, Set<Vec2D> effect) {}
+    private record ActiveEffect(Cooldown cooldown, Set<Vec2D> effect) { }
 }

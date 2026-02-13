@@ -30,12 +30,13 @@ import javafx.util.Duration;
  * 
  */
 public class MainStage extends Application {
-    private final int TICK = 16;
+    private final int TICK = 7;
     private final int LOADOUT_SIZE = 3;
     private final double MIN_SCREEN_WIDTH = (Double.min(
         Screen.getPrimary().getBounds().getHeight(),
         Screen.getPrimary().getBounds().getWidth()
     )) / 2;
+
     private final GameBoard board = new GameBoard(
         List.of(
             "← \nleft",
@@ -67,10 +68,11 @@ public class MainStage extends Application {
     private final Controller controller = new Controller(GameConfig.defaultConfig());
     private Timeline timeline;
     private Stage stage;
-    
+
     /**
+     * Start method to display the stage to the user.
      * 
-     * @param s
+     * @param s the stage to show
      */
     @Override
     public void start(final Stage s) {
@@ -79,14 +81,13 @@ public class MainStage extends Application {
         addKeysListenersToMenu(menu.getScene());
         addKeysListenersToStage();
 
-        menu.refresh((ArsenalState)controller.tick(TICK));
+        menu.refresh((ArsenalState) controller.tick(TICK));
         stage.setScene(menu.getScene());
 
         timeline = new Timeline(
             new KeyFrame(Duration.millis(TICK), e -> tick())
         );
         timeline.setCycleCount(Timeline.INDEFINITE);
-        
         stage.setMinHeight(MIN_SCREEN_WIDTH);
         stage.setMinWidth(MIN_SCREEN_WIDTH);
         stage.show();
@@ -95,17 +96,18 @@ public class MainStage extends Application {
             quitAlert();
         });
     }
-    private void matchEnd(String matchResult) {
+
+    private void matchEnd(final String matchResult) {
         final Alert alert = new Alert(Alert.AlertType.NONE);
         final ButtonType ok = new ButtonType("OK");
         alert.setTitle("END of BATTLE");
-        alert.setContentText("YOU"+matchResult+"THE GAME");
+        alert.setContentText("YOU" + matchResult + "THE GAME");
         alert.getButtonTypes().setAll(ok);
         alert.show();
     }
 
-    private void tick(){
-        var cs = (CombatState) controller.tick(TICK);
+    private void tick() {
+        final var cs = (CombatState) controller.tick(TICK);
         board.refresh(cs, TICK);
         switch (cs.matchStatus()) {
             case CombatStatus.WON -> {
@@ -120,7 +122,7 @@ public class MainStage extends Application {
         }
     }
 
-    private void addKeysListenersToBoard(final Scene boardScene){
+    private void addKeysListenersToBoard(final Scene boardScene) {
         boardScene.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
             switch (event.getCode()) {
                 case KeyCode.DOWN -> controller.handle(Move.DOWN);
@@ -149,7 +151,7 @@ public class MainStage extends Application {
     private void addKeysListenersToMenu(final Scene menuScene) {
         menuScene.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
             if (menu.getGroup().getSelectedToggle() != null) {
-                final ToggleButton btn = (ToggleButton)menu.getGroup().getSelectedToggle();
+                final ToggleButton btn = (ToggleButton) menu.getGroup().getSelectedToggle();
                 switch (event.getCode()) {
                     case KeyCode.Z -> {
                         controller.handle(new Equip(menu.getId(btn.getText())));
@@ -172,7 +174,7 @@ public class MainStage extends Application {
                         menu.refreshCombine();
                     }
                     case KeyCode.ENTER -> {
-                        if(menu.getCombiner().size() > 1) {
+                        if (menu.getCombiner().size() > 1) {
                             controller.handle(new Combine(menu.getCombiner().get(0), menu.getCombiner().get(1)));
                             menu.refresh((ArsenalState) controller.tick(TICK));
                             menu.clearCombiner();
@@ -241,8 +243,9 @@ public class MainStage extends Application {
     }
 
     /**
+     * The entry point of the program.
      * 
-     * @param args
+     * @param args arguments from launching
      */
     public static void entry(final String[] args) {
         launch(args);
