@@ -4,48 +4,87 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
+import it.unibo.df.configurations.Constants;
 import it.unibo.df.input.Move;
 import it.unibo.df.model.abilities.Ability;
 import it.unibo.df.model.abilities.AbilityType;
 import it.unibo.df.model.abilities.Vec2D;
 
+/**
+ * Utility class that provides useful methods for modeling tactics.
+ */
 public final class TacticsUtility {
-    
-    private final static int BOARD_SIZE = 10;
+
+    private static final int BOARD_SIZE = Constants.BOARD_SIZE;
 
     private TacticsUtility() { }
 
-    //dist considering only the directon (up, down, left, right)
+    /**
+     * Calculate the distance between two points considering only the 4 directions to move.
+     * 
+     * @param a first point
+     * @param b secondo point
+     * @return distance from a to b
+     */
     public static int manhattanDist(final Vec2D a, final Vec2D b) {
         return Math.abs(a.x() - b.x()) + Math.abs(a.y() - b.y());
     }
 
-    //dist considering all direction
+    /**
+     * Calculate the distance between two points considering the 8 directions to move.
+     * 
+     * @param a first point
+     * @param b second point
+     * @return distance from a to b
+     */
     public static int chebyshevDist(final Vec2D a, final Vec2D b) {
         return Math.max(Math.abs(a.x() - b.x()), Math.abs(a.y() - b.y()));
     }
 
-    public static boolean isAdjacent(final Vec2D a, final Vec2D b) { //to controll 8 pos use chebyshev
-        return manhattanDist(a,b) == 1; 
+    /**
+     * Check if two point is are adjacent.
+     * 
+     * @param a first point
+     * @param b second point
+     * @return boolean
+     */
+    public static boolean isAdjacent(final Vec2D a, final Vec2D b) {
+        return manhattanDist(a, b) == 1; 
     }
 
-    public static double normalizeDist(int value) { //non normalizza bene, normalizza chebyshev
-        return value / (double) BOARD_SIZE; //cast to double
+    /**
+     * Calculate the normalization of a distance ranging from 0 to BOARD_SIZE.
+     * 
+     * @param value input
+     * @return the value between 0.0 and 1.0
+     */
+    public static double normalizeDist(final int value) {
+        return value / (double) BOARD_SIZE;
     }
 
-    //FIX NORMALIZZAZIONE DISTANZA
-    public static double normalizeManhattanDist(int dist) {
-        int max = (BOARD_SIZE - 1) * 2; // 18 per 10x10
+    /**
+     * Calculate the normalization of a manhattan dist.
+     *
+     * @param dist input
+     * @return the dist between 0.0 and 1.0
+     */
+    public static double normalizeManhattanDist(final int dist) {
+        final int max = (BOARD_SIZE - 1) * 2;
         return Math.max(0.0, Math.min(1.0, dist / (double) max));
     }
 
-
-    //pressure
+    /**
+     * Calculates moves that reduce the distance from start to target.
+     * 
+     * @param start position
+     * @param target position
+     * @return list of possible moves
+     */
     public static List<Move> getMovesToApproach(final Vec2D start, final Vec2D target) {
-        List<Move> validMoves = new ArrayList<>();
-        int currentDist = manhattanDist(start, target);
-        for (Move move : Move.values()) {
-            Vec2D futurePos = applyMove(start, move);
+        final List<Move> validMoves = new ArrayList<>();
+        final int currentDist = manhattanDist(start, target);
+        for (final Move move : Move.values()) {
+            final Vec2D futurePos = applyMove(start, move);
             if (isValidPos(futurePos) && !isAdjacent(start, target) && manhattanDist(futurePos, target) < currentDist) {
                 validMoves.add(move);
             }
@@ -53,37 +92,56 @@ public final class TacticsUtility {
         return validMoves;
     }
 
-    //escape
+    /**
+     * Calculates moves that increment the distance from start to target.
+     * 
+     * @param start position
+     * @param target position
+     * @return list of possible moves
+     */
     public static List<Move> getMovesToRetreat(final Vec2D start, final Vec2D target) {
-        List<Move> movesToIncreareDist = new ArrayList<>();
-        int currentDist = manhattanDist(start, target); 
-        for (Move move : Move.values()) {
-            Vec2D futurePos = applyMove(start, move);
-            int futureDist = manhattanDist(futurePos, target);
-            if (isValidPos(futurePos) && futureDist < BOARD_SIZE && futureDist > currentDist ) { //maximum distance to retreat
+        final List<Move> movesToIncreareDist = new ArrayList<>();
+        final int currentDist = manhattanDist(start, target); 
+        for (final Move move : Move.values()) {
+            final Vec2D futurePos = applyMove(start, move);
+            final int futureDist = manhattanDist(futurePos, target);
+            if (isValidPos(futurePos) && futureDist < BOARD_SIZE && futureDist > currentDist) {
                 movesToIncreareDist.add(move);
             }
         }
         return movesToIncreareDist;
     }
 
-    //stabilize
-    public static List<Move> getMovesToMaintainRange(final Vec2D start, final Vec2D target, int minRange, int maxRange) {
-        List<Move> movesToManteinDist = new ArrayList<>();
-        int currentDist = manhattanDist(start, target);
+    /**
+     * Calculates the possible moves to keep the distance from the target in a specific range.
+     * 
+     * @param start position
+     * @param target position
+     * @param minRange min manhattan distance
+     * @param maxRange max manhattan distance
+     * @return list of possible move
+     */
+    public static List<Move> getMovesToMaintainRange(
+        final Vec2D start, 
+        final Vec2D target, 
+        final int minRange, 
+        final int maxRange
+    ) {
+        final List<Move> movesToManteinDist = new ArrayList<>();
+        final int currentDist = manhattanDist(start, target);
 
         if (currentDist > maxRange) {
             return getMovesToApproach(start, target);
         }
-    
+
         if (currentDist < minRange) {
             return getMovesToRetreat(start, target);
         }
 
-        for (Move move : Move.values()) {
-            Vec2D futurePos = applyMove(start, move);
-            int futureDist = manhattanDist(futurePos, target);
-            
+        for (final Move move : Move.values()) {
+            final Vec2D futurePos = applyMove(start, move);
+            final int futureDist = manhattanDist(futurePos, target);
+
             if (isValidPos(futurePos) && futureDist >= minRange && futureDist <= maxRange) {
                 movesToManteinDist.add(move);
             }
@@ -91,14 +149,25 @@ public final class TacticsUtility {
         return movesToManteinDist;
     }
 
-    //
+    /**
+     * Check if the position is on the board.
+     * 
+     * @param a position
+     * @return boolean
+     */
     public static boolean isValidPos(final Vec2D a) {
         return a.x() >= 0 && a.x() < BOARD_SIZE
             && a.y() >= 0 && a.y() < BOARD_SIZE;
     }
 
-    //convert Move type to Vec2D
-    public static Vec2D applyMove(Vec2D pos, Move move) {
+    /**
+     * Calculate a position from a move.
+     * 
+     * @param pos current position
+     * @param move to apply
+     * @return new position
+     */
+    public static Vec2D applyMove(final Vec2D pos, final Move move) {
         return switch (move) {
             case UP -> new Vec2D(pos.x(), pos.y() - 1);
             case DOWN -> new Vec2D(pos.x(), pos.y() + 1);
@@ -107,41 +176,51 @@ public final class TacticsUtility {
         };
     }
 
-    //
-    public static boolean canHit(Vec2D caster, Vec2D target, Ability ability) {
+    /**
+     * Checks if the ability cast by the caster hits the target.
+     * 
+     * @param caster position
+     * @param target position
+     * @param ability to cast from caster
+     * @return boolean
+     */
+    public static boolean canHit(final Vec2D caster, final Vec2D target, final Ability ability) {
         return ability.effect()
             .apply(caster)
             .map(area -> area.contains(target))
             .orElse(false);
     }
 
-    //metodo che valuta la distanza del target all'area del colpo, attenzione ad usarlo quando player viene colpito
-    public static int distFromHit(Vec2D caster, Vec2D target, Ability ability) {
+    /**
+     * Calculates the min Manhattan distance from the ability area to the target.
+     * 
+     * @param caster position
+     * @param target position
+     * @param ability to cast from caster
+     * @return shortest Manhattan distance
+     */
+    public static int distFromHit(final Vec2D caster, final Vec2D target, final Ability ability) {
         return ability.effect()
             .apply(caster)
             .map(area -> area.stream()
                 .map(cell -> manhattanDist(cell, target))
                 .min(Integer::compareTo)
-                .orElse(Integer.MAX_VALUE))
+                .orElse(Integer.MAX_VALUE)
+            )
             .orElse(Integer.MAX_VALUE);
     }
 
-    //prendo le abilita in base al tipo
-    public static List<Integer> abilityByType(List<Ability> loadout, AbilityType type) {
-        return Stream.iterate(0, x -> x+1)
+    /**
+     * Takes the abilities of the specified type.
+     * 
+     * @param loadout list of abilities
+     * @param type of ability
+     * @return list of ability indexes
+     */
+    public static List<Integer> abilityByType(final List<Ability> loadout, final AbilityType type) {
+        return Stream.iterate(0, x -> x + 1)
             .limit(loadout.size())
             .filter(idx -> loadout.get(idx).type().equals(type))
             .toList();
     }
 }
-
-/**
- * note personali
- * + metodo set mosse migliore x targettarlo
- * + metodo set mosse migliore x andare lontano(safe)
- * + metodo set mosse x restare in un range, se sono nel range magari sto fermo
- * + metodo controllo se siamo adiacenti
- * + metodo controllo posizione valida
- * + normalizzare distanza 
- * 
- */

@@ -12,57 +12,66 @@ import it.unibo.df.input.Input;
 import it.unibo.df.model.abilities.Ability;
 import it.unibo.df.model.abilities.AbilityType;
 
+/**
+ * Has as its goal to cure itself.
+ */
 public class StabilizeStrategy implements AiStrategy {
 
     private final int idEntity;
     private int healResource;
 
-    public StabilizeStrategy(int idEntity) {
+    /**
+     * Constructor, take the identity of the enemy who owns the strategy.
+     * 
+     * @param idEntity of enemy
+     */
+    public StabilizeStrategy(final int idEntity) {
         this.idEntity = idEntity;
         this.healResource = 3;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public Optional<Input> computeNextAction(CombatState cs, List<Ability> loadout) {
-        var me = cs.enemies().get(idEntity);
-        var player = cs.player();
-        
-        Optional<Input> healInput = AiActions.tryToHeal(me, loadout);
+    public Optional<Input> computeNextAction(final CombatState cs, final List<Ability> loadout) {
+        final var me = cs.enemies().get(idEntity);
+        final var player = cs.player();
+
+        final Optional<Input> healInput = AiActions.tryToHeal(me, loadout);
         if (healInput.isPresent() && healResource > 0) {
             //System.out.println("AI: "+ idEntity + " -> Healing!");
             healResource -= 1;
             return healInput;
         }
-
-        System.out.println("stabilize" + idEntity +"--"+ me.hp());
-
-
         return AiActions.fleeFromTarget(me, player);
     }
 
-    @Override //STABILIZE
-    public double calculateUtility(CombatState cs, List<Ability> loadout) {
-        var me = cs.enemies().get(idEntity);
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public double calculateUtility(final CombatState cs, final List<Ability> loadout) {
+        final var me = cs.enemies().get(idEntity);
 
         //CONTROLLARE SE HO CURE
-        boolean hasHeal = !TacticsUtility.abilityByType(loadout, AbilityType.HEAL).isEmpty();
-        boolean hasLifeSteel = !TacticsUtility.abilityByType(loadout, AbilityType.LIFESTEAL).isEmpty();
-        if (!hasHeal && !hasLifeSteel) return 0.0; //non ho cure
+        final boolean hasHeal = !TacticsUtility.abilityByType(loadout, AbilityType.HEAL).isEmpty();
+        final boolean hasLifeSteel = !TacticsUtility.abilityByType(loadout, AbilityType.LIFESTEAL).isEmpty();
+        if (!hasHeal && !hasLifeSteel) {
+            return 0.0;
+        }
 
         //hp alti, non mi curo o cure finite
-        if (me.hpRatio() > 0.8 || healResource <= 0) return 0.0;
-
-        var healIdx = TacticsUtility.abilityByType(loadout, AbilityType.HEAL);
-        double healReady = healIdx.stream().anyMatch(i -> me.cooldownAbilities().get(i) == 0) ? 1.0 : 0.5; //desidero curarmi
+        if (me.hpRatio() > 0.8 || healResource <= 0) {
+            return 0.0;
+        }
+        final var healIdx = TacticsUtility.abilityByType(loadout, AbilityType.HEAL);
+        final double healReady = healIdx.stream().anyMatch(i -> me.cooldownAbilities().get(i) == 0) ? 1.0 : 0.5;
 
         //mi curo maggiormente nel renge tra 20% e 40% di vita
-        double panic = CurvesUtility.gaussian(me.hpRatio(), 0.3,0.21);
-        double utility = panic * healReady;
-        
-        //System.out.println(utility +"--"+idEntity+"--STABILIZE");
+        final double panic = CurvesUtility.gaussian(me.hpRatio(), 0.3, 0.21);
+        final double utility = panic * healReady;
 
-        // Clamping finale 
         return CurvesUtility.clamp(utility);
     }
-
 }

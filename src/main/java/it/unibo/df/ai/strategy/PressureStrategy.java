@@ -14,86 +14,99 @@ import it.unibo.df.model.abilities.Ability;
 import it.unibo.df.model.abilities.AbilityType;
 import it.unibo.df.model.abilities.Vec2D;
 
-public class PressureStrategy implements AiStrategy{
+/**
+ * Its objective is to put pressure on the player, get closer and attack him.
+ */
+public class PressureStrategy implements AiStrategy {
 
     private final int idEntity;
     private int special;
-    private double momentToCastSpecial = 0.6;
-    private Vec2D aimFocus = null;
+    private double momentToCastSpecial;
+    private Vec2D aimFocus;
 
-    public PressureStrategy(int idEntity) {
+    /**
+     * Constructor, take the identity of the enemy who owns the strategy.
+     * 
+     * @param idEntity of enemy
+     */
+    public PressureStrategy(final int idEntity) {
         this.idEntity = idEntity;
         this.special = 2;
+        this.momentToCastSpecial = 0.6;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public Optional<Input> computeNextAction(CombatState cs, List<Ability> loadout) {
-        var me = cs.enemies().get(idEntity);
-        var player = cs.player();
-       
-        //momento di castare special
+    public Optional<Input> computeNextAction(final CombatState cs, final List<Ability> loadout) {
+        final var me = cs.enemies().get(idEntity);
+        final var player = cs.player();
+
         if (me.hpRatio() < momentToCastSpecial && special > 0) {
             special -= 1;
             momentToCastSpecial = 0.3;
-            //System.out.println("cast SPECIAL by "+idEntity);
             return Optional.of(Attack.SPECIAL);
         }
 
-        // 30% di probabilità di aggiornare la mira
-        double reflexChance = 0.30;
+        final double reflexChance = 0.30;
         if (Math.random() < reflexChance) {
-            //aggiunta disturbo
             aimFocus = applyNoise(player.position()); 
         }
 
-        //mena
-        Optional<Input> attack = AiActions.tryBestAttack(me, aimFocus, loadout);
-        if (attack.isPresent()) return attack;
+        final Optional<Input> attack = AiActions.tryBestAttack(me, aimFocus, loadout);
+        if (attack.isPresent()) {
+            return attack;
+        }
 
-        //si riposiziona in base al focus
-        Optional<Input> aimMove = AiActions.moveForBestAim(me, aimFocus, loadout);
-        if (aimMove.isPresent()) return aimMove;
-            
-        System.out.println("pressure" + idEntity +"--"+ me.hp());
-
-        return Optional.empty();       
+        final Optional<Input> aimMove = AiActions.moveForBestAim(me, aimFocus, loadout);
+        if (aimMove.isPresent()) {
+            return aimMove;
+        }
+        return Optional.empty();
     }
 
-    @Override //PRESSURE
-    public double calculateUtility(CombatState cs, List<Ability> loadout) {
-        var me = cs.enemies().get(idEntity);
-        var player = cs.player();
-        if(aimFocus == null) aimFocus = player.position();
-
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public double calculateUtility(final CombatState cs, final List<Ability> loadout) {
+        final var me = cs.enemies().get(idEntity);
+        final var player = cs.player();
+        if (aimFocus == null) {
+            aimFocus = player.position();
+        }
         // Se ho poca vita, la mia voglia di pressare cala.
         // hp 100% -> 0.98
         // hp 50%  -> 0.65
         // hp 20% -> 0.23
-        double confidence = CurvesUtility.logistic(me.hpRatio(), 6, 0.4);//CurvesUtility.exponential(me.hpRatio(), 2);
+        final double confidence = CurvesUtility.logistic(me.hpRatio(), 6, 0.4);
 
-        var ammo = TacticsUtility.abilityByType(loadout, AbilityType.ATTACK); //abilita con cui attacco
-        
+        final var ammo = TacticsUtility.abilityByType(loadout, AbilityType.ATTACK);
+
         //mi calcolo i disponibili sui totali 
         // 0 / 2 -> 0
         // 1 / 2 -> 0.5
         // 2 / 2 -> 1
-        double ammoScore = (double) ammo.stream().filter(x -> me.cooldownAbilities().get(x) == 0).count() / (double) ammo.size();
+        final double ammoScore = (double) ammo.stream()
+            .filter(x -> me.cooldownAbilities().get(x) == 0)
+            .count() / (double) ammo.size();
 
         //meno vita ha il nemico meglio piu voglia di pressare ho
         //trattiamo hp player
         // hp 100% -> 0.08
         // hp 50% -> 0.5
         // hp 10% -> 0.88
-        double bloodlust = CurvesUtility.logistic(player.hpRatio(),5,0.5); //vita del nemico FORSE MEGLIO ESPONENZIALE
+        final double bloodlust = CurvesUtility.logistic(player.hpRatio(), 5, 0.5);
 
-        double utility = //+- da bilanciare meglio
+        double utility =
               0.35 * confidence
             + 0.35 * bloodlust
             + 0.15 * ammoScore
             + 0.15 * ammo.size() * 0.1;
 
         if (AiActions.tryBestAttack(me, this.aimFocus, loadout).isPresent()) {
-            utility += 0.3; //posso colpire ORA allora gli do questo bonus !!
+            utility += 0.3;
         }
 
         //System.out.println(utility +"--"+idEntity+"--PRESSURE");
@@ -101,13 +114,12 @@ public class PressureStrategy implements AiStrategy{
         return CurvesUtility.clamp(utility);
     }
 
-
-    // Helper per il disturbo
-    private Vec2D applyNoise(Vec2D realPos) {
-        // 20% di chance di sbagliare di 1 casella anche quando aggiorno
+    // Helper implemets noise
+    private Vec2D applyNoise(final Vec2D realPos) {
+        // 20% di chance to get noise
         if (Math.random() < 0.20) {
-            int dx = (int)(Math.random() * 3) - 1; 
-            int dy = (int)(Math.random() * 3) - 1;
+            final int dx = (int) (Math.random() * 3) - 1; 
+            final int dy = (int) (Math.random() * 3) - 1;
             return new Vec2D(realPos.x() + dx, realPos.y() + dy);
         }
         return realPos;
