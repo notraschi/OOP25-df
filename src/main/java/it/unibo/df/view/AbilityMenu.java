@@ -100,7 +100,7 @@ public class AbilityMenu {
             for (int j = 0; j < INVENTORY_HEIGHT; j++) {
                 final ToggleButton btn = new ToggleButton();
                 btn.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
-                btn.getStyleClass().add("lost");
+                //btn.getStyleClass().add("lost");
                 inventaryArea.add(btn, i, j);
                 btn.setToggleGroup(group);
             }
@@ -163,17 +163,18 @@ public class AbilityMenu {
         unlockedList.removeAll(lost);
         final Iterator<Integer> unlockIt = unlockedList.iterator();
         final Iterator<Integer> lostIt = lost.iterator();
-
         for (final var e : inventaryArea.getChildren()) {
             if (e instanceof ToggleButton button) {
-                button.getStyleClass().remove("unlocked");
+                button.getStyleClass().clear();
                 if (unlockIt.hasNext()) {
                     button.setText(unlocked.get(unlockIt.next()).name());
-                    button.getStyleClass().remove("lost");
                     button.getStyleClass().add("unlocked");
                 } else if (lostIt.hasNext()) {
                     button.setText(unlocked.get(lostIt.next()).name());
                     button.getStyleClass().add("lost");
+                }else{
+                    button.getStyleClass().add("lost");
+                    button.setText("");
                 }
             }
         }
