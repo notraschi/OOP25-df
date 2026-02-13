@@ -30,7 +30,7 @@ import javafx.util.Duration;
  * 
  */
 public class MainStage extends Application {
-    private final int TICK = 30;
+    private final int TICK = 16;
     private final int LOADOUT_SIZE = 3;
     private final double MIN_SCREEN_WIDTH = (Double.min(
         Screen.getPrimary().getBounds().getHeight(),
@@ -90,6 +90,10 @@ public class MainStage extends Application {
         stage.setMinHeight(MIN_SCREEN_WIDTH);
         stage.setMinWidth(MIN_SCREEN_WIDTH);
         stage.show();
+        stage.setOnCloseRequest(e -> {
+            e.consume();
+            quitAlert();
+        });
     }
     private void matchEnd(String matchResult) {
         final Alert alert = new Alert(Alert.AlertType.NONE);
