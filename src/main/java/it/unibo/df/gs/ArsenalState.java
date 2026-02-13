@@ -6,7 +6,7 @@ import java.util.Optional;
 import it.unibo.df.dto.AbilityView;
 
 /**
- * represents the game's state while in the arsenal.
+ * Represents the game's state while in the arsenal.
  */
 public record ArsenalState(
     // hold abilities loaded in or gained via combine
@@ -19,7 +19,7 @@ public record ArsenalState(
     Optional<Integer> unequipped
 ) implements GameState {
 
-    public static ArsenalState copyOf(ArsenalState as) {
+    public static ArsenalState copyOf(final ArsenalState as) {
         return new ArsenalState(
             List.copyOf(as.unlocked),
             List.copyOf(as.lost),

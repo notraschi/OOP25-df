@@ -1,14 +1,5 @@
 package it.unibo.df.model.combat;
 
-/*
-- why no System Time?
-- this cooldown handles _relative_ times, what if the game is paused? what about testing?
-  by relying on System time we cannot have those.
-- why no TimeUnit?
-- moving away from System time means there is no need to TimeUnit,
-  everything is milliseconds anyway.
-*/
-
 /**
  * handles cooldowns, uses milliseconds as unit.
  */
