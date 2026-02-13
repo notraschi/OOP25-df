@@ -44,13 +44,15 @@ public final class Progress {
      * @param killedEnemies amount of enemies killed in battle, unlocks one new
      *                      ability for each.
      */
-    public void update(int killedEnemies) {
+    public void update(final int killedEnemies) {
         final Random random = new Random();
         for (int i = 0; i < killedEnemies; i++) {
             List<Integer> keys = List.copyOf(lockedAbilitiesById.keySet());
-            int index = random.nextInt(0, keys.size()); // % keys.size();
-            unlockedAbilitiesById.put(keys.get(index), lockedAbilitiesById.get(keys.get(index)));
-            lockedAbilitiesById.remove(keys.get(index));
+            if (keys.size() > 0) {
+                int index = random.nextInt(0, keys.size());
+                unlockedAbilitiesById.put(keys.get(index), lockedAbilitiesById.get(keys.get(index)));
+                lockedAbilitiesById.remove(keys.get(index));
+            }
         }
     }
 
