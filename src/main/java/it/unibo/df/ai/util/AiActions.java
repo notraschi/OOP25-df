@@ -14,25 +14,40 @@ import it.unibo.df.model.abilities.AbilityType;
 import it.unibo.df.model.abilities.Vec2D;
 
 /**
- *  It is a utility class used to perform actions in strategies.
+ *  Utility class used to perform actions in strategies.
  */
 public final class AiActions {
 
     private AiActions() { }
 
+    /**
+     * Try to cast an attack that hits.
+     * 
+     * @param me caster
+     * @param target position 
+     * @param loadout of caster
+     * @return input
+     */
     public static Optional<Input> tryBestAttack(final EntityView me, final Vec2D target, final List<Ability> loadout) {
         for (int i = 0; i < loadout.size(); i++) {
-            if (me.cooldownAbilities().get(i) == 0) { //ready?
-                if (TacticsUtility.canHit(me.position(), target, loadout.get(i))) { //can hit?
-                    return Optional.of(Attack.values()[i]); //hit!
+            if (me.cooldownAbilities().get(i) == 0) {
+                if (TacticsUtility.canHit(me.position(), target, loadout.get(i))) {
+                    return Optional.of(Attack.values()[i]);
                 }
             }
         }
-
         return Optional.empty();
     }
 
-    //l'idea è che io devo attaccare, quindi mi metto in una posizione in cui mi avvicino per poter attaccare
+    /**
+     * Try to move into a position from which it can hit with an available attack,
+     * otherwise it moves into a position from which it can aim.
+     * 
+     * @param me caster
+     * @param target position 
+     * @param loadout of caster
+     * @return input
+     */
     public static Optional<Input> moveForBestAim(final EntityView me, final Vec2D target, final List<Ability> loadout) {
 
         final var readyAttacks = loadout.stream()
@@ -54,7 +69,6 @@ public final class AiActions {
         return Optional.ofNullable(bestMove);
     }
 
-    //migliorabile
     private static Move moveForBestAimfromLoadout(final EntityView me, final Vec2D target, final List<Ability> subsetLoadout) {
 
         Move bestMove = null;
@@ -74,7 +88,7 @@ public final class AiActions {
         int minHitDistance = currentBestDist;
         for (final Move move : Move.values()) {
             final var posToEvaluate = TacticsUtility.applyMove(me.position(), move);
-            
+
             if (!TacticsUtility.isValidPos(posToEvaluate)) {
                 continue;
             }
@@ -83,7 +97,7 @@ public final class AiActions {
                 if (ab.type() != AbilityType.ATTACK) {
                     continue;
                 }
-                
+
                 final int dist = TacticsUtility.distFromHit(posToEvaluate, target, ab);
                 if (dist < minHitDistance) {
                     minHitDistance = dist;
@@ -94,6 +108,13 @@ public final class AiActions {
         return bestMove;
     }
 
+    /**
+     * Try to cast an heal ability.
+     * 
+     * @param me caster
+     * @param loadout of caster
+     * @return input
+     */
     public static Optional<Input> tryToHeal(final EntityView me, final List<Ability> loadout) {
 
         for (final Ability ab: loadout) {
@@ -109,7 +130,11 @@ public final class AiActions {
     }
 
     /**
-     * cerca di massimizzare la distanza dal target.
+     * Try to escape from the target.
+     * 
+     * @param me caster
+     * @param target position
+     * @return move
      */
     public static Optional<Input> fleeFromTarget(final EntityView me, final EntityView target) {
 
@@ -117,12 +142,14 @@ public final class AiActions {
         final Random rand = new Random();
 
         if (!retreatMoves.isEmpty()) {
-            return Optional.of(retreatMoves.get(rand.nextInt(0,retreatMoves.size())));
+            return Optional.of(retreatMoves.get(rand.nextInt(0, retreatMoves.size())));
         }
 
        final List<Move> retreatMovesStepTwo = new ArrayList<>();
         for (final Move move : Move.values()) {
-            boolean validMove = !TacticsUtility.getMovesToRetreat(TacticsUtility.applyMove(me.position(), move), target.position()).isEmpty();
+            final boolean validMove = !TacticsUtility.getMovesToRetreat(
+                TacticsUtility.applyMove(me.position(), move), target.position()
+            ).isEmpty();
             if (validMove) {
                 retreatMovesStepTwo.add(move);
             }
@@ -136,16 +163,25 @@ public final class AiActions {
     }
 
     /**
-     * Azione di Mantenimento cerca di restare in un range specifico.
+     * Try to keep a certain distance from the target is maintained.
+     * 
+     * @param me caster
+     * @param target position
+     * @param minRange min distance to keep
+     * @param maxRange max distance to keep
+     * @return move
      */
-    public static Optional<Input> keepDistance(final EntityView me, final EntityView target, final int minRange, final int maxRange) {
+    public static Optional<Input> keepDistance(
+        final EntityView me, 
+        final EntityView target, 
+        final int minRange, 
+        final int maxRange
+    ) {
         final var moves = TacticsUtility.getMovesToMaintainRange(me.position(), target.position(), minRange, maxRange);
         if (!moves.isEmpty()) {
             final Random rand = new Random();
-            return Optional.of(moves.get(rand.nextInt(0,moves.size())));
+            return Optional.of(moves.get(rand.nextInt(0, moves.size())));
         }
         return Optional.empty();
     }
-
-    //wrapper per approach target
 }

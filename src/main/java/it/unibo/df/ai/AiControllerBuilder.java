@@ -11,46 +11,44 @@ import it.unibo.df.model.abilities.Ability;
 /**
  * Builder for Ai Controller.
  */
-public class AiControllerBuilder {
+public final class AiControllerBuilder {
 
-    private final List<AiStrategy> strategies;
-    private final List<Ability> loadout;
+    private final List<AiStrategy> strategies = new ArrayList<>();
     private final int idEntity;
+    private List<Ability> loadout = new ArrayList<>();
 
     /**
      * Start build of an AiController. 
      * 
      * @param idEntity to which the controller is associated
      */
-    public AiControllerBuilder(int idEntity) {
-        this.strategies = new ArrayList<>();
-        this.loadout = new ArrayList<>();
+    public AiControllerBuilder(final int idEntity) {
         this.idEntity = idEntity;
     }
 
     /**
-     *  loadout of enemy
+     *  Loadout of enemy.
      * 
-     * @param loadout the equipped abilities
+     * @param loadoutToSet the equipped abilities
      * @return builder
      */
-    public AiControllerBuilder setLoadout(List<Ability> loadout) {
-        this.loadout.addAll(loadout);
+    public AiControllerBuilder setLoadout(final List<Ability> loadoutToSet) {
+        this.loadout = loadoutToSet;
         return this;
     }
 
     /**
      * Adds the strategies we want AI use.
      * 
-     * @param strategy to add.
+     * @param type indicate the Strategy.
      * @return builder
      */
-    public AiControllerBuilder add(AiStrategyType type) {
-        AiStrategy strategy = switch (type) {
+    public AiControllerBuilder add(final AiStrategyType type) {
+        final AiStrategy strategy = switch (type) {
             case PRESSURE -> new PressureStrategy(idEntity);
             case STABILIZE -> new StabilizeStrategy(idEntity);
             case ESCAPE -> new EscapeStrategy(idEntity);
-            default -> throw new IllegalArgumentException("Strategia non implementata: " + type);
+            default -> throw new IllegalArgumentException("Strategy not implemented: " + type);
         };
         this.strategies.add(strategy);
         return this;

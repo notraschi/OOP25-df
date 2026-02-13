@@ -20,91 +20,92 @@ import it.unibo.df.model.arsenal.ArsenalModel;
  * arsenal state.
  */
 public final class ArsenalController implements ControllerState {
-	private final ArsenalModel model;
-	private ArsenalStateBuilder builder;
 
-	public ArsenalController(Map<Integer, Ability> arsenal) {
-		model = new ArsenalModel(arsenal);
-		builder = new ArsenalStateBuilder();
-		arsenal.values().stream().map(Ability::asView).forEach(builder::addUnlock);
-	}
+    private final ArsenalModel model;
+    private ArsenalStateBuilder builder;
 
-	@Override
-	public boolean handle(Input input) {
-		return switch (input) {
-			case ArsenalInput in -> 
-				switch (in) {
-					case Equip equip -> handleEquip(equip);
-					case Unequip unequip -> handleUnequip(unequip);
-					case Combine combine -> handleCombine(combine);
-				};
-			default -> false;
-		};
-	}
-
-	private boolean handleEquip(Equip input) {
-		var result = model.equip(input.id());
-		if (result) {
-			builder.setEquip(input.id());
-		}
-		return result;
-	}
-
-	private boolean handleUnequip(Unequip input) {
-		var result = model.unequip(input.id());
-		if (result) {
-			builder.setUnequip(input.id());
-		}
-		return result;
-	}
-
-    private boolean handleCombine(Combine input) {
-        var result = model.combine(input.id1(), input.id2());
-		result.ifPresent(unlocked -> {
-			builder.addUnlock(unlocked)
-				.addLost(input.id1())
-				.addLost(input.id2());
-		});
-		return result.isPresent();
+    public ArsenalController(final Map<Integer, Ability> arsenal) {
+        model = new ArsenalModel(arsenal);
+        builder = new ArsenalStateBuilder();
+        arsenal.values().stream().map(Ability::asView).forEach(builder::addUnlock);
     }
 
-	public List<Ability> currentLoadout() {
-		return model.getLoadout();
-	}
+    @Override
+    public boolean handle(final Input input) {
+        return switch (input) {
+            case ArsenalInput in -> 
+                switch (in) {
+                    case Equip equip -> handleEquip(equip);
+                    case Unequip unequip -> handleUnequip(unequip);
+                    case Combine combine -> handleCombine(combine);
+                };
+            default -> false;
+        };
+    }
 
-	@Override
-	public GameState tick(long deltaTime) {
-		var state = builder.build();
-		builder = new ArsenalStateBuilder();
-		return state;
-	}
+    private boolean handleEquip(final Equip input) {
+        final var result = model.equip(input.id());
+        if (result) {
+            builder.setEquip(input.id());
+        }
+        return result;
+    }
 
-	private static class ArsenalStateBuilder {
-		List<AbilityView> unlock = new LinkedList<>();
-		List<Integer> lost = new LinkedList<>();
-		Optional<Integer> equip = Optional.empty();
-		Optional<Integer> unequip = Optional.empty();
+    private boolean handleUnequip(final Unequip input) {
+        final var result = model.unequip(input.id());
+        if (result) {
+            builder.setUnequip(input.id());
+        }
+        return result;
+    }
 
-		ArsenalStateBuilder addUnlock(AbilityView a) {
-			unlock.add(a);
-			return this;
-		}
+    private boolean handleCombine(final Combine input) {
+        final var result = model.combine(input.id1(), input.id2());
+        result.ifPresent(unlocked -> {
+            builder.addUnlock(unlocked)
+                .addLost(input.id1())
+                .addLost(input.id2());
+        });
+        return result.isPresent();
+    }
 
-		ArsenalStateBuilder addLost(int id) {
-			lost.add(id);
-			return this;
-		}
+    public List<Ability> currentLoadout() {
+        return model.getLoadout();
+    }
 
-		void setEquip(int id) {
-			equip = Optional.of(id);
-		}
+    @Override
+    public GameState tick(final long deltaTime) {
+        final var state = builder.build();
+        builder = new ArsenalStateBuilder();
+        return state;
+    }
 
-		void setUnequip(int id) {
-			unequip = Optional.of(id);
-		}
+    private static final class ArsenalStateBuilder {
+        private final List<AbilityView> unlock = new LinkedList<>();
+        private final List<Integer> lost = new LinkedList<>();
+        private Optional<Integer> equip = Optional.empty();
+        private Optional<Integer> unequip = Optional.empty();
 
-		ArsenalState build() {
-			return new ArsenalState(List.copyOf(unlock), List.copyOf(lost), equip, unequip);
-		}
-	}
+        ArsenalStateBuilder addUnlock(final AbilityView a) {
+            unlock.add(a);
+            return this;
+        }
+
+        ArsenalStateBuilder addLost(final int id) {
+            lost.add(id);
+            return this;
+        }
+
+        void setEquip(final int id) {
+            equip = Optional.of(id);
+        }
+
+        void setUnequip(final int id) {
+            unequip = Optional.of(id);
+        }
+
+        ArsenalState build() {
+            return new ArsenalState(List.copyOf(unlock), List.copyOf(lost), equip, unequip);
+        }
+    }
 }

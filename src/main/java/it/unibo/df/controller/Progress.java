@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
 import java.io.UncheckedIOException;
+import java.io.Writer;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -15,7 +16,6 @@ import java.util.Random;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import java.io.Writer;
 
 import org.yaml.snakeyaml.Yaml;
 
@@ -44,6 +44,7 @@ public final class Progress {
      * @param killedEnemies amount of enemies killed in battle, unlocks one new
      *                      ability for each.
      */
+
     public void update(final int killedEnemies) {
         final Random random = new Random();
         for (int i = 0; i < killedEnemies; i++) {
@@ -60,7 +61,7 @@ public final class Progress {
      * resets progress to default.
      */
     public void reset() {
-        var allAbilities = new LinkedHashMap<>(unlockedAbilitiesById);
+        final var allAbilities = new LinkedHashMap<>(unlockedAbilitiesById);
         allAbilities.putAll(lockedAbilitiesById);
 
         unlockedAbilitiesById = allAbilities.values().stream()
@@ -73,14 +74,16 @@ public final class Progress {
 
     /**
      * writes progress to file.
-     * @throws IOException 
+     * 
+     * @throws IOException write error
      */
     public void write() {
-        Path path = Paths.get(System.getProperty("user.home"), "save.yml");
-        try (Writer writer = Files.newBufferedWriter(path)){
-            Yaml file = new Yaml();
+        final Path path = Paths.get(System.getProperty("user.home"), "save.yml");
+        try (Writer writer = Files.newBufferedWriter(path)) {
+            final Yaml file = new Yaml();
             file.dump(unlockedAbilitiesById.keySet(), writer);
-        }catch (IOException e){
+        } catch (final IOException e) {
+            throw new AbilityLoadingException("write error", e);
         }
     }
 
@@ -106,26 +109,23 @@ public final class Progress {
     }
 
     @SuppressWarnings("unchecked")
-    private Set<Integer> readFileUnlocked(){
-        Path path = Paths.get(System.getProperty("user.home"), "save.yml");
-        try (Reader reader = Files.newBufferedReader(path)){
-            Yaml file = new Yaml();
-            ;
-            return (Set<Integer>)file.load(reader);
-        }catch (IOException e){
+    private Set<Integer> readFileUnlocked() {
+        final Path path = Paths.get(System.getProperty("user.home"), "save.yml");
+        try (Reader reader = Files.newBufferedReader(path)) {
+            final Yaml file = new Yaml();
+            return (Set<Integer>) file.load(reader);
+        } catch (final IOException e) {
             return Set.of();
         }
-
     }
 
     /**
-     * helper to load a generic progress
+     * helper to load a generic progress.
      * 
      * @return a stream of pairs containig an ability and a boolean to signify whether it's unlocked
      */
     private static Stream<Ability> loadGeneric() {
-        // needs a "leading leash" ('/') in front of the file path.
-        InputStream stream = Progress.class.getResourceAsStream("/abilities.yml");
+        final InputStream stream = Progress.class.getResourceAsStream("/abilities.yml");
         if (stream == null) {
             throw new IllegalStateException("abilities.yml not found");
         }
@@ -133,14 +133,14 @@ public final class Progress {
         return loadFromStream(stream).onClose(() -> {
             try {
                 stream.close();
-            } catch (IOException ex) {
+            } catch (final IOException ex) {
                 throw new AbilityLoadingException("could not close stream", ex);
             }
         });
     }
 
     /**
-     * helper to load a generic progress from a input stream
+     * helper to load a generic progress from a input stream.
      * 
      * @param stream the input stream
      * @return similar to {@link loadGeneric}
@@ -173,11 +173,11 @@ public final class Progress {
 
         final Map<String, Object> abilityData = (Map<String, Object>) entry;
 
-        final int id = (int) abilityData.get("id");
+        final int id = Integer.class.cast(abilityData.get("id"));
         final String name = String.valueOf(abilityData.get("name"));
-        final int cooldown = (int) abilityData.get("cooldown");
-        final int casterHpDelta = (int) abilityData.get("casterHpDelta");
-        final int targetHpDelta = (int) abilityData.get("targetHpDelta");
+        final int cooldown = Integer.class.cast(abilityData.get("cooldown"));
+        final int casterHpDelta = Integer.class.cast(abilityData.get("casterHpDelta"));
+        final int targetHpDelta = Integer.class.cast(abilityData.get("targetHpDelta"));
 
         final String area = String.valueOf(abilityData.getOrDefault("area", "NONE"))
             .toUpperCase(Locale.ROOT);
@@ -185,12 +185,13 @@ public final class Progress {
         final AbilityFn effect = AbilityAreas.fromString(area);
 
         return new Ability(
-                        id,
-                        name,
-                        cooldown,
-                        casterHpDelta,
-                        targetHpDelta,
-                        effect);
+            id,
+            name,
+            cooldown,
+            casterHpDelta,
+            targetHpDelta,
+            effect
+        );
     }
 
     /**
@@ -200,22 +201,17 @@ public final class Progress {
      */
     public static Map<Integer, Ability> allRegisteredAbilities() {
         return loadGeneric().collect(Collectors.toMap(
-                a -> a.id(),
-                a -> a));
+            a -> a.id(),
+            a -> a)
+        );
     }
-
-    /**
-     * simple pair to hold information about the ability, easier to move around.
-     */
-    //private static record Pair(boolean unlocked, Ability ability) {
-    //}
 
     /**
      * custo exception to be more explicit during error handling.
      */
     public static class AbilityLoadingException extends UncheckedIOException {
 
-        public AbilityLoadingException(String message, IOException cause) {
+        public AbilityLoadingException(final String message, final IOException cause) {
             super(message, cause);
         }
     }

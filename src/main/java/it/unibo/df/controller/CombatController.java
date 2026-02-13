@@ -26,122 +26,124 @@ import it.unibo.df.model.combat.EnemyFactory;
  * combat state.
  */
 public final class CombatController implements ControllerState {
-	private static final List<EnemyDefinition> DEFAULT_SPAWNABLE_ENEMIES = List.of(
-		EnemyFactory.basicEnemy(new Vec2D(3, 3)),
-		EnemyFactory.createSniper(new Vec2D(7, 7))
-	);
+    private static final List<EnemyDefinition> DEFAULT_SPAWNABLE_ENEMIES = List.of(
+        EnemyFactory.basicEnemy(new Vec2D(3, 3)),
+        EnemyFactory.createSniper(new Vec2D(7, 7))
+    );
 
-	private final Map<Integer,AiController> aiControllers = new HashMap<>();
-	private final CombatModel model;
-	private final List<Set<Vec2D>> effects;
-	private CombatState state;
+    private final Map<Integer, AiController> aiControllers = new HashMap<>();
+    private final CombatModel model;
+    private final List<Set<Vec2D>> effects;
+    private CombatState state;
 
-    public CombatController(final List<Ability> loadout, int numberOfEnemies) {
-		if (numberOfEnemies < 0 || numberOfEnemies > DEFAULT_SPAWNABLE_ENEMIES.size()) {
-			throw new IllegalArgumentException("illegal number of enemies");
-		}
-		model = new CombatModel(loadout);
-		IntStream.range(0, numberOfEnemies).forEach(i -> spawnEnemy(DEFAULT_SPAWNABLE_ENEMIES.get(i)));
-		effects = new LinkedList<>();
-		state = buildState();
+    public CombatController(final List<Ability> loadout, final int numberOfEnemies) {
+        if (numberOfEnemies < 0 || numberOfEnemies > DEFAULT_SPAWNABLE_ENEMIES.size()) {
+            throw new IllegalArgumentException("illegal number of enemies");
+        }
+        model = new CombatModel(loadout);
+        IntStream.range(0, numberOfEnemies).forEach(i -> spawnEnemy(DEFAULT_SPAWNABLE_ENEMIES.get(i)));
+        effects = new LinkedList<>();
+        state = buildState();
     }
 
-	private void spawnEnemy(EnemyDefinition enemy) {
-		int id = model.addEnemy(enemy);
-		var aiBuilder = new AiControllerBuilder(id).setLoadout(enemy.loadout());
-		enemy.strategies().stream().forEach(s -> aiBuilder.add(s));
-		aiControllers.put(id, aiBuilder.build());
-	}
+    private void spawnEnemy(final EnemyDefinition enemy) {
+        final int id = model.addEnemy(enemy);
+        final var aiBuilder = new AiControllerBuilder(id).setLoadout(enemy.loadout());
+        enemy.strategies().stream().forEach(s -> aiBuilder.add(s));
+        aiControllers.put(id, aiBuilder.build());
+    }
 
-	/**
-	 * {@inheritDoc }
-	 */
-	@Override
-	public boolean handle(Input input) {
-		return switch (input) {
-			case CombatInput action -> 
-				switch (action) {
-					case Move moveAction -> handleMove(Optional.empty(), moveAction);
-					case Attack attackAction -> handleAttack(Optional.empty(), attackAction);
-				};
-			default -> false;
-		};
-	}
+    /**
+     * {@inheritDoc}.
+     */
+    @Override
+    public boolean handle(final Input input) {
+        return switch (input) {
+            case CombatInput action -> 
+                switch (action) {
+                    case Move moveAction -> handleMove(Optional.empty(), moveAction);
+                    case Attack attackAction -> handleAttack(Optional.empty(), attackAction);
+                };
+            default -> false;
+        };
+    }
 
-	/**
-	 * handles move-related input
-	 * 
-	 * @param direction the direction to move towards
-	 * @return true if input was handled
-	 */
-	private boolean handleMove(Optional<Integer> entityId, Move direction) {
-		Vec2D delta;
-		switch (direction) {
-			case Move.UP -> delta = new Vec2D(0, -1);
-			case Move.DOWN -> delta = new Vec2D(0, 1);
-			case Move.LEFT -> delta = new Vec2D(-1, 0);
-			case Move.RIGHT -> delta = new Vec2D(1, 0);
-			default -> delta = new Vec2D(0, 0);
-		}
-		return model.move(entityId, delta);
-	}
+    /**
+     * handles move-related input.
+     * 
+     * @param direction the direction to move towards
+     * @param entityId of mover
+     * @return true if input was handled
+     */
+    private boolean handleMove(final Optional<Integer> entityId, final Move direction) {
+        final Vec2D delta;
+        switch (direction) {
+            case Move.UP -> delta = new Vec2D(0, -1);
+            case Move.DOWN -> delta = new Vec2D(0, 1);
+            case Move.LEFT -> delta = new Vec2D(-1, 0);
+            case Move.RIGHT -> delta = new Vec2D(1, 0);
+            default -> delta = new Vec2D(0, 0);
+        }
+        return model.move(entityId, delta);
+    }
 
-	/**
-	 * handles attack-related input
-	 * 
-	 * @param ability the ability performed
-	 * @return true if input was handled
-	 */
-	private boolean handleAttack(Optional<Integer> entityId, Attack ability) {
-		if (ability.equals(Attack.SPECIAL)) {
-			model.castSpecial(
-				entityId.orElseThrow(() -> new IllegalArgumentException("player cant special"))
-			);
-		} else {
-			model.cast(entityId, ability.ordinal()).ifPresent(affected -> effects.add(affected));
-		}
-		return true;
-	}
+    /**
+     * handles attack-related input.
+     * 
+     * @param ability the ability performed
+     * @param entityId of performer
+     * @return true if input was handled
+     */
+    private boolean handleAttack(final Optional<Integer> entityId, final Attack ability) {
+        if (ability.equals(Attack.SPECIAL)) {
+            model.castSpecial(
+                entityId.orElseThrow(() -> new IllegalArgumentException("player cant special"))
+            );
+        } else {
+            model.cast(entityId, ability.ordinal()).ifPresent(affected -> effects.add(affected));
+        }
+        return true;
+    }
 
-	private CombatState buildState() {
-		return new CombatState(
-			model.playerView(),
-			model.enemyView(),
-			List.copyOf(effects),
-			model.getDisrupt()
-		);
-	}
+    private CombatState buildState() {
+        return new CombatState(
+            model.playerView(),
+            model.enemyView(),
+            List.copyOf(effects),
+            model.getDisrupt()
+        );
+    }
 
-	/**
-	 * {@inheritDoc }
-	 */
-	/*
-	explaination of the way controller builds GameState, and patterns used:
-	1- controller build GameState (as opposed to model doing it) because i need to have view to know *when* abilites were cast
-	1.1 - otherwise controller or model should have a timer to check if an effect is still visible (wrong!)
-	2- model exposes methods to get minimal info (playerPos & enemyPos)
-	3- IMPORTANT: controller.effects (== ComabatState.effects) contain the cells affected from abilities since last tick()!!
-	3.1 - this pattern is called **frame-scoped event buffering**.
-	3.2 - view should set up its own timers when it recieves new effects, and make old effects disapper according to said timers
-	*/
-	@Override
-	public GameState tick(long deltaTime) {
-		model.tick(deltaTime);
-		aiControllers.entrySet().stream()
-			.filter(e -> model.isEnemyAlive(e.getKey()))
-			.forEach(e -> e.getValue().computeNextInput(state).ifPresent(in -> {
-				switch ((CombatInput) in) {
-					case Move moveAction -> handleMove(Optional.of(e.getKey()), moveAction);
-					case Attack attackAction -> handleAttack(Optional.of(e.getKey()), attackAction);
-				}
-			}
-		));
-		state = buildState(); 
-		effects.clear(); // now we're ready for new effects happening
-		return state;
-	}
+    /**
+     * {@inheritDoc}.
+     */
+    /*
+    explaination of the way controller builds GameState, and patterns used:
+    1- controller build GameState (as opposed to model doing it) because i need to have view to know *when* abilites were cast
+    1.1 - otherwise controller or model should have a timer to check if an effect is still visible (wrong!)
+    2- model exposes methods to get minimal info (playerPos & enemyPos)
+    3- IMPORTANT: controller.effects (== ComabatState.effects) contain the cells affected from abilities since last tick()!!
+    3.1 - this pattern is called **frame-scoped event buffering**.
+    3.2 - view should set up its own timers when it recieves new effects, and make old effects disapper according to said timers
+    */
+    @Override
+    public GameState tick(final long deltaTime) {
+        model.tick(deltaTime);
+        aiControllers.entrySet().stream()
+            .filter(e -> model.isEnemyAlive(e.getKey()))
+            .forEach(e -> e.getValue().computeNextInput(state).ifPresent(in -> {
+                switch ((CombatInput) in) {
+                    case Move moveAction -> handleMove(Optional.of(e.getKey()), moveAction);
+                    case Attack attackAction -> handleAttack(Optional.of(e.getKey()), attackAction);
+                }
+            }
+        ));
+        state = buildState(); 
+        effects.clear();
+        return state;
+    }
 
-	public int killedEnemies() {
-		return model.getKilledEnemies();
-	}
+    public int killedEnemies() {
+        return model.getKilledEnemies();
+    }
 }
