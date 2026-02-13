@@ -23,7 +23,7 @@ public class AbilityMenu {
     private final int MAX_SIZE_PERC = 100;
     private final int INVENTORY_WIDTH_PERC = 80;
     private final int MIXER_ABILITY_SIZE = 2;
-    private final int INVENTORY_WIDTH = 5;
+    private final int INVENTORY_WIDTH = 3;
     private final int INVENTORY_HEIGHT = 8;
     private final int KEYS_AREA_ROWS = 2;
     private final int  loadoutSize;
@@ -92,8 +92,10 @@ public class AbilityMenu {
             for (int j = 0; j < INVENTORY_HEIGHT; j++) {
                 final ToggleButton btn = new ToggleButton();
                 btn.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
+                btn.getStyleClass().add("lost");
                 inventaryArea.add(btn, i, j);
                 btn.setToggleGroup(group);
+                
             }
         }
         return inventaryArea; 
@@ -162,10 +164,11 @@ public class AbilityMenu {
 
         for (final var e : inventaryArea.getChildren()) {
             if (e instanceof ToggleButton button) {
-                button.getStyleClass().remove("lost");
+                button.getStyleClass().remove("unlocked");
                 if (unlockIt.hasNext()) {
                     button.setText(unlocked.get(unlockIt.next()).name());
-                    //button.getStyleClass().add("unlocked");
+                    button.getStyleClass().remove("lost");
+                    button.getStyleClass().add("unlocked");
                 } else if (lostIt.hasNext()) {
                     button.setText(unlocked.get(lostIt.next()).name());
                     button.getStyleClass().add("lost");
@@ -216,15 +219,14 @@ public class AbilityMenu {
         refreshEquipped();   
     }
 
-    public void addAbilityToCombine(final String name) {
-        if (combiner.size() >= MIXER_ABILITY_SIZE) {
-            combiner.removeFirst();
+    public void addAbilityToCombine(final int id) {
+        if (combiner.size() <= MIXER_ABILITY_SIZE && !(lost.contains(id))) {
+           combiner.add(id);
         }
-        for (final var e : unlocked.entrySet()) {
-            if (e.getValue().name().equals(name) && !lost.contains(e.getValue().id())) {
-                combiner.add(e.getKey());
-            }
-        }
+    }
+
+    public void removeFromCombine(final int id) {
+        combiner.remove(Integer.valueOf(id));
     }
 
     public void unequip(int id){

@@ -30,7 +30,7 @@ import javafx.util.Duration;
  * 
  */
 public class MainStage extends Application {
-    private final int TICK = 7;
+    private final int TICK = 30;
     private final int LOADOUT_SIZE = 3;
     private final double MIN_SCREEN_WIDTH = (Double.min(
         Screen.getPrimary().getBounds().getHeight(),
@@ -59,6 +59,7 @@ public class MainStage extends Application {
             "X \nto unequip",
             "I \nBack to play",
             "1 \nselect in mixer",
+            "2 \nselect in mixer",
             "Q \nquit"
         ),
         LOADOUT_SIZE
@@ -159,7 +160,11 @@ public class MainStage extends Application {
                         menu.refreshDescription(menu.getId(btn.getText()));
                     }
                     case KeyCode.DIGIT1 -> {
-                        menu.addAbilityToCombine(btn.getText());
+                        menu.addAbilityToCombine(menu.getId(btn.getText()));
+                        menu.refreshCombine();
+                    }
+                    case KeyCode.DIGIT2 -> {
+                        menu.removeFromCombine(menu.getId(btn.getText()));
                         menu.refreshCombine();
                     }
                     case KeyCode.ENTER -> {
