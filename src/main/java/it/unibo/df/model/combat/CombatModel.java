@@ -310,7 +310,7 @@ public class CombatModel {
          */
         boolean validMove(Vec2D position, int bound) {
             return !(movementCooldown.isActive()
-                && (position.x() < 0 || position.x() >= bound || position.y() < 0 || position.y() >= bound));
+                || (position.x() < 0 || position.x() >= bound || position.y() < 0 || position.y() >= bound));
         }
 
         /**
