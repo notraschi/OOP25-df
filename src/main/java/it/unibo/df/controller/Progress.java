@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
 import java.io.UncheckedIOException;
+import java.io.Writer;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -15,7 +16,6 @@ import java.util.Random;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import java.io.Writer;
 
 import org.yaml.snakeyaml.Yaml;
 
@@ -170,11 +170,11 @@ public final class Progress {
 
         final Map<String, Object> abilityData = (Map<String, Object>) entry;
 
-        final int id = (int) abilityData.get("id");
+        final int id = Integer.class.cast(abilityData.get("id"));
         final String name = String.valueOf(abilityData.get("name"));
-        final int cooldown = (int) abilityData.get("cooldown");
-        final int casterHpDelta = (int) abilityData.get("casterHpDelta");
-        final int targetHpDelta = (int) abilityData.get("targetHpDelta");
+        final int cooldown = Integer.class.cast(abilityData.get("cooldown"));
+        final int casterHpDelta = Integer.class.cast(abilityData.get("casterHpDelta"));
+        final int targetHpDelta = Integer.class.cast(abilityData.get("targetHpDelta"));
 
         final String area = String.valueOf(abilityData.getOrDefault("area", "NONE"))
             .toUpperCase(Locale.ROOT);
@@ -182,12 +182,13 @@ public final class Progress {
         final AbilityFn effect = AbilityAreas.fromString(area);
 
         return new Ability(
-                        id,
-                        name,
-                        cooldown,
-                        casterHpDelta,
-                        targetHpDelta,
-                        effect);
+            id,
+            name,
+            cooldown,
+            casterHpDelta,
+            targetHpDelta,
+            effect
+        );
     }
 
     /**
@@ -197,8 +198,9 @@ public final class Progress {
      */
     public static Map<Integer, Ability> allRegisteredAbilities() {
         return loadGeneric().collect(Collectors.toMap(
-                a -> a.id(),
-                a -> a));
+            a -> a.id(),
+            a -> a)
+        );
     }
 
     /**
