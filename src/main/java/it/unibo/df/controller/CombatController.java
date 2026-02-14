@@ -27,7 +27,7 @@ import it.unibo.df.model.combat.EnemyFactory;
  */
 public final class CombatController implements ControllerState {
     private static final List<EnemyDefinition> DEFAULT_SPAWNABLE_ENEMIES = List.of(
-        EnemyFactory.basicEnemy(new Vec2D(3, 3)),
+        EnemyFactory.createTank(new Vec2D(3, 3)),
         EnemyFactory.createSniper(new Vec2D(7, 7))
     );
 

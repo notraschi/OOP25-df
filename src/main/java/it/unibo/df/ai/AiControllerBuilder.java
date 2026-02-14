@@ -63,7 +63,7 @@ public final class AiControllerBuilder {
         if (strategies.isEmpty()) {
             throw new IllegalStateException("There are no strategies to follow!");
         }
-        return new AiController(
+        return new AiControllerImpl(
             new ArrayList<>(this.strategies),
             new ArrayList<>(this.loadout)
         );
