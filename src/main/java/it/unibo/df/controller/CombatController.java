@@ -11,7 +11,6 @@ import java.util.stream.IntStream;
 import it.unibo.df.ai.AiController;
 import it.unibo.df.ai.AiControllerBuilder;
 import it.unibo.df.gs.CombatState;
-import it.unibo.df.gs.GameState;
 import it.unibo.df.input.Attack;
 import it.unibo.df.input.CombatInput;
 import it.unibo.df.input.Input;
@@ -117,17 +116,8 @@ public final class CombatController implements ControllerState {
     /**
      * {@inheritDoc}.
      */
-    /*
-    explaination of the way controller builds GameState, and patterns used:
-    1- controller build GameState (as opposed to model doing it) because i need to have view to know *when* abilites were cast
-    1.1 - otherwise controller or model should have a timer to check if an effect is still visible (wrong!)
-    2- model exposes methods to get minimal info (playerPos & enemyPos)
-    3- IMPORTANT: controller.effects (== ComabatState.effects) contain the cells affected from abilities since last tick()!!
-    3.1 - this pattern is called **frame-scoped event buffering**.
-    3.2 - view should set up its own timers when it recieves new effects, and make old effects disapper according to said timers
-    */
     @Override
-    public GameState tick(final long deltaTime) {
+    public CombatState tick(final long deltaTime) {
         model.tick(deltaTime);
         aiControllers.entrySet().stream()
             .filter(e -> model.isEnemyAlive(e.getKey()))
