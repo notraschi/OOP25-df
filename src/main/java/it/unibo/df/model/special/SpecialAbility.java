@@ -22,7 +22,7 @@ public record SpecialAbility<T>(
      * @param input the input
      * @return true if a transform can be applied
      */
-    public boolean canHandle(Object input) {
+    public boolean canHandle(final Object input) {
         return inputType.isInstance(input);
     }
 
@@ -32,7 +32,7 @@ public record SpecialAbility<T>(
      * @param input the input to transform
      * @return an empty Optional if input was denied, or one with the transformed input
      */
-    public Optional<T> trasform(T input) {
+    public Optional<T> trasform(final T input) {
         if (!affected.contains(input)) {
             return Optional.of(input);
         } else {

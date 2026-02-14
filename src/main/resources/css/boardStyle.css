@@ -1,6 +1,4 @@
 StackPane {
-    
-    
     -fx-alignment: center;
 }
 .board {
@@ -18,7 +16,7 @@ StackPane {
 .playerSpecial{
     -fx-background-color: darkgreen;
     -fx-border-color: purple;
-    -fx-border-width: 2px;
+    -fx-border-width: 4px;
 
 }
 .enemy{

@@ -48,9 +48,9 @@ public final class Progress {
     public void update(final int killedEnemies) {
         final Random random = new Random();
         for (int i = 0; i < killedEnemies; i++) {
-            List<Integer> keys = List.copyOf(lockedAbilitiesById.keySet());
+            final List<Integer> keys = List.copyOf(lockedAbilitiesById.keySet());
             if (keys.size() > 0) {
-                int index = random.nextInt(0, keys.size());
+                final int index = random.nextInt(0, keys.size());
                 unlockedAbilitiesById.put(keys.get(index), lockedAbilitiesById.get(keys.get(index)));
                 lockedAbilitiesById.remove(keys.get(index));
             }
@@ -211,6 +211,11 @@ public final class Progress {
      */
     public static class AbilityLoadingException extends UncheckedIOException {
 
+        /**
+         * 
+         * @param message
+         * @param cause
+         */
         public AbilityLoadingException(final String message, final IOException cause) {
             super(message, cause);
         }

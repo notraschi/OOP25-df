@@ -149,7 +149,7 @@ public class GameBoard {
 
         for (int i = 0; i < Constants.BOARD_SIZE; i++) {
             for (int j = 0; j < Constants.BOARD_SIZE; j++) {
-                playAreaMat[i][j].getStyleClass().clear();
+                playAreaMat[i][j].getStyleClass().removeAll("player", "playerSpecial", "enemy", "move");
             }
         }
         playAreaMat[gs.player().position().x()][gs.player().position().y()].getStyleClass().add(
@@ -163,8 +163,7 @@ public class GameBoard {
         activeEffects.stream().map(ActiveEffect::effect)
             .forEach(set -> set.forEach(cell -> playAreaMat[cell.x()][cell.y()].getStyleClass().add("move")));
     }
-    // activeEffects.forEach(set -> set.forEach(cell -> playAreaMat[cell.x()][cell.y()].getStyleClass().add("move")));
-
+ 
     private void refreshLife(final CombatState gs) {
         lifeBar.setProgress(gs.player().hpRatio());
         final Iterator<ProgressBar> enemyBarsIt = enemyBars.iterator();
@@ -205,11 +204,11 @@ public class GameBoard {
     }
 
     /**
-	 * refresh the game board, to move enemy player and color where an ability hit.
+     * refresh the game board, to move enemy player and color where an ability hit.
      * 
-	 * @param gs combat state
+     * @param gs combat state
      * @param deltaTime time passed from last tick
-	 */
+     */
     public void refresh(final CombatState gs, final long deltaTime) {
         activeEffects.forEach(ae -> ae.cooldown.update(deltaTime));
         activeEffects.removeIf(ae -> !ae.cooldown.isActive());

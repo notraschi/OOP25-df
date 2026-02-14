@@ -21,12 +21,12 @@ import javafx.scene.layout.GridPane;
  * The Scene of the menu where the user select abilities.
  */
 public class AbilityMenu {
-    private final int MAX_SIZE_PERC = 100;
-    private final int INVENTORY_WIDTH_PERC = 80;
-    private final int MIXER_ABILITY_SIZE = 2;
-    private final int INVENTORY_WIDTH = 3;
-    private final int INVENTORY_HEIGHT = 8;
-    private final int KEYS_AREA_ROWS = 2;
+    private static final int MAX_SIZE_PERC = 100;
+    private static final int INVENTORY_WIDTH_PERC = 80;
+    private static final int MIXER_ABILITY_SIZE = 2;
+    private static final int INVENTORY_WIDTH = 3;
+    private static final int INVENTORY_HEIGHT = 8;
+    private static final int KEYS_AREA_ROWS = 2;
     private final int loadoutSize;
     private GridPane inventaryArea;
     private GridPane equipment;
@@ -100,7 +100,6 @@ public class AbilityMenu {
             for (int j = 0; j < INVENTORY_HEIGHT; j++) {
                 final ToggleButton btn = new ToggleButton();
                 btn.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
-                //btn.getStyleClass().add("lost");
                 inventaryArea.add(btn, i, j);
                 btn.setToggleGroup(group);
             }
@@ -172,7 +171,7 @@ public class AbilityMenu {
                 } else if (lostIt.hasNext()) {
                     button.setText(unlocked.get(lostIt.next()).name());
                     button.getStyleClass().add("lost");
-                }else{
+                } else {
                     button.getStyleClass().add("lost");
                     button.setText("");
                 }
@@ -217,7 +216,7 @@ public class AbilityMenu {
     }
 
     /**
-	 * Refresh the inventary page and write the equipment, unlocked an locked moves.
+     * Refresh the inventary page and write the equipment, unlocked an locked moves.
      * 
      * @param gs Arsenal state
      */

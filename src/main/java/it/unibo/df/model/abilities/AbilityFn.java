@@ -8,7 +8,7 @@ import java.util.Set;
  */
 @FunctionalInterface
 public interface AbilityFn {
-    
+
     /**
      * Applies the ability effect.
      *

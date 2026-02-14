@@ -30,9 +30,9 @@ import javafx.util.Duration;
  * 
  */
 public class MainStage extends Application {
-    private final int TICK = 7;
-    private final int LOADOUT_SIZE = 3;
-    private final double MIN_SCREEN_WIDTH = (Double.min(
+    private static final int TICK = 7;
+    private static final int LOADOUT_SIZE = 3;
+    private final double minScreenSize = (Double.min(
         Screen.getPrimary().getBounds().getHeight(),
         Screen.getPrimary().getBounds().getWidth()
     )) / 2;
@@ -88,8 +88,8 @@ public class MainStage extends Application {
             new KeyFrame(Duration.millis(TICK), e -> tick())
         );
         timeline.setCycleCount(Timeline.INDEFINITE);
-        stage.setMinHeight(MIN_SCREEN_WIDTH);
-        stage.setMinWidth(MIN_SCREEN_WIDTH);
+        stage.setMinHeight(minScreenSize);
+        stage.setMinWidth(minScreenSize);
         stage.show();
         stage.setOnCloseRequest(e -> {
             e.consume();

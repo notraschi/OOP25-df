@@ -7,7 +7,6 @@ import java.util.Optional;
 
 import it.unibo.df.dto.AbilityView;
 import it.unibo.df.gs.ArsenalState;
-import it.unibo.df.gs.GameState;
 import it.unibo.df.input.ArsenalInput;
 import it.unibo.df.input.Combine;
 import it.unibo.df.input.Equip;
@@ -74,7 +73,7 @@ public final class ArsenalController implements ControllerState {
     }
 
     @Override
-    public GameState tick(final long deltaTime) {
+    public ArsenalState tick(final long deltaTime) {
         final var state = builder.build();
         builder = new ArsenalStateBuilder();
         return state;
