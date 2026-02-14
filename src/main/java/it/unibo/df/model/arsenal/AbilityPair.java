@@ -7,8 +7,6 @@ package it.unibo.df.model.arsenal;
  * @param firstId first ability id (sorted)
  * @param secondId second ability id (sorted)
  */
-
-
 public record AbilityPair(int firstId, int secondId) {
 
     /**
@@ -20,6 +18,6 @@ public record AbilityPair(int firstId, int secondId) {
      */
     public static AbilityPair of(final int a, final int b) {
         return a <= b ? new AbilityPair(a, b) : new AbilityPair(b, a);
-    }  
+    }
 }
 

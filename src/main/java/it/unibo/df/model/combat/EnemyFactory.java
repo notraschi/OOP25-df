@@ -15,6 +15,7 @@ import it.unibo.df.model.special.SpecialAbilities;
 public class EnemyFactory {
 
     private static final Map<Integer, Ability> arsenal = Progress.allRegisteredAbilities();
+    
     private EnemyFactory() { }
 
     private static Ability getByName(String name) {

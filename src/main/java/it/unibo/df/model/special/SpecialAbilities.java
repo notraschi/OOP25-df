@@ -14,7 +14,7 @@ public enum SpecialAbilities {
     INVERT_MOVEMENT(
         new SpecialAbility<Vec2D>(
             Vec2D.class,
-            Set.of(new Vec2D(0,1), new Vec2D(0,-1), new Vec2D(1,0), new Vec2D(-1,0)),
+            Set.of(new Vec2D(0, 1), new Vec2D(0, -1), new Vec2D(1, 0), new Vec2D(-1, 0)),
             vec -> Optional.of(new Vec2D(-vec.x(), -vec.y())),
             new Cooldown(6000)
         )
@@ -22,7 +22,7 @@ public enum SpecialAbilities {
     DENY_MOVEMENT(
         new SpecialAbility<Vec2D>(
             Vec2D.class,
-            Set.of(new Vec2D(0,1), new Vec2D(0,-1), new Vec2D(1,0), new Vec2D(-1,0)),
+            Set.of(new Vec2D(0, 1), new Vec2D(0, -1), new Vec2D(1, 0), new Vec2D(-1, 0)),
             vec -> Optional.empty(),
             new Cooldown(2000)
         )
