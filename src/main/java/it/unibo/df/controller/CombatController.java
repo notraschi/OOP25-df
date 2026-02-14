@@ -109,7 +109,7 @@ public final class CombatController implements ControllerState {
             model.playerView(),
             model.enemyView(),
             List.copyOf(effects),
-            model.getDisrupt()
+            model.isDisruptActive()
         );
     }
 

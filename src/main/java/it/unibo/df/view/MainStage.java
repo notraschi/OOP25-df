@@ -226,7 +226,7 @@ public class MainStage extends Application {
         if (stage.getScene().equals(menu.getScene()) && menu.getEquipped().size() == LOADOUT_SIZE) {
             timeline.play();
             controller.toBattle();
-            board.refreshAbility(menu.getEquipped());
+            board.refreshAbilities(menu.getEquipped());
             stage.setScene(board.getScene());
         } else if (stage.getScene().equals(board.getScene())) {
             menu.clearMenus();

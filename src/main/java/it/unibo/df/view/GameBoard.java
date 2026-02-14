@@ -8,7 +8,6 @@ import java.util.stream.Collectors;
 
 import it.unibo.df.configurations.Constants;
 import it.unibo.df.dto.AbilityView;
-import it.unibo.df.dto.SpecialAbilityView;
 import it.unibo.df.gs.CombatState;
 import it.unibo.df.model.abilities.Vec2D;
 import it.unibo.df.model.combat.Cooldown;
@@ -64,7 +63,7 @@ public class GameBoard {
         formatColumns(playArea, Constants.BOARD_SIZE, MAX_SIZE_PERC / Constants.BOARD_SIZE);
         formatRows(playArea, Constants.BOARD_SIZE, MAX_SIZE_PERC / Constants.BOARD_SIZE);
         centerPane.add(fillPlayArea(playArea), 0, 0); 
-        centerPane.add(fillLowBar(), 0, 1);
+        centerPane.add(fillLowBarArea(), 0, 1);
         final SceneResizer resizer = new SceneResizer(
             centerPane,
             Double.valueOf(BOARD_SIZE_PERC) / Double.valueOf(MAX_SIZE_PERC),
@@ -131,7 +130,7 @@ public class GameBoard {
         return area;
     }
 
-    private GridPane fillLowBar() {
+    private GridPane fillLowBarArea() {
         final GridPane lowBar = new GridPane();
         final int nColumns = 3;
         formatColumns(lowBar, nColumns, MAX_SIZE_PERC / nColumns);
@@ -153,9 +152,9 @@ public class GameBoard {
             }
         }
         playAreaMat[gs.player().position().x()][gs.player().position().y()].getStyleClass().add(
-            gs.activeDisrupt().equals(SpecialAbilityView.NONE) 
-            ? "player"
-            : "playerSpecial"
+            gs.isDisruptActive()
+            ? "playerSpecial"
+            : "player"
         );
         for (final var e : enemyPosition) {
             playAreaMat[e.x()][e.y()].getStyleClass().add("enemy");
@@ -193,7 +192,7 @@ public class GameBoard {
      * 
      * @param equipment list of abilities equipped
      */
-    public void refreshAbility(final List<AbilityView> equipment) {
+    public void refreshAbilities(final List<AbilityView> equipment) {
         equipped = equipment;
         final Iterator<AbilityView> equipIt = equipment.iterator();
         for (final var e : abilityArea.getChildren()) {

@@ -10,10 +10,8 @@ import java.util.stream.Stream;
 
 import it.unibo.df.configurations.Constants;
 import it.unibo.df.dto.EntityView;
-import it.unibo.df.dto.SpecialAbilityView;
 import it.unibo.df.model.abilities.Ability;
 import it.unibo.df.model.abilities.Vec2D;
-import it.unibo.df.model.special.SpecialAbilities;
 import it.unibo.df.model.special.SpecialAbility;
 
 /**
@@ -26,7 +24,7 @@ public class CombatModel {
     private final Entity player;
     private final Map<Integer, Entity> enemies;
     private int nextEnemyId;
-    private Optional<SpecialAbilities> disrupt;
+    private Optional<SpecialAbility> disrupt;
 
     /**
      * Constructor.
@@ -145,7 +143,7 @@ public class CombatModel {
         final var enemy = enemies.get(entityId);
         enemy.special.ifPresentOrElse(s -> {
                 disrupt = Optional.of(s);
-                disrupt.get().ability.timer().begin();
+                disrupt.get().timer().begin();
             },
             () -> {
                 throw new IllegalStateException("someone made an enemy without a special");
@@ -165,11 +163,11 @@ public class CombatModel {
     @SuppressWarnings("unchecked")
     private <T> Optional<T> applyDisruption(final T input) {
         // guard
-        if (disrupt.isEmpty() || !disrupt.get().ability.canHandle(input)) {
+        if (disrupt.isEmpty() || !disrupt.get().canHandle(input)) {
             return Optional.of(input);
         }
         // safe cast because of the guard earlier
-        final var casted = (SpecialAbility<T>) disrupt.get().ability;
+        final var casted = (SpecialAbility<T>) disrupt.get();
         return casted.trasform(input);
     }
 
@@ -198,8 +196,8 @@ public class CombatModel {
      * 
      * @return currently active special ability (disruptor).
      */
-    public SpecialAbilityView getDisrupt() {
-        return SpecialAbilities.asView(disrupt);
+    public boolean isDisruptActive() {
+        return disrupt.isPresent();
     }
 
     /**
@@ -215,9 +213,9 @@ public class CombatModel {
             e.cooldowns.forEach(c -> c.update(deltaTime));
             e.movementCooldown.update(deltaTime);
         });
-        disrupt.ifPresent(ab -> ab.ability.timer().update(deltaTime));
+        disrupt.ifPresent(ab -> ab.timer().update(deltaTime));
         // remove disrupt if timer is done
-        if (disrupt.isPresent() && !disrupt.get().ability.timer().isActive()) {
+        if (disrupt.isPresent() && !disrupt.get().timer().isActive()) {
             disrupt = Optional.empty();
         }
     }
@@ -254,7 +252,7 @@ public class CombatModel {
         private final List<Ability> loadout;
         private final List<Cooldown> cooldowns;
         private final Cooldown movementCooldown;
-        private final Optional<SpecialAbilities> special;
+        private final Optional<SpecialAbility> special;
 
         private Vec2D position;
         private int hp;
@@ -271,7 +269,7 @@ public class CombatModel {
             final Vec2D position,
             final int hp,
             final List<Ability> loadout,
-            final Optional<SpecialAbilities> special
+            final Optional<SpecialAbility> special
         ) {
             this.position = position;
             this.hp = hp;
