@@ -3,7 +3,6 @@ package it.unibo.df.model.special;
 import java.util.Optional;
 import java.util.Set;
 
-import it.unibo.df.dto.SpecialAbilityView;
 import it.unibo.df.model.abilities.Vec2D;
 import it.unibo.df.model.combat.Cooldown;
 
@@ -20,7 +19,6 @@ public final class SpecialAbilityFactory {
      */
     public static SpecialAbility<Vec2D> invertMovement() {
         return new SpecialAbility<>(
-            SpecialAbilityView.INVERT_MOVEMENT,
             Vec2D.class,
             ALL_MOVEMENT_INPUTS,
             vec -> Optional.of(new Vec2D(-vec.x(), -vec.y())),
@@ -35,7 +33,6 @@ public final class SpecialAbilityFactory {
      */
     public static SpecialAbility<Vec2D> denyMovement() {
         return new SpecialAbility<>(
-            SpecialAbilityView.DENY_MOVEMENT,
             Vec2D.class,
             ALL_MOVEMENT_INPUTS,
             vec -> Optional.empty(),
@@ -50,7 +47,6 @@ public final class SpecialAbilityFactory {
      */
     public static SpecialAbility<Integer> denyAttack() {
         return new SpecialAbility<>(
-            SpecialAbilityView.DENY_ATTACK,
             Integer.class,
             ALL_ATTACKS,
             n -> Optional.empty(),

@@ -10,7 +10,6 @@ import java.util.stream.Stream;
 
 import it.unibo.df.configurations.Constants;
 import it.unibo.df.dto.EntityView;
-import it.unibo.df.dto.SpecialAbilityView;
 import it.unibo.df.model.abilities.Ability;
 import it.unibo.df.model.abilities.Vec2D;
 import it.unibo.df.model.special.SpecialAbility;
@@ -197,8 +196,8 @@ public class CombatModel {
      * 
      * @return currently active special ability (disruptor).
      */
-    public SpecialAbilityView getDisrupt() {
-        return disrupt.map(SpecialAbility::abilityType).orElse(SpecialAbilityView.NONE);
+    public boolean isDisruptActive() {
+        return disrupt.isPresent();
     }
 
     /**

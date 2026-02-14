@@ -7,13 +7,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
 
-import it.unibo.df.dto.SpecialAbilityView;
 import it.unibo.df.model.abilities.Ability;
 import it.unibo.df.model.abilities.Vec2D;
 import it.unibo.df.model.combat.CombatModel;
+import it.unibo.df.model.combat.EnemyDefinition;
 import it.unibo.df.model.special.SpecialAbility;
 import it.unibo.df.model.special.SpecialAbilityFactory;
-import it.unibo.df.model.combat.EnemyDefinition;
 
 /**
  * Test class for AbilityRegistry.
@@ -50,7 +49,7 @@ final class CombatModelTest {
 
         // artificially casting the special ability
         model.castSpecial(1);
-        assertEquals(SpecialAbilityView.DENY_MOVEMENT, model.getDisrupt());
+        assertTrue(model.isDisruptActive());
         // now movement should be denied
         model.move(Optional.empty(), new Vec2D(0, 1));
         assertEquals(new Vec2D(1, 0), model.playerView().position()); // old location
@@ -71,7 +70,7 @@ final class CombatModelTest {
 
         // artificially casting the special ability
         model.castSpecial(1);
-        assertEquals(SpecialAbilityView.INVERT_MOVEMENT, model.getDisrupt());
+        assertTrue(model.isDisruptActive());
 
         // now movement should be inverted
         model.tick(175); // expire movement cooldown
@@ -102,7 +101,7 @@ final class CombatModelTest {
 
         // artificially casting the special ability
         model.castSpecial(1);
-        assertEquals(SpecialAbilityView.DENY_ATTACK, model.getDisrupt());
+        assertTrue(model.isDisruptActive());
 
         // now attack shouldnt work
         model.cast(Optional.empty(), 1);

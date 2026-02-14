@@ -8,7 +8,6 @@ import java.util.stream.Collectors;
 
 import it.unibo.df.configurations.Constants;
 import it.unibo.df.dto.AbilityView;
-import it.unibo.df.dto.SpecialAbilityView;
 import it.unibo.df.gs.CombatState;
 import it.unibo.df.model.abilities.Vec2D;
 import it.unibo.df.model.combat.Cooldown;
@@ -153,9 +152,9 @@ public class GameBoard {
             }
         }
         playAreaMat[gs.player().position().x()][gs.player().position().y()].getStyleClass().add(
-            gs.activeDisrupt().equals(SpecialAbilityView.NONE) 
-            ? "player"
-            : "playerSpecial"
+            gs.isDisruptActive()
+            ? "playerSpecial"
+            : "player"
         );
         for (final var e : enemyPosition) {
             playAreaMat[e.x()][e.y()].getStyleClass().add("enemy");

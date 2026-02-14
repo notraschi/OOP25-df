@@ -4,7 +4,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 
-import it.unibo.df.dto.SpecialAbilityView;
 import it.unibo.df.model.combat.Cooldown;
 
 /**
@@ -12,7 +11,6 @@ import it.unibo.df.model.combat.Cooldown;
  * only castable by enemies, are meant to disrupt player's actions.
  */
 public record SpecialAbility<T>(
-    SpecialAbilityView abilityType,
     Class<T> inputType,
     Set<T> affected,
     Function<T, Optional<T>> fn,
