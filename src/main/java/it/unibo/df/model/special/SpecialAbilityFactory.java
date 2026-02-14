@@ -12,6 +12,10 @@ import it.unibo.df.model.combat.Cooldown;
 public final class SpecialAbilityFactory {
     private static final Set<Vec2D> ALL_MOVEMENT_INPUTS = Set.of(new Vec2D(0,1), new Vec2D(0,-1), new Vec2D(1,0), new Vec2D(-1,0));
     private static final Set<Integer> ALL_ATTACKS = Set.of(0, 1, 2);
+
+    private SpecialAbilityFactory() {
+    }
+
     /**
      * creates a special ability inverting player's movement.
      * 
