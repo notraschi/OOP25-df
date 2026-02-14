@@ -5,7 +5,7 @@ import java.util.List;
 import it.unibo.df.ai.AiStrategyType;
 import it.unibo.df.model.abilities.Ability;
 import it.unibo.df.model.abilities.Vec2D;
-import it.unibo.df.model.special.SpecialAbilities;
+import it.unibo.df.model.special.SpecialAbility;
 
 /**
  *  Represent enemies.
@@ -15,5 +15,5 @@ public record EnemyDefinition(
     int hp, 
     List<Ability> loadout,
     List<AiStrategyType> strategies,
-    SpecialAbilities special
+    SpecialAbility special
 ) { }

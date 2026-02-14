@@ -8,7 +8,6 @@ import java.util.stream.Collectors;
 import it.unibo.df.configurations.Constants;
 import it.unibo.df.dto.CombatStatus;
 import it.unibo.df.dto.EntityView;
-import it.unibo.df.dto.SpecialAbilityView;
 import it.unibo.df.model.abilities.Vec2D;
 
 /**
@@ -19,8 +18,7 @@ public record CombatState(
     Map<Integer, EntityView> enemies,
     // effects casted since last tick
     List<Set<Vec2D>> effects,
-    // active Special Ability (disruptor)
-    SpecialAbilityView activeDisrupt
+    boolean isDisruptActive
 ) implements GameState {
 
     /**

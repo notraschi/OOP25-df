@@ -7,12 +7,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
 
-import it.unibo.df.dto.SpecialAbilityView;
 import it.unibo.df.model.abilities.Ability;
 import it.unibo.df.model.abilities.Vec2D;
 import it.unibo.df.model.combat.CombatModel;
 import it.unibo.df.model.combat.EnemyDefinition;
-import it.unibo.df.model.special.SpecialAbilities;
+import it.unibo.df.model.special.SpecialAbility;
+import it.unibo.df.model.special.SpecialAbilityFactory;
 
 /**
  * Test class for AbilityRegistry.
@@ -20,7 +20,7 @@ import it.unibo.df.model.special.SpecialAbilities;
 final class CombatModelTest {
     private CombatModel model;
 
-    void setup(SpecialAbilities sa) {
+    void setup(SpecialAbility sa) {
         var defaultLoadout = List.of(
                 new Ability(1, "", 1, 5, 0, pos -> Optional.empty()),
                 new Ability(2, "", 1, 5, 0, pos -> Optional.empty()),
@@ -41,7 +41,7 @@ final class CombatModelTest {
 
     @Test
     void specialAbiltyDenyMovementTest() {
-        setup(SpecialAbilities.DENY_MOVEMENT);
+        setup(SpecialAbilityFactory.denyMovement());
 
         // moving player
         model.move(Optional.empty(), new Vec2D(1, 0));
@@ -49,7 +49,7 @@ final class CombatModelTest {
 
         // artificially casting the special ability
         model.castSpecial(1);
-        assertEquals(SpecialAbilityView.DENY_MOVEMENT, model.getDisrupt());
+        assertTrue(model.isDisruptActive());
         // now movement should be denied
         model.move(Optional.empty(), new Vec2D(0, 1));
         assertEquals(new Vec2D(1, 0), model.playerView().position()); // old location
@@ -62,7 +62,7 @@ final class CombatModelTest {
 
     @Test
     void specialAbiltyInvertMovementTest() {
-        setup(SpecialAbilities.INVERT_MOVEMENT);
+        setup(SpecialAbilityFactory.invertMovement());
 
         // moving player
         model.move(Optional.empty(), new Vec2D(1, 0));
@@ -70,7 +70,7 @@ final class CombatModelTest {
 
         // artificially casting the special ability
         model.castSpecial(1);
-        assertEquals(SpecialAbilityView.INVERT_MOVEMENT, model.getDisrupt());
+        assertTrue(model.isDisruptActive());
 
         // now movement should be inverted
         model.tick(175); // expire movement cooldown
@@ -85,7 +85,7 @@ final class CombatModelTest {
 
     @Test
     void specialAbiltyDenyAttackTest() throws NoSuchFieldException, IllegalAccessException {
-        setup(SpecialAbilities.DENY_ATTACK);
+        setup(SpecialAbilityFactory.denyAttack());
         var playerField = model.getClass().getDeclaredField("player");
         playerField.setAccessible(true);
         var player = playerField.get(model);
@@ -101,7 +101,7 @@ final class CombatModelTest {
 
         // artificially casting the special ability
         model.castSpecial(1);
-        assertEquals(SpecialAbilityView.DENY_ATTACK, model.getDisrupt());
+        assertTrue(model.isDisruptActive());
 
         // now attack shouldnt work
         model.cast(Optional.empty(), 1);

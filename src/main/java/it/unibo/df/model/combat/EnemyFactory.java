@@ -7,7 +7,7 @@ import it.unibo.df.ai.AiStrategyType;
 import it.unibo.df.controller.Progress;
 import it.unibo.df.model.abilities.Ability;
 import it.unibo.df.model.abilities.Vec2D;
-import it.unibo.df.model.special.SpecialAbilities;
+import it.unibo.df.model.special.SpecialAbilityFactory;
 
 /**
  * Create pre-made enemies so that they make sense.
@@ -39,7 +39,7 @@ public class EnemyFactory {
                 AiStrategyType.STABILIZE,
                 AiStrategyType.ESCAPE
             ),
-            SpecialAbilities.DENY_ATTACK
+            SpecialAbilityFactory.denyAttack()
         );
     }
 
@@ -57,7 +57,7 @@ public class EnemyFactory {
                 AiStrategyType.PRESSURE, // Ti spara da lontano
                 AiStrategyType.STABILIZE // Si cura se serve
             ),
-            SpecialAbilities.DENY_MOVEMENT
+            SpecialAbilityFactory.denyMovement()
         );
     }
 
@@ -75,7 +75,7 @@ public class EnemyFactory {
                 AiStrategyType.STABILIZE
                 // Niente Escape: il tank non scappa!
             ),
-            SpecialAbilities.INVERT_MOVEMENT
+            SpecialAbilityFactory.invertMovement()
         );
     }
 
