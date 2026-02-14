@@ -49,6 +49,11 @@ dependencies {
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
+tasks.withType<Test> {
+    // Enables JUnit 5 Jupiter module
+    useJUnitPlatform()
+}
+
 val main: String by project
 
 application {
