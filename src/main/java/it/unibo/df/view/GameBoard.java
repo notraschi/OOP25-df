@@ -205,11 +205,11 @@ public class GameBoard {
     }
 
     /**
-	 * refresh the game board, to move enemy player and color where an ability hit.
+     * refresh the game board, to move enemy player and color where an ability hit.
      * 
-	 * @param gs combat state
+     * @param gs combat state
      * @param deltaTime time passed from last tick
-	 */
+     */
     public void refresh(final CombatState gs, final long deltaTime) {
         activeEffects.forEach(ae -> ae.cooldown.update(deltaTime));
         activeEffects.removeIf(ae -> !ae.cooldown.isActive());

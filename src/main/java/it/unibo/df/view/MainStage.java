@@ -30,9 +30,9 @@ import javafx.util.Duration;
  * 
  */
 public class MainStage extends Application {
-    private final int TICK = 7;
-    private final int LOADOUT_SIZE = 3;
-    private final double MIN_SCREEN_WIDTH = (Double.min(
+    private static final int TICK = 7;
+    private static final int LOADOUT_SIZE = 3;
+    private static final double MIN_SCREEN_WIDTH = (Double.min(
         Screen.getPrimary().getBounds().getHeight(),
         Screen.getPrimary().getBounds().getWidth()
     )) / 2;
