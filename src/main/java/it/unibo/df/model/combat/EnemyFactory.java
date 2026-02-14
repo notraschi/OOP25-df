@@ -10,27 +10,39 @@ import it.unibo.df.model.abilities.Vec2D;
 import it.unibo.df.model.special.SpecialAbilityFactory;
 
 /**
- * Create pre-made enemies so that they make sense.
+ * Create pre-made enemies.
  */
-public class EnemyFactory {
+public final class EnemyFactory {
 
-    private static final Map<Integer, Ability> arsenal = Progress.allRegisteredAbilities();
-    
+    public static final int AVAILABLE_ENEMY_TYPES = 3;
+
+    private static final int BASIC_ENEMY_HP = 100;
+    private static final int SNIPER_ENEMY_HP = 80;
+    private static final int TANK_ENEMY_HP = 150;
+
+    private static final Map<Integer, Ability> ARSENAL = Progress.allRegisteredAbilities();
+
     private EnemyFactory() { }
 
-    private static Ability getByName(String name) {
-        return arsenal.values().stream()
+    private static Ability getByName(final String name) {
+        return ARSENAL.values().stream()
             .filter(a -> a.name().equalsIgnoreCase(name))
             .findFirst()
             .orElseThrow(() -> new IllegalStateException("Ability not found: " + name));
     }
 
-    public static EnemyDefinition basicEnemy(Vec2D position) {
+    /**
+     * create a basic enemy with basic loadout.
+     * 
+     * @param position where enemies spawn
+     * @return a representation of enemies
+     */
+    public static EnemyDefinition createBasicEnemy(final Vec2D position) {
         return new EnemyDefinition(
             position,
-            100,
+            BASIC_ENEMY_HP,
             List.of(
-                getByName("Close Strike"),
+                getByName("Triple Push"),
                 getByName("Cross Cut"),
                 getByName("Medium Heal")
             ),
@@ -43,28 +55,40 @@ public class EnemyFactory {
         );
     }
 
-    public static EnemyDefinition createSniper(Vec2D position) {
+    /**
+     * creates a sniper, equips long-distance ability and fast healing, but has little life.
+     * 
+     * @param position where enemies spawn
+     * @return a representation of enemies
+     */
+    public static EnemyDefinition createSniper(final Vec2D position) {
         return new EnemyDefinition(
             position,
-            80, // Meno vita
+            SNIPER_ENEMY_HP,
             List.of(
-                getByName("Long Shot"), // Long Shot - Attacco principale
-                getByName("Arrow Burst"),  // Arrow Burst - Attacco medio
-                getByName("Small Heal")  // Quick Heal - Cura piccola
+                getByName("Long Shot"),
+                getByName("Arrow Burst"),
+                getByName("Small Heal")
             ),
             List.of(
-                AiStrategyType.ESCAPE,   // Scappa appena ti avvicini
-                AiStrategyType.PRESSURE, // Ti spara da lontano
-                AiStrategyType.STABILIZE // Si cura se serve
+                AiStrategyType.ESCAPE,
+                AiStrategyType.PRESSURE,
+                AiStrategyType.STABILIZE
             ),
             SpecialAbilityFactory.denyMovement()
         );
     }
 
-    public static EnemyDefinition createTank(Vec2D position) {
+    /**
+     * He creates a tank, has a lot of life and has close attacks, presses and heals, he doesn't run away.
+     * 
+     * @param position where enemies spawn
+     * @return a representation of enemies
+     */
+    public static EnemyDefinition createTank(final Vec2D position) {
         return new EnemyDefinition(
             position,
-            150,
+            TANK_ENEMY_HP,
             List.of(
                 getByName("Close Strike"),
                 getByName("Fan Sweep"),
@@ -73,11 +97,24 @@ public class EnemyFactory {
             List.of(
                 AiStrategyType.PRESSURE,
                 AiStrategyType.STABILIZE
-                // Niente Escape: il tank non scappa!
             ),
             SpecialAbilityFactory.invertMovement()
         );
     }
 
-    //BERSERKER
+    /**
+     * helper method that helps randomly create enemies based on the type indicated by index.
+     * 
+     * @param index indicate the type of enemy
+     * @param position to spawn enemy
+     * @return a representation of enemies
+     */
+    public static EnemyDefinition createByIndex(final int index, final Vec2D position) {
+        return switch (index) {
+            case 0 -> createBasicEnemy(position);
+            case 1 -> createSniper(position);
+            case 2 -> createTank(position);
+            default -> throw new IllegalArgumentException("Tipo di nemico non valido: " + index);
+        };
+    }
 }

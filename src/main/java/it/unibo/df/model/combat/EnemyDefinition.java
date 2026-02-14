@@ -8,7 +8,13 @@ import it.unibo.df.model.abilities.Vec2D;
 import it.unibo.df.model.special.SpecialAbility;
 
 /**
- *  Represent enemies.
+ * Represent enemies to spawn.
+ * 
+ * @param position where start at spawn
+ * @param hp starting life
+ * @param loadout of ability
+ * @param strategies that implement
+ * @param special equiped
  */
 public record EnemyDefinition(
     Vec2D position,

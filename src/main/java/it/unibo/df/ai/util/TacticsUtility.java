@@ -11,7 +11,7 @@ import it.unibo.df.model.abilities.AbilityType;
 import it.unibo.df.model.abilities.Vec2D;
 
 /**
- * Utility class that provides useful methods for modeling tactics.
+ * Utility class that provides useful methods for modeling actions.
  */
 public final class TacticsUtility {
 

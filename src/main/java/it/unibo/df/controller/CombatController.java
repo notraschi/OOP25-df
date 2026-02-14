@@ -1,15 +1,21 @@
 package it.unibo.df.controller;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Random;
 import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import it.unibo.df.ai.AiController;
 import it.unibo.df.ai.AiControllerBuilder;
+import it.unibo.df.configurations.Constants;
 import it.unibo.df.gs.CombatState;
 import it.unibo.df.input.Attack;
 import it.unibo.df.input.CombatInput;
@@ -25,22 +31,29 @@ import it.unibo.df.model.combat.EnemyFactory;
  * combat state.
  */
 public final class CombatController implements ControllerState {
-    private static final List<EnemyDefinition> DEFAULT_SPAWNABLE_ENEMIES = List.of(
-        EnemyFactory.createTank(new Vec2D(3, 3)),
-        EnemyFactory.createSniper(new Vec2D(7, 7))
-    );
-
     private final Map<Integer, AiController> aiControllers = new HashMap<>();
     private final CombatModel model;
     private final List<Set<Vec2D>> effects;
     private CombatState state;
 
     public CombatController(final List<Ability> loadout, final int numberOfEnemies) {
-        if (numberOfEnemies < 0 || numberOfEnemies > DEFAULT_SPAWNABLE_ENEMIES.size()) {
+        if (numberOfEnemies < 0 || numberOfEnemies > EnemyFactory.AVAILABLE_ENEMY_TYPES) {
             throw new IllegalArgumentException("illegal number of enemies");
         }
         model = new CombatModel(loadout);
-        IntStream.range(0, numberOfEnemies).forEach(i -> spawnEnemy(DEFAULT_SPAWNABLE_ENEMIES.get(i)));
+
+        final List<Vec2D> availablePoints = generateSpawnPoints(numberOfEnemies);
+
+        final List<Integer> enemieIdx = IntStream
+            .range(0, EnemyFactory.AVAILABLE_ENEMY_TYPES)
+            .boxed()
+            .collect(Collectors.toCollection(ArrayList::new));
+        Collections.shuffle(enemieIdx);
+
+        IntStream.range(0, numberOfEnemies).forEach(i -> {
+            spawnEnemy(EnemyFactory.createByIndex(enemieIdx.get(i), availablePoints.get(i)));
+        });
+
         effects = new LinkedList<>();
         state = buildState();
     }
@@ -50,6 +63,19 @@ public final class CombatController implements ControllerState {
         final var aiBuilder = new AiControllerBuilder(id).setLoadout(enemy.loadout());
         enemy.strategies().stream().forEach(s -> aiBuilder.add(s));
         aiControllers.put(id, aiBuilder.build());
+    }
+
+    private List<Vec2D> generateSpawnPoints(final int n) {
+        final Random rand = new Random();
+        final Set<Vec2D> points = new HashSet<>();
+
+        while (points.size() < n) {
+            points.add(new Vec2D(
+                rand.nextInt(3, Constants.BOARD_SIZE), 
+                rand.nextInt(3, Constants.BOARD_SIZE))
+            );
+        }
+        return new ArrayList<>(points);
     }
 
     /**
