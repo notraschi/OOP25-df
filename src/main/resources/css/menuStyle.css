@@ -12,17 +12,17 @@ StackPane {
 }
 .unlocked{
     -fx-background-color: lightgreen;
-    fx-border-color: black;
+    -fx-border-color: black;
     -fx-border-width: 1px;
 }
 .unlocked:selected{
     -fx-background-color: green;
-    fx-border-color: black;
+    -fx-border-color: black;
     -fx-border-width: 1px;
 }
 .lost{
     -fx-background-color: lightgrey;
-    fx-border-color: black;
+    -fx-border-color: black;
     -fx-border-width: 1px;
 }
 
