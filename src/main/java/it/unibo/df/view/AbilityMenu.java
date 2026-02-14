@@ -100,7 +100,6 @@ public class AbilityMenu {
             for (int j = 0; j < INVENTORY_HEIGHT; j++) {
                 final ToggleButton btn = new ToggleButton();
                 btn.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
-                //btn.getStyleClass().add("lost");
                 inventaryArea.add(btn, i, j);
                 btn.setToggleGroup(group);
             }
