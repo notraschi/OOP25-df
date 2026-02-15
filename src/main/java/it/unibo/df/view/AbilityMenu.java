@@ -61,7 +61,7 @@ public class AbilityMenu {
         menuArea.add(fillLowerArea(), 0, 1);
         final SceneResizer resizer = new SceneResizer(
             menuArea,
-            Double.valueOf(INVENTORY_WIDTH_PERC) / Double.valueOf(MAX_SIZE_PERC),
+            (double)INVENTORY_WIDTH_PERC / MAX_SIZE_PERC,
             MAX_SIZE_PERC / MAX_SIZE_PERC
         );
         menu = new Scene(resizer.getBorderPane());
@@ -154,7 +154,7 @@ public class AbilityMenu {
             unlocked.put(e.id(), e);
         }
         lost.addAll(gs.lost()); 
-        gs.equipped().ifPresent(e -> equipped.add(e));
+        gs.equipped().ifPresent(equipped::add);
     }
 
     private void refreshAbilities() {
@@ -232,7 +232,7 @@ public class AbilityMenu {
      * @param id to add it to the combiner
      */
     public void addAbilityToCombine(final int id) {
-        if (combiner.size() <= MIXER_ABILITY_SIZE && !(lost.contains(id))) {
+        if (combiner.size() <= MIXER_ABILITY_SIZE && !lost.contains(id)) {
            combiner.add(id);
         }
     }
@@ -243,7 +243,7 @@ public class AbilityMenu {
      * @param id to remove it to the combiner
      */
     public void removeFromCombine(final int id) {
-        combiner.remove(Integer.valueOf(id));
+        combiner.remove((Integer)id);
     }
 
     /**
@@ -252,7 +252,7 @@ public class AbilityMenu {
      * @param id to unequip it
      */
     public void unequip(final int id) {
-        equipped.remove(Integer.valueOf(id));
+        equipped.remove((Integer)id);
     }
 
     /**
@@ -303,7 +303,7 @@ public class AbilityMenu {
      * @return the equipment 
      */
     public List<AbilityView> getEquipped() {
-        return equipped.stream().map(e -> unlocked.get(e)).toList();
+        return equipped.stream().map(unlocked::get).toList();
     }
 
     /**

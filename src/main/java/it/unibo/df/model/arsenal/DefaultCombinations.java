@@ -6,7 +6,7 @@ import java.util.Set;
 
 import it.unibo.df.model.abilities.Ability;
 import it.unibo.df.model.abilities.AbilityFn;
-import it.unibo.df.model.abilities.Vec2D;
+import it.unibo.df.utility.Vec2D;
 
 /**
  * Default combinations.

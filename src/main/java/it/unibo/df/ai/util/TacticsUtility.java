@@ -8,7 +8,7 @@ import it.unibo.df.configurations.Constants;
 import it.unibo.df.input.Move;
 import it.unibo.df.model.abilities.Ability;
 import it.unibo.df.model.abilities.AbilityType;
-import it.unibo.df.model.abilities.Vec2D;
+import it.unibo.df.utility.Vec2D;
 
 /**
  * Utility class that provides useful methods for modeling actions.

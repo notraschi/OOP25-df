@@ -23,6 +23,7 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.stage.Modality;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.util.Duration;
@@ -33,10 +34,10 @@ import javafx.util.Duration;
 public class MainStage extends Application {
     private static final int TICK = 7;
     private static final int LOADOUT_SIZE = 3;
-    private final double minScreenSize = (Double.min(
+    private final double minScreenSize = Double.min(
         Screen.getPrimary().getBounds().getHeight(),
         Screen.getPrimary().getBounds().getWidth()
-    )) / 2;
+    ) / 2;
 
     private final GameBoard board = new GameBoard(
         List.of(
@@ -99,10 +100,10 @@ public class MainStage extends Application {
 
     private void matchEnd(final String matchResult) {
         final Alert alert = new Alert(Alert.AlertType.NONE);
-        final ButtonType ok = new ButtonType("OK");
         alert.setTitle("END of BATTLE");
         alert.setContentText("YOU" + matchResult + "THE GAME");
-        alert.getButtonTypes().setAll(ok);
+        alert.getButtonTypes().setAll(ButtonType.OK);
+        alertSetOnTop(alert);
         alert.showAndWait();
     }
 
@@ -200,10 +201,11 @@ public class MainStage extends Application {
         alert.setContentText("Game Paused");
         alert.getButtonTypes().setAll(resume, quit);
         timeline.pause();
+        alertSetOnTop(alert);
         final Optional<ButtonType> result = alert.showAndWait();
-        if (result.isPresent() && result.get() == resume) {
+        if (result.isPresent() && result.get().equals(resume)) {
             timeline.play();
-        } else if (result.isPresent() && result.get() == quit) {
+        } else if (result.isPresent() && result.get().equals(quit)) {
             quit();
         }
     }
@@ -217,15 +219,26 @@ public class MainStage extends Application {
         alert.setContentText("");
         alert.getButtonTypes().setAll(resume, reset, quit);
         timeline.pause();
+        alertSetOnTop(alert);
         final Optional<ButtonType> result = alert.showAndWait();
-        if (result.isPresent() && result.get() == resume && stage.getScene().equals(board.getScene())) {
+        if (result.isPresent() && result.get().equals(resume) && stage.getScene().equals(board.getScene())) {
             timeline.play();
-        } else if (result.isPresent() && result.get() == reset) {
+        } else if (result.isPresent() && result.get().equals(reset)) {
             controller.resetProgress();
             quit();
-        } else if (result.isPresent() && result.get() == quit) {
+        } else if (result.isPresent() && result.get().equals(quit)) {
             quit();
         }
+    }
+
+    private void alertSetOnTop(Alert alert) {
+        alert.initOwner(stage);
+        alert.initModality(Modality.WINDOW_MODAL);
+
+        alert.setOnShown(e -> {
+            Stage s = (Stage) alert.getDialogPane().getScene().getWindow();
+            s.setAlwaysOnTop(true);
+        });
     }
 
     private void visualChange() {

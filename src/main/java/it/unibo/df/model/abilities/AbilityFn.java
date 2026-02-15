@@ -3,6 +3,8 @@ package it.unibo.df.model.abilities;
 import java.util.Optional;
 import java.util.Set;
 
+import it.unibo.df.utility.Vec2D;
+
 /**
  * Functional interface defining the logic of an ability.
  */

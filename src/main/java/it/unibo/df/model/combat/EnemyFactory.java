@@ -6,8 +6,8 @@ import java.util.Map;
 import it.unibo.df.ai.AiStrategyType;
 import it.unibo.df.controller.Progress;
 import it.unibo.df.model.abilities.Ability;
-import it.unibo.df.model.abilities.Vec2D;
 import it.unibo.df.model.special.SpecialAbilityFactory;
+import it.unibo.df.utility.Vec2D;
 
 /**
  * Create pre-made enemies.

@@ -22,10 +22,10 @@ import it.unibo.df.input.CombatInput;
 import it.unibo.df.input.Input;
 import it.unibo.df.input.Move;
 import it.unibo.df.model.abilities.Ability;
-import it.unibo.df.model.abilities.Vec2D;
 import it.unibo.df.model.combat.CombatModel;
 import it.unibo.df.model.combat.EnemyDefinition;
 import it.unibo.df.model.combat.EnemyFactory;
+import it.unibo.df.utility.Vec2D;
 
 /**
  * combat state.
