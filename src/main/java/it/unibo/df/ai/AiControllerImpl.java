@@ -13,7 +13,7 @@ import it.unibo.df.model.abilities.Ability;
  */
 public class AiControllerImpl implements AiController {
     private static final double UTILITY_SWITCH_MARGIN = 0.05;
-    private final List<AiStrategy> avaiableStrategies;
+    private final List<AiStrategy> availableStrategies;
     private final List<Ability> loadout;
     private AiStrategy currentStrategy; 
 
@@ -24,8 +24,12 @@ public class AiControllerImpl implements AiController {
      * @param loadout equiped
      */
     public AiControllerImpl(final List<AiStrategy> strategies, final List<Ability> loadout) {
-        this.avaiableStrategies = strategies;
+        this.availableStrategies = strategies;
         this.loadout = loadout;
+        if (this.availableStrategies.isEmpty()) {
+            throw new IllegalArgumentException("AI must have a strategy");
+        }
+        this.currentStrategy = this.availableStrategies.get(0);
     }
 
     /**
@@ -51,7 +55,7 @@ public class AiControllerImpl implements AiController {
                         ? Double.NEGATIVE_INFINITY
                         : currentStrategy.calculateUtility(gameState, loadout) + UTILITY_SWITCH_MARGIN;
 
-        for (final AiStrategy strategy: avaiableStrategies) {
+        for (final AiStrategy strategy: availableStrategies) {
             final double utility = strategy.calculateUtility(gameState, loadout);
             if (maxUtility < utility) {
                 maxUtility = utility;
