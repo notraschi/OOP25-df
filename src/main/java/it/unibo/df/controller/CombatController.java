@@ -115,7 +115,6 @@ public final class CombatController implements ControllerState {
         };
         return model.move(entityId, delta);
     }
-    
 
     /**
      * handles attack-related input.

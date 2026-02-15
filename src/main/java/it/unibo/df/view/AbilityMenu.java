@@ -61,7 +61,7 @@ public class AbilityMenu {
         menuArea.add(fillLowerArea(), 0, 1);
         final SceneResizer resizer = new SceneResizer(
             menuArea,
-            (double)INVENTORY_WIDTH_PERC / MAX_SIZE_PERC,
+            (double) INVENTORY_WIDTH_PERC / MAX_SIZE_PERC,
             MAX_SIZE_PERC / MAX_SIZE_PERC
         );
         menu = new Scene(resizer.getBorderPane());
@@ -243,7 +243,7 @@ public class AbilityMenu {
      * @param id to remove it to the combiner
      */
     public void removeFromCombine(final int id) {
-        combiner.remove((Integer)id);
+        combiner.remove((Integer) id);
     }
 
     /**
@@ -252,7 +252,7 @@ public class AbilityMenu {
      * @param id to unequip it
      */
     public void unequip(final int id) {
-        equipped.remove((Integer)id);
+        equipped.remove((Integer) id);
     }
 
     /**

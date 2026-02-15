@@ -73,7 +73,7 @@ public class GameBoard {
         centerPane.add(fillLowBarArea(), 0, 1);
         final SceneResizer resizer = new SceneResizer(
             centerPane,
-            (double)BOARD_SIZE_PERC / MAX_SIZE_PERC,
+            (double) BOARD_SIZE_PERC / MAX_SIZE_PERC,
             MAX_SIZE_PERC / MAX_SIZE_PERC
         );
         board = new Scene(resizer.getBorderPane());
