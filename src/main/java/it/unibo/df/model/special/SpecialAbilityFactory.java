@@ -10,7 +10,16 @@ import it.unibo.df.model.combat.Cooldown;
  * factory for special abilities.
  */
 public final class SpecialAbilityFactory {
-    private static final Set<Vec2D> ALL_MOVEMENT_INPUTS = Set.of(new Vec2D(0,1), new Vec2D(0,-1), new Vec2D(1,0), new Vec2D(-1,0));
+    private static final int INVERT_MOVEMENT_MS = 6000;
+    private static final int DENY_MOVEMENT_MS = 2000;
+    private static final int DENY_ATTACK_MS = 5000;
+
+    private static final Set<Vec2D> ALL_MOVEMENT_INPUTS = Set.of(
+        new Vec2D(0, 1), 
+        new Vec2D(0, -1), 
+        new Vec2D(1, 0), 
+        new Vec2D(-1, 0) 
+    );
     private static final Set<Integer> ALL_ATTACKS = Set.of(0, 1, 2);
 
     private SpecialAbilityFactory() {
@@ -26,7 +35,7 @@ public final class SpecialAbilityFactory {
             Vec2D.class,
             ALL_MOVEMENT_INPUTS,
             vec -> Optional.of(new Vec2D(-vec.x(), -vec.y())),
-            new Cooldown(6000)
+            new Cooldown(INVERT_MOVEMENT_MS)
         );
     }
 
@@ -40,7 +49,7 @@ public final class SpecialAbilityFactory {
             Vec2D.class,
             ALL_MOVEMENT_INPUTS,
             vec -> Optional.empty(),
-            new Cooldown(2000)
+            new Cooldown(DENY_MOVEMENT_MS)
         );
     }
 
@@ -54,7 +63,7 @@ public final class SpecialAbilityFactory {
             Integer.class,
             ALL_ATTACKS,
             n -> Optional.empty(),
-            new Cooldown(5000)
+            new Cooldown(DENY_ATTACK_MS)
         );
     }
 }

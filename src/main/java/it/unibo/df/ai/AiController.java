@@ -5,6 +5,9 @@ import java.util.Optional;
 import it.unibo.df.gs.CombatState;
 import it.unibo.df.input.Input;
 
+/**
+ * AI controller for enemies.
+ */
 public interface AiController {
 
     /**
@@ -13,5 +16,5 @@ public interface AiController {
      * @param gameState context of the game
      * @return input to do
      */
-    Optional<Input> computeNextInput(final CombatState gameState);
+    Optional<Input> computeNextInput(CombatState gameState);
 }

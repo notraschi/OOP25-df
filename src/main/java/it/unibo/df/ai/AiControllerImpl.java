@@ -31,6 +31,7 @@ public class AiControllerImpl implements AiController {
     /**
      * {@inheritDoc}.
      */
+    @Override
     public Optional<Input> computeNextInput(final CombatState gameState) {
         return getInput(gameState);
     }

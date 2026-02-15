@@ -9,6 +9,12 @@ import it.unibo.df.model.combat.Cooldown;
 /**
  * represents a SpecialAbility.
  * only castable by enemies, are meant to disrupt player's actions.
+ * 
+ * @param <T> type of input handled
+ * @param inputType class of the expected input
+ * @param affected inputs that can be altered
+ * @param fn transformation function
+ * @param timer cooldown timer
  */
 public record SpecialAbility<T>(
     Class<T> inputType,
