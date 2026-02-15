@@ -30,6 +30,7 @@ public final class Progress {
     private static final Set<Integer> DEFAULT_UNLOCKED_IDS = Set.of(1, 2, 3, 4, 5);
     private Map<Integer, Ability> unlockedAbilitiesById = new LinkedHashMap<>();
     private Map<Integer, Ability> lockedAbilitiesById = new LinkedHashMap<>();
+    private final Random random = new Random();
 
     /**
      * Creates a registry loading abilities.yml from resources.
@@ -44,9 +45,7 @@ public final class Progress {
      * @param killedEnemies amount of enemies killed in battle, unlocks one new
      *                      ability for each.
      */
-
     public void update(final int killedEnemies) {
-        final Random random = new Random();
         for (int i = 0; i < killedEnemies; i++) {
             final List<Integer> keys = List.copyOf(lockedAbilitiesById.keySet());
             if (!keys.isEmpty()) {
@@ -210,6 +209,8 @@ public final class Progress {
      * custom exception to be more explicit during error handling.
      */
     public static class AbilityLoadingException extends UncheckedIOException {
+        private static final long serialVersionUID = 1L;
+
         /**
          * creates a new loading exception.
          * 

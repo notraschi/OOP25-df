@@ -24,8 +24,8 @@ public class AiControllerImpl implements AiController {
      * @param loadout equiped
      */
     public AiControllerImpl(final List<AiStrategy> strategies, final List<Ability> loadout) {
-        this.availableStrategies = strategies;
-        this.loadout = loadout;
+        this.availableStrategies = List.copyOf(strategies);
+        this.loadout = List.copyOf(loadout);
         if (this.availableStrategies.isEmpty()) {
             throw new IllegalArgumentException("AI must have a strategy");
         }

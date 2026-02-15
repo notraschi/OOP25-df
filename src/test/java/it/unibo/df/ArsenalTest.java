@@ -26,7 +26,7 @@ class ArsenalTest {
     private ArsenalController controller;
 
     @BeforeEach
-    void setup() {
+    void setUp() {
         controller = new ArsenalController(arsenal);
     }
 

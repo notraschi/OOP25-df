@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import it.unibo.df.configurations.Constants;
 import it.unibo.df.dto.AbilityView;
 import it.unibo.df.gs.CombatState;
@@ -77,12 +78,12 @@ public class GameBoard {
             MAX_SIZE_PERC / MAX_SIZE_PERC
         );
         board = new Scene(resizer.getBorderPane());
-        board.getStylesheets().add(getClass().getResource("/css/boardStyle.css").toExternalForm());
+        board.getStylesheets().add(GameBoard.class.getResource("/css/boardStyle.css").toExternalForm());
     }
 
     private GridPane fillAbilityArea() {
         abilityArea = new GridPane();
-        formatColumns(abilityArea, loadoutSize, MAX_SIZE_PERC / loadoutSize);
+        formatColumns(abilityArea, loadoutSize, (double) MAX_SIZE_PERC / loadoutSize);
         formatRows(abilityArea, 1, MAX_SIZE_PERC);
         for (int i = 0; i < loadoutSize; i++) {
             final Label lbl = new Label();
@@ -110,11 +111,15 @@ public class GameBoard {
         return area;
     }
 
+    @SuppressFBWarnings(
+        value = "ICAST_INTEGER_DIVISION_CAST_TO_DOUBLE",
+        justification = "the division must necessarily return a whole to me"
+    )
     private GridPane fillKeysArea() {
         final GridPane area = new GridPane();
         final Iterator<String> keysIt = keys.iterator();
         formatRows(area, KEYS_AREA_ROWS, MAX_SIZE_PERC / KEYS_AREA_ROWS);
-        formatColumns(area, keys.size() / KEYS_AREA_ROWS, MAX_SIZE_PERC / (keys.size() / KEYS_AREA_ROWS));
+        formatColumns(area, keys.size() / KEYS_AREA_ROWS, (double) MAX_SIZE_PERC / (keys.size() / KEYS_AREA_ROWS));
         for (int i = 0; i < KEYS_AREA_ROWS; i++) {
             for (int j = 0; j < keys.size() / KEYS_AREA_ROWS; j++) {
                 final Label lbl = new Label(keysIt.hasNext() ? keysIt.next() : "");
@@ -209,7 +214,7 @@ public class GameBoard {
      * @param equipment list of abilities equipped
      */
     public void refreshAbilities(final List<AbilityView> equipment) {
-        equipped = equipment;
+        equipped = List.copyOf(equipment);
         final Iterator<AbilityView> equipIt = equipment.iterator();
         for (final var e : abilityArea.getChildren()) {
             if (e instanceof Label content) {
@@ -241,6 +246,10 @@ public class GameBoard {
     /**
      * @return a scene of the board
      */
+    @SuppressFBWarnings(
+        value = "EI_EXPOSE_REP2", 
+        justification = "the scene must necessarily be this one"
+    )
     public Scene getScene() {
         return board;
     }

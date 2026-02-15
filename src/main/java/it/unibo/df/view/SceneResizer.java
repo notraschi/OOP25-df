@@ -1,5 +1,6 @@
 package it.unibo.df.view;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import javafx.beans.value.ChangeListener;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
@@ -39,6 +40,10 @@ public class SceneResizer {
     /**
      * @return BorderPane, the external container
      */
+    @SuppressFBWarnings(
+        value = "EI_EXPOSE_REP2", 
+        justification = "the pane must necessarily be this one"
+    )
     public BorderPane getBorderPane() {
         return borderPane;
     }

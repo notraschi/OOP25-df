@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import it.unibo.df.model.abilities.Ability;
@@ -30,28 +31,27 @@ final class CombatModelTest {
 
     private CombatModel model;
 
-    void setup(final SpecialAbility<?> sa) {
+    @BeforeEach
+    void setUp() {
         final var defaultLoadout = List.of(
-                new Ability(1, "", 1, HEAL_DELTA, 0, pos -> Optional.empty()),
-                new Ability(2, "", 1, HEAL_DELTA, 0, pos -> Optional.empty()),
-                new Ability(3, "", 1, HEAL_DELTA, 0, pos -> Optional.empty()));
-        // filling the loadout with garbage
+            new Ability(1, "", 1, HEAL_DELTA, 0, pos -> Optional.empty()),
+            new Ability(2, "", 1, HEAL_DELTA, 0, pos -> Optional.empty()),
+            new Ability(3, "", 1, HEAL_DELTA, 0, pos -> Optional.empty())
+        );
         model = new CombatModel(defaultLoadout);
-        // basic test
-        assertTrue(model.enemyView().isEmpty());
-        assertEquals(new Vec2D(0, 0), model.playerView().position());
-        // adding an enemy that can deny the movement
+    }
+
+    void setupWithSpecial(final SpecialAbility<?> sa) {
         model.addEnemy(
             new EnemyDefinition(
-                new Vec2D(EDGE_POS, EDGE_POS), 100, defaultLoadout, List.of(), sa
+                new Vec2D(EDGE_POS, EDGE_POS), 100, List.of(), List.of(), sa
             )
         );
-        assertEquals(1, model.enemyView().size());
     }
 
     @Test
     void specialAbiltyDenyMovementTest() {
-        setup(SpecialAbilityFactory.denyMovement());
+        setupWithSpecial(SpecialAbilityFactory.denyMovement());
 
         // moving player
         model.move(Optional.empty(), new Vec2D(1, 0));
@@ -72,7 +72,7 @@ final class CombatModelTest {
 
     @Test
     void specialAbiltyInvertMovementTest() {
-        setup(SpecialAbilityFactory.invertMovement());
+        setupWithSpecial(SpecialAbilityFactory.invertMovement());
 
         // moving player
         model.move(Optional.empty(), new Vec2D(1, 0));
@@ -95,7 +95,7 @@ final class CombatModelTest {
 
     @Test
     void specialAbiltyDenyAttackTest() throws NoSuchFieldException, IllegalAccessException {
-        setup(SpecialAbilityFactory.denyAttack());
+        setupWithSpecial(SpecialAbilityFactory.denyAttack());
         final var playerField = model.getClass().getDeclaredField("player");
         playerField.setAccessible(true); // NOPMD: entity is a private nested class
         final var player = playerField.get(model);

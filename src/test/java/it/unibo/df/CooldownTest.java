@@ -24,7 +24,7 @@ final class CooldownTest {
         assertTrue(controller.handle(new Equip(3)));
         assertTrue(controller.handle(new Equip(2)));
 
-        controller.toBattle();
+        controller.enterBattle();
         assertTrue(controller.handle(Attack.ABILITY1));
         var gs = (CombatState) controller.tick(1000); // timer starts
         assertEquals(1, gs.effects().size());

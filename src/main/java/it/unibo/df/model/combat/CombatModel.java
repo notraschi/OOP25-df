@@ -272,7 +272,7 @@ public class CombatModel {
             this.maxHp = hp;
             this.loadout = loadout;
             this.cooldowns = loadout.stream()
-                .map(a -> new Cooldown(a.cooldown() * 1000))
+                .map(a -> new Cooldown(a.cooldown() * 1000L))
                 .toList();
             this.movementCooldown = new Cooldown(MOVEMENT_COOLDOWN_TIME);
         }

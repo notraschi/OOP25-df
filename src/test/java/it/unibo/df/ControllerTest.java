@@ -30,7 +30,7 @@ final class ControllerTest {
         assertTrue(controller.handle(new Equip(1)));
         assertTrue(controller.handle(new Equip(2)));
         // cannot go to battle right now, loadout isn't full yet!
-        final var ex = assertThrows(IllegalStateException.class, controller::toBattle);
+        final var ex = assertThrows(IllegalStateException.class, controller::enterBattle);
         assertNotNull(ex);
 
         assertTrue(controller.handle(new Equip(3)));
@@ -40,7 +40,7 @@ final class ControllerTest {
         assertFalse(controller.handle(new Equip(-1)));
 
         // switches controller to CombatController
-        controller.toBattle();
+        controller.enterBattle();
         // perform ability
         controller.handle(Attack.ABILITY1);
         // check for new state update...

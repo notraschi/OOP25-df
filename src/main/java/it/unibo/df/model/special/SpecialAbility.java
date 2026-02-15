@@ -4,6 +4,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import it.unibo.df.utility.Cooldown;
 
 /**
@@ -16,6 +17,10 @@ import it.unibo.df.utility.Cooldown;
  * @param fn transformation function
  * @param timer cooldown timer
  */
+@SuppressFBWarnings(
+    value = "EI",
+    justification = "sets are created as immutable by the factory"
+)
 public record SpecialAbility<T>(
     Class<T> inputType,
     Set<T> affected,

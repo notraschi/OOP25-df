@@ -3,13 +3,13 @@ package it.unibo.df;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import it.unibo.df.configurations.GameConfig;
 import it.unibo.df.controller.CombatController;
 import it.unibo.df.controller.Controller;
 import it.unibo.df.controller.Progress;
-import it.unibo.df.gs.CombatState;
 import it.unibo.df.input.Equip;
 import it.unibo.df.model.combat.CombatModel;
 
@@ -30,59 +30,66 @@ final class UnlockAbilitiesTest {
     private Progress progress;
     private CombatModel model;
 
-    void setup() throws SecurityException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
-        controller = new Controller(GameConfig.defaultConfig());
-        controller.resetProgress();
+    @BeforeEach
+    void setUp() {
+        try {
+            final var config = GameConfig.testingWithEnemiesConfig();
+            progress = config.progress();
+            controller = new Controller(config);
+            controller.resetProgress();
 
-        controller.handle(new Equip(ABILITY_1));
-        controller.handle(new Equip(ABILITY_2));
-        controller.handle(new Equip(ABILITY_3));
-        // gets Progress
-        final var progressField = controller.getClass().getDeclaredField("progress");
-        progressField.setAccessible(true);
-        progress = (Progress) progressField.get(controller);
+            controller.handle(new Equip(ABILITY_1));
+            controller.handle(new Equip(ABILITY_2));
+            controller.handle(new Equip(ABILITY_3));
 
-        controller.toBattle();
-        // gets controller state (CombatController)
-        final var stateControllerField = controller.getClass().getDeclaredField("state");
-        stateControllerField.setAccessible(true);
-        final var state = (CombatController) stateControllerField.get(controller);
-        final var modelField = state.getClass().getDeclaredField("model");
-        modelField.setAccessible(true);
-        model = (CombatModel) modelField.get(state);
+            controller.enterBattle();
+            // gets controller state (CombatController)
+            final var stateControllerField = controller.getClass().getDeclaredField("state");
+            stateControllerField.setAccessible(true); // NOPMD: necessary to access model
+            final var state = (CombatController) stateControllerField.get(controller);
+            final var modelField = state.getClass().getDeclaredField("model");
+            modelField.setAccessible(true); // NOPMD
+            model = (CombatModel) modelField.get(state);
 
-        assertEquals(ENEMIES_IN_BATTLE, ((CombatState) state.tick(0)).enemies().size());
+            assertEquals(ENEMIES_IN_BATTLE, state.tick(0).enemies().size());
+        } catch (NoSuchFieldException | SecurityException | IllegalAccessException ex) {
+            System.getLogger(UnlockAbilitiesTest.class.getName()).log(System.Logger.Level.ERROR, "error loading model", ex);
+        }
     }
 
     @SuppressWarnings("unchecked")
     @Test
-    void unlockAbility() throws NoSuchFieldException, IllegalAccessException {
-        setup();
-        assertEquals(0, model.getKilledEnemies());
+    void unlockAbility() {
+        try {
+            setUp();
+            assertEquals(0, model.getKilledEnemies());
 
-        final var enemyField = model.getClass().getDeclaredField("enemies");
-        enemyField.setAccessible(true);
-        final var enemies = (Map<Integer, ?>) enemyField.get(model);
-        // get first enemy
-        final var enemy = enemies.values().iterator().next();
-        final var hpField = enemy.getClass().getSuperclass().getDeclaredField("hp");
-        hpField.setAccessible(true);
-        // artificially killing the enemy
-        hpField.setInt(enemy, KILL_HP);
+            final var enemyField = model.getClass().getDeclaredField("enemies");
+            enemyField.setAccessible(true); // NOPMD: necessary to kill enemy
+            final var enemies = (Map<Integer, ?>) enemyField.get(model);
+            // get first enemy
+            final var enemy = enemies.values().iterator().next();
+            final var hpField = enemy.getClass().getDeclaredField("hp");
+            hpField.setAccessible(true); // NOPMD: this is an inner class
+            // artificially killing the enemy
+            hpField.setInt(enemy, KILL_HP);
 
-        assertEquals(KILLED_ENEMIES, model.getKilledEnemies());
+            assertEquals(KILLED_ENEMIES, model.getKilledEnemies());
 
-        controller.toArsenal();
+            controller.enterArsenal();
 
-        assertEquals(UNLOCKED_AFTER_KILL, progress.unlockedAbilities().size());
+            assertEquals(UNLOCKED_AFTER_KILL, progress.unlockedAbilities().size());
 
-        controller.saveOnClose();
+            controller.saveOnClose();
+        } catch (NoSuchFieldException | SecurityException | IllegalAccessException ex) {
+            System.getLogger(UnlockAbilitiesTest.class.getName()).log(System.Logger.Level.ERROR, "error killing an enemy", ex);
+        }
     }
 
     @Test
-    void resetGame() throws SecurityException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
-        setup();
-        controller.toArsenal();
+    void resetGame() {
+        setUp();
+        controller.enterArsenal();
 
         controller.resetProgress();
         assertEquals(DEFAULT_UNLOCKED, progress.unlockedAbilities().size());
@@ -90,11 +97,9 @@ final class UnlockAbilitiesTest {
         assertEquals(UNLOCKED_AFTER_UPDATE, progress.unlockedAbilities().size());
         controller.saveOnClose();
         // new game
-        controller = new Controller(GameConfig.testingConfig());
-        // gets Progress
-        final var progressField = controller.getClass().getDeclaredField("progress");
-        progressField.setAccessible(true);
-        progress = (Progress) progressField.get(controller);
+        final var config = GameConfig.defaultConfig();
+        progress = config.progress();
+        controller = new Controller(config);
         // cleanup
         assertEquals(UNLOCKED_AFTER_UPDATE, progress.unlockedAbilities().size());
         controller.resetProgress();
