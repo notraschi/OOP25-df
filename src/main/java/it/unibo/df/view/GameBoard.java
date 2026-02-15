@@ -63,6 +63,8 @@ public class GameBoard {
         playArea = new Canvas();
         graphicsContext = playArea.getGraphicsContext2D();
         playArea.setManaged(false);
+        playArea.widthProperty().bind(canvasWrapper.widthProperty());
+        playArea.heightProperty().bind(canvasWrapper.heightProperty());
         canvasWrapper.getChildren().add(playArea);
         formatColumns(centerPane, 1, MAX_SIZE_PERC);
         formatRows(centerPane, 1, BOARD_SIZE_PERC);
@@ -135,8 +137,8 @@ public class GameBoard {
     }
 
     private void refreshMap(final CombatState gs) {
-        playArea.setWidth(canvasWrapper.getWidth());
-        playArea.setHeight(canvasWrapper.getHeight());
+        //playArea.setWidth(canvasWrapper.getWidth());
+        //playArea.setHeight(canvasWrapper.getHeight());
         final double cellSize = playArea.getHeight() / Constants.BOARD_SIZE;
         graphicsContext.clearRect(0, 0, playArea.getWidth(), playArea.getHeight());
         graphicsContext.setFill(gs.isDisruptActive() ? Color.PURPLE : Color.GREEN);
