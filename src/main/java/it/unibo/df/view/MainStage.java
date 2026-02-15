@@ -231,12 +231,12 @@ public class MainStage extends Application {
         }
     }
 
-    private void alertSetOnTop(Alert alert) {
+    private void alertSetOnTop(final Alert alert) {
         alert.initOwner(stage);
         alert.initModality(Modality.WINDOW_MODAL);
 
         alert.setOnShown(e -> {
-            Stage s = (Stage) alert.getDialogPane().getScene().getWindow();
+            final Stage s = (Stage) alert.getDialogPane().getScene().getWindow();
             s.setAlwaysOnTop(true);
         });
     }
