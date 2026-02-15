@@ -10,7 +10,6 @@ import it.unibo.df.dto.AbilityView;
  * @param id            unique identifier of the ability
  * @param name          display name of the ability
  * @param cooldown      cooldown time in ticks
- * @param type          category of the ability
  * @param casterHpDelta caster hp variation
  * @param targetHpDelta target hp variation
  * @param effect        function implementing the ability logic
@@ -23,6 +22,11 @@ public record Ability(
         int targetHpDelta,
         AbilityFn effect) {
 
+    /**
+     * Returns the ability type based on its effects.
+     *
+     * @return the ability type
+     */
     public AbilityType type() {
         if (casterHpDelta > 0 && targetHpDelta != 0) {
             return AbilityType.LIFESTEAL;
@@ -33,12 +37,14 @@ public record Ability(
         return AbilityType.ATTACK;
     }
 
-    public AbilityView asView() {
-        return new AbilityView(this.name, 
-            this.id, this.casterHpDelta, 
-            this.targetHpDelta, 
-            (int)TimeUnit.SECONDS.toMillis(this.cooldown)
-        );
+    /**
+     * Returns the ability view.
+     */
+    public AbilityView asView() { // fix tab
+        return new AbilityView(this.name,
+                this.id, this.casterHpDelta,
+                this.targetHpDelta,
+                (int) TimeUnit.SECONDS.toMillis(this.cooldown));
     }
 
 }

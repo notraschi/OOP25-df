@@ -8,6 +8,8 @@ import java.util.Set;
  * Represents areas affected by abilities.
  */
 public final class AbilityAreas {
+    private static final int LINE_RANGE = 9;
+
     private AbilityAreas() {
     }
 
@@ -45,6 +47,11 @@ public final class AbilityAreas {
         };
     }
 
+    /**
+     * Arrow-shaped area to the left and right of the caster.
+     *
+     * @return arrow area
+     */
     public static AbilityFn arrowRight() {
         return p -> {
             final Set<Vec2D> area = new HashSet<>();
@@ -62,6 +69,11 @@ public final class AbilityAreas {
         };
     }
 
+    /**
+     * Wide fan-shaped area up to 2 tiles from the caster.
+     *
+     * @return wide arrow area
+     */
     public static AbilityFn arrowWideUp() {
         return p -> {
             final Set<Vec2D> area = new HashSet<>();
@@ -81,6 +93,11 @@ public final class AbilityAreas {
         };
     }
 
+    /**
+     * Diagonal cross area around the caster.
+     *
+     * @return diagonal cross area
+     */
     public static AbilityFn diagX() {
         return p -> {
             final Set<Vec2D> area = new HashSet<>();
@@ -94,6 +111,11 @@ public final class AbilityAreas {
         };
     }
 
+    /**
+     * Pattern 1 to the right/left of the caster.
+     *
+     * @return pattern area
+     */
     public static AbilityFn p1Right() {
         return p -> {
             final Set<Vec2D> area = new HashSet<>();
@@ -113,6 +135,11 @@ public final class AbilityAreas {
         };
     }
 
+    /**
+     * Pattern 2 to the left/right of the caster.
+     *
+     * @return pattern area
+     */
     public static AbilityFn p2Left() {
         return p -> {
             final Set<Vec2D> area = new HashSet<>();
@@ -128,6 +155,11 @@ public final class AbilityAreas {
         };
     }
 
+    /**
+     * Pattern 3 around the caster.
+     *
+     * @return pattern area
+     */
     public static AbilityFn p3Up() {
         return p -> {
             final Set<Vec2D> area = new HashSet<>();
@@ -139,6 +171,11 @@ public final class AbilityAreas {
         };
     }
 
+    /**
+     * Pattern 4 below the caster.
+     *
+     * @return pattern area
+     */
     public static AbilityFn p4Down() {
         return p -> {
             final Set<Vec2D> area = new HashSet<>();
@@ -156,10 +193,15 @@ public final class AbilityAreas {
         };
     }
 
+    /**
+     * Horizontal line area from the caster.
+     *
+     * @return line area
+     */
     public static AbilityFn lineRight() {
         return p -> {
             final Set<Vec2D> area = new HashSet<>();
-            for (int i = 1; i <= 9; i++) {
+            for (int i = 1; i <= LINE_RANGE; i++) {
                 area.add(new Vec2D(p.x() + i, p.y()));
                 area.add(new Vec2D(p.x() - i, p.y()));
             }
@@ -167,10 +209,15 @@ public final class AbilityAreas {
         };
     }
 
+    /**
+     * Vertical line area from the caster.
+     *
+     * @return line area
+     */
     public static AbilityFn lineVertical() {
         return p -> {
             final Set<Vec2D> area = new HashSet<>();
-            for (int i = 1; i <= 9; i++) {
+            for (int i = 1; i <= LINE_RANGE; i++) {
                 area.add(new Vec2D(p.x(), p.y() + i));
                 area.add(new Vec2D(p.x(), p.y() - i));
             }
@@ -178,6 +225,11 @@ public final class AbilityAreas {
         };
     }
 
+    /**
+     * Columns area in front of the caster.
+     *
+     * @return columns area
+     */
     public static AbilityFn columns3Down() {
         return p -> {
             final Set<Vec2D> area = new HashSet<>();
