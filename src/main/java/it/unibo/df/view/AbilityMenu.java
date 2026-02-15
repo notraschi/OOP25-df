@@ -1,11 +1,12 @@
 package it.unibo.df.view;
 
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import it.unibo.df.dto.AbilityView;
@@ -36,7 +37,7 @@ public class AbilityMenu {
     private final Map<Integer, AbilityView> unlocked = new LinkedHashMap<>();
     private final List<Integer> lost = new LinkedList<>();
     private final List<Integer> equipped = new LinkedList<>();
-    private final List<Integer> combiner = new LinkedList<>();
+    private final Set<Integer> combiner = new LinkedHashSet<>();
     private Label descriptionLabel;
     private final ToggleGroup group = new ToggleGroup();
     private Scene menu;
@@ -294,7 +295,7 @@ public class AbilityMenu {
      * @return a List of ids to combine.
      */
     public List<Integer> getCombiner() {
-        return Collections.unmodifiableList(combiner);
+        return combiner.stream().toList();
     }
 
     /**

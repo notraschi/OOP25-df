@@ -24,7 +24,7 @@ public class CombatModel {
     private static final int PLAYER_HP = 500;
 
     private final Entity player;
-    private final Map<Integer, Entity> enemies;
+    private final Map<Integer, EnemyEntity> enemies;
     private int nextEnemyId;
     private Optional<SpecialAbility<?>> disrupt;
 
@@ -34,7 +34,7 @@ public class CombatModel {
      * @param playerLoadout chosen in asernal
      */
     public CombatModel(final List<Ability> playerLoadout) {
-        player = new Entity(new Vec2D(0, 0), PLAYER_HP, playerLoadout, Optional.empty());
+        player = new Entity(new Vec2D(0, 0), PLAYER_HP, playerLoadout);
         enemies = new LinkedHashMap<>();
         disrupt = Optional.empty();
     }
@@ -49,7 +49,7 @@ public class CombatModel {
         nextEnemyId++;
         enemies.put(
             nextEnemyId,
-            new Entity(enemy.position(), enemy.hp(), enemy.loadout(), Optional.of(enemy.special()))
+            new EnemyEntity(enemy.position(), enemy.hp(), enemy.loadout(), enemy.special())
         );
         return nextEnemyId;
     }
@@ -62,7 +62,7 @@ public class CombatModel {
      * @return true if he moved
      */
     public boolean move(final Optional<Integer> entityId, final Vec2D delta) {
-        final var mover = entityId.map(enemies::get).orElse(player);
+        final var mover = entityId.map(enemies::get).map(ee -> (Entity) ee).orElse(player);
         final var targetPos = entityId.isPresent()
             ? mover.calculateMove(delta)
             : mover.calculateMove(
@@ -83,7 +83,7 @@ public class CombatModel {
      */
     private boolean canMove(final Vec2D targetPos) {
         return !enemies.values().stream()
-            .anyMatch(e -> e.position.equals(targetPos) && e.hp > 0) 
+            .anyMatch(e -> e.getPosition().equals(targetPos) && e.getHp() > 0) 
             && !player.position.equals(targetPos);
     }
 
@@ -100,16 +100,16 @@ public class CombatModel {
                 .filter(ab -> !player.cooldowns.get(ab).isActive())
                 .flatMap(ab -> {
                     player.cooldowns.get(ab).begin();
-                    return applyAbiliy(player, enemies.values().stream(), player.loadout.get(ab));
+                    return applyAbiliy(player, enemies.values().stream().map(ee -> (Entity) ee), player.loadout.get(ab));
                 });
         } else {
             final var enemy = enemies.get(entityId.get());
             // cooldown check
-            if (enemy.cooldowns.get(ability).isActive()) {
+            if (enemy.getCooldowns().get(ability).isActive()) {
                 return Optional.empty();
             }
-            enemy.cooldowns.get(ability).begin();
-            return applyAbiliy(enemy, Stream.of(player), enemy.loadout.get(ability));
+            enemy.getCooldowns().get(ability).begin();
+            return applyAbiliy(enemy, Stream.of(player), enemy.getLoadout().get(ability));
         }
     }
 
@@ -143,14 +143,11 @@ public class CombatModel {
      */
     public void castSpecial(final int entityId) {
         final var enemy = enemies.get(entityId);
-        enemy.special.ifPresentOrElse(s -> {
-                disrupt = Optional.of(s);
-                disrupt.get().timer().begin();
-            },
-            () -> {
-                throw new IllegalStateException("someone made an enemy without a special");
-            }
-        );
+        if (enemy == null) {
+            throw new IllegalArgumentException("not a valid enemy");
+        }
+        disrupt = Optional.of(enemy.special);
+        disrupt.get().timer().begin();
     }
 
     /**
@@ -212,8 +209,8 @@ public class CombatModel {
         player.cooldowns.forEach(c -> c.update(deltaTime));
         player.movementCooldown.update(deltaTime);
         enemies.values().forEach(e -> {
-            e.cooldowns.forEach(c -> c.update(deltaTime));
-            e.movementCooldown.update(deltaTime);
+            e.getCooldowns().forEach(c -> c.update(deltaTime));
+            e.getMovementCooldown().update(deltaTime);
         });
         disrupt.ifPresent(ab -> ab.timer().update(deltaTime));
         // remove disrupt if timer is done
@@ -232,7 +229,7 @@ public class CombatModel {
         if (!enemies.containsKey(id)) {
             throw new IllegalArgumentException("unknown id, this enemy does not exist");
         }
-        return enemies.get(id).hp > 0;
+        return enemies.get(id).getHp() > 0;
     }
 
     /**
@@ -241,7 +238,7 @@ public class CombatModel {
      * @return amount of killed enemies
      */
     public int getKilledEnemies() {
-        return (int) enemies.values().stream().filter(e -> e.hp == 0).count();
+        return (int) enemies.values().stream().filter(e -> e.getHp() == 0).count();
     }
 
     /**
@@ -254,7 +251,6 @@ public class CombatModel {
         private final List<Ability> loadout;
         private final List<Cooldown> cooldowns;
         private final Cooldown movementCooldown;
-        private final Optional<SpecialAbility<?>> special;
 
         private Vec2D position;
         private int hp;
@@ -265,13 +261,11 @@ public class CombatModel {
          * @param position starting position
          * @param hp default hp 
          * @param loadout starting loadout
-         * @param special ability only for enemies
          */
         Entity(
             final Vec2D position,
             final int hp,
-            final List<Ability> loadout,
-            final Optional<SpecialAbility<?>> special
+            final List<Ability> loadout
         ) {
             this.position = position;
             this.hp = hp;
@@ -281,7 +275,6 @@ public class CombatModel {
                 .map(a -> new Cooldown(a.cooldown() * 1000L))
                 .toList();
             this.movementCooldown = new Cooldown(MOVEMENT_COOLDOWN_TIME);
-            this.special = special;
         }
 
         /**
@@ -336,6 +329,56 @@ public class CombatModel {
             movementCooldown.begin();
         }
 
+        /**
+         * gets hp.
+         * 
+         * @return entity's current hp
+         */
+        int getHp() {
+            return hp;
+        }
+
+        /**
+         * gets loadout.
+         * 
+         * @return entity's loadout
+         */
+        List<Ability> getLoadout() {
+            return loadout;
+        }
+
+        /**
+         * gets position.
+         * 
+         * @return entity's current position
+         */
+        Vec2D getPosition() {
+            return position;
+        }
+
+        /**
+         * gets cooldowns.
+         * 
+         * @return entity's cooldowns
+         */
+        List<Cooldown> getCooldowns() {
+            return cooldowns;
+        }
+
+        /**
+         * gets movement cooldown.
+         * 
+         * @return entity's movement cooldown
+         */
+        Cooldown getMovementCooldown() {
+            return movementCooldown;
+        }
+
+        /**
+         * converts an Entity to a dto object.
+         * 
+         * @return the dto in question
+         */
         EntityView asView() {
             return new EntityView(
                 maxHp,
@@ -344,6 +387,31 @@ public class CombatModel {
                 cooldowns.stream().map(Cooldown::getRemaining).toList(),
                 (int) movementCooldown.getRemaining()
             );
+        }
+    }
+
+    /**
+     * Represents an enemy in the game with position, health, and abilities.
+     */
+    private static final class EnemyEntity extends Entity {
+        private final SpecialAbility<?> special;
+
+        /**
+         * Constructs an EnemyEntity with the specified position, health, and abilities.
+         * 
+         * @param position starting position
+         * @param hp default hp 
+         * @param loadout starting loadout
+         * @param special ability only for enemies
+         */
+        EnemyEntity(
+            final Vec2D position,
+            final int hp,
+            final List<Ability> loadout,
+            final SpecialAbility<?> special
+        ) {
+            super(position, hp, loadout);
+            this.special = special;
         }
     }
 }
