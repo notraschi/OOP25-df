@@ -31,7 +31,7 @@ public class GameBoard {
     private static final int BOARD_SIZE_PERC = 80;
     private static final int KEYS_AREA_ROWS = 2;
     private static final int ENEMY_NUMBER = 2;
-    private static final int EFFECT_DISPLAY_DURATION = 200;
+    private static final int EFFECT_DISPLAY_DURATION = 300;
     private final int loadoutSize;
     private GraphicsContext graphicsContext;
     private Canvas playArea;
