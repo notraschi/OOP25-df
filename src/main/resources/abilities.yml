@@ -16,49 +16,49 @@ abilities:
   cooldown: 20
   casterHpDelta: 0
   targetHpDelta: 28
-  area: LINE_R
+  area: LINE_H
 - id: 4
   name: Arrow Burst
   cooldown: 20
   casterHpDelta: 0
   targetHpDelta: 30
-  area: ARROW_R
+  area: ARROW
 - id: 5
   name: Fan Sweep
   cooldown: 8
   casterHpDelta: 0
   targetHpDelta: 15
-  area: ARROWWIDE_U
+  area: ARROWWIDE
 - id: 6
   name: Tight Hit
   cooldown: 20
   casterHpDelta: 0
   targetHpDelta: 32
-  area: P3_U
+  area: P3
 - id: 7
   name: Triple Push
   cooldown: 7
   casterHpDelta: 0
   targetHpDelta: 14
-  area: COLUMNS3_D
+  area: COLUMNS3
 - id: 8
   name: Side Sweep
   cooldown: 7
   casterHpDelta: 0
   targetHpDelta: 14
-  area: P2_L
+  area: P2
 - id: 9
   name: V Slash
   cooldown: 7
   casterHpDelta: 0
   targetHpDelta: 15
-  area: P1_R
+  area: P1
 - id: 10
   name: Wide Smash
   cooldown: 8
   casterHpDelta: 0
   targetHpDelta: 18
-  area: P4_D
+  area: P4
 - id: 11
   name: Drain Close
   cooldown: 3
@@ -76,7 +76,7 @@ abilities:
   cooldown: 20
   casterHpDelta: 12
   targetHpDelta: 24
-  area: ARROW_R
+  area: ARROW
 - id: 14
   name: Small Heal
   cooldown: 3
