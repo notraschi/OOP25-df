@@ -149,6 +149,7 @@ public class AbilityMenu {
             for (int j = 0; j < keys.size() / KEYS_AREA_ROWS; j++) {
                 final Label lbl = new Label(key.hasNext() ? key.next() : "");
                 lbl.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
+                lbl.setWrapText(true);
                 area.add(lbl, j, i);
             }
         }
