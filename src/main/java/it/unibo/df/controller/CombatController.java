@@ -51,9 +51,9 @@ public final class CombatController implements ControllerState {
         final List<Vec2D> availablePoints = generateSpawnPoints(numberOfEnemies);
 
         final List<Integer> enemieIdx = IntStream
-                .range(0, EnemyFactory.AVAILABLE_ENEMY_TYPES)
-                .boxed()
-                .collect(Collectors.toCollection(ArrayList::new));
+            .range(0, EnemyFactory.AVAILABLE_ENEMY_TYPES)
+            .boxed()
+            .collect(Collectors.toCollection(ArrayList::new));
         Collections.shuffle(enemieIdx);
 
         IntStream.range(0, numberOfEnemies).forEach(i -> {
