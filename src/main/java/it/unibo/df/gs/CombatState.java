@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import it.unibo.df.configurations.Constants;
 import it.unibo.df.dto.CombatStatus;
 import it.unibo.df.dto.EntityView;
@@ -18,6 +19,10 @@ import it.unibo.df.utility.Vec2D;
  * @param effects effects
  * @param isDisruptActive disrupt
  */
+@SuppressFBWarnings(
+    value = "EI_EXPOSE_REP2",
+    justification = "defensive copies are created using Map.copyOf and List.copyOf"
+)
 public record CombatState(
     EntityView player,
     Map<Integer, EntityView> enemies,
