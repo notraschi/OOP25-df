@@ -31,7 +31,7 @@ final class UnlockAbilitiesTest {
     private CombatModel model;
 
     @BeforeEach
-    void setup() {
+    void setUp() {
         try {
             final var config = GameConfig.testingWithEnemiesConfig();
             progress = config.progress();
@@ -61,7 +61,7 @@ final class UnlockAbilitiesTest {
     @Test
     void unlockAbility() {
         try {
-            setup();
+            setUp();
             assertEquals(0, model.getKilledEnemies());
 
             final var enemyField = model.getClass().getDeclaredField("enemies");
@@ -88,7 +88,7 @@ final class UnlockAbilitiesTest {
 
     @Test
     void resetGame() {
-        setup();
+        setUp();
         controller.enterArsenal();
 
         controller.resetProgress();
