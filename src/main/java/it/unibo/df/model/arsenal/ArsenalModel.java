@@ -1,6 +1,5 @@
 package it.unibo.df.model.arsenal;
 
-
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
