@@ -1,4 +1,9 @@
 package it.unibo.df.input;
 
-public record Equip(int id) implements ArsenalInput { }
-
+/**
+ * Command used to equip an ability in the loadout.
+ *
+ * @param id the identifier of the ability to equip
+ */
+public record Equip(int id) implements ArsenalInput {
+}

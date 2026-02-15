@@ -1,4 +1,7 @@
 package it.unibo.df.input;
 
-public sealed interface CombatInput extends Input permits Move, Attack { }
-
+/**
+ * Interface for inputs valid during combat.
+ */
+public sealed interface CombatInput extends Input permits Move, Attack {
+}
