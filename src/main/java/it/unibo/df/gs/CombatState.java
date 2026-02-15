@@ -20,7 +20,7 @@ import it.unibo.df.utility.Vec2D;
  * @param isDisruptActive disrupt
  */
 @SuppressFBWarnings(
-    value = {"EI", "EI_EXPOSE_REP2"},
+    value = "EI",
     justification = "defensive copies are created using Map.copyOf and List.copyOf"
 )
 public record CombatState(

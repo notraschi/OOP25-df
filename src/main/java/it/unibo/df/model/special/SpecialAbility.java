@@ -18,7 +18,7 @@ import it.unibo.df.utility.Cooldown;
  * @param timer cooldown timer
  */
 @SuppressFBWarnings(
-    value = {"EI", "EI_EXPOSE_REP2"},
+    value = "EI",
     justification = "sets are created as immutable by the factory"
 )
 public record SpecialAbility<T>(

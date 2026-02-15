@@ -10,7 +10,7 @@ import it.unibo.df.controller.Progress;
  * @param progress the games progress
  */
 @SuppressFBWarnings(
-    value = {"EI", "EI_EXPOSE_REP2"},
+    value = "EI",
     justification = "shares mutable Progress for testing purposes"
 )
 public record GameConfig(

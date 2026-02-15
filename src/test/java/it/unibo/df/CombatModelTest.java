@@ -5,7 +5,6 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -41,7 +40,7 @@ final class CombatModelTest {
         );
         model = new CombatModel(defaultLoadout);
     }
-    
+
     void setupWithSpecial(final SpecialAbility<?> sa) {
         model.addEnemy(
             new EnemyDefinition(
