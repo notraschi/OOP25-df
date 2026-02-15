@@ -32,9 +32,9 @@ final class CombatModelTest {
 
     void setup(final SpecialAbility<?> sa) {
         final var defaultLoadout = List.of(
-                new Ability(1, "", 1, 5, 0, pos -> Optional.empty()),
-                new Ability(2, "", 1, 6, 0, pos -> Optional.empty()),
-                new Ability(3, "", 1, 7, 0, pos -> Optional.empty()));
+                new Ability(1, "", 1, HEAL_DELTA, 0, pos -> Optional.empty()),
+                new Ability(2, "", 1, HEAL_DELTA, 0, pos -> Optional.empty()),
+                new Ability(3, "", 1, HEAL_DELTA, 0, pos -> Optional.empty()));
         // filling the loadout with garbage
         model = new CombatModel(defaultLoadout);
         // basic test

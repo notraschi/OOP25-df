@@ -229,6 +229,8 @@ public class MainStage extends Application {
     }
 
     private void visualChange() {
+        final double width = stage.getWidth();
+        final double height = stage.getHeight();
         if (stage.getScene().equals(menu.getScene()) && menu.getEquipped().size() == LOADOUT_SIZE) {
             timeline.play();
             controller.toBattle();
@@ -241,6 +243,8 @@ public class MainStage extends Application {
             menu.refresh((ArsenalState) controller.tick(TICK));
             stage.setScene(menu.getScene());
         }
+        stage.setWidth(width);
+        stage.setHeight(height);
     }
 
     private void quit() {
