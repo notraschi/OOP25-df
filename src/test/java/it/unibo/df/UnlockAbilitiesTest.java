@@ -65,7 +65,7 @@ final class UnlockAbilitiesTest {
         final var enemies = (Map<Integer, ?>) enemyField.get(model);
         // get first enemy
         final var enemy = enemies.values().iterator().next();
-        final var hpField = enemy.getClass().getDeclaredField("hp");
+        final var hpField = enemy.getClass().getSuperclass().getDeclaredField("hp");
         hpField.setAccessible(true);
         // artificially killing the enemy
         hpField.setInt(enemy, KILL_HP);
