@@ -18,8 +18,8 @@ import it.unibo.df.utility.Vec2D;
  * @param special equiped
  */
 @SuppressFBWarnings(
-    value = {"EI_EXPOSE_REP2"}, 
-    justification = "lists are created using List.of() and are immutable"
+    value = "EI_EXPOSE_REP", 
+    justification = "lists are created using (List.of()/copyOf) and are immutable"
 )
 public record EnemyDefinition(
     Vec2D position,
