@@ -83,7 +83,7 @@ public class CombatModel {
      */
     private boolean canMove(final Vec2D targetPos) {
         return !enemies.values().stream()
-            .anyMatch(e -> e.position.equals(targetPos) && e.hp > 0) 
+            .anyMatch(e -> e.getPosition().equals(targetPos) && e.getHp() > 0) 
             && !player.position.equals(targetPos);
     }
 
@@ -105,11 +105,11 @@ public class CombatModel {
         } else {
             final var enemy = enemies.get(entityId.get());
             // cooldown check
-            if (enemy.cooldowns.get(ability).isActive()) {
+            if (enemy.getCooldowns().get(ability).isActive()) {
                 return Optional.empty();
             }
-            enemy.cooldowns.get(ability).begin();
-            return applyAbiliy(enemy, Stream.of(player), enemy.loadout.get(ability));
+            enemy.getCooldowns().get(ability).begin();
+            return applyAbiliy(enemy, Stream.of(player), enemy.getLoadout().get(ability));
         }
     }
 
@@ -209,8 +209,8 @@ public class CombatModel {
         player.cooldowns.forEach(c -> c.update(deltaTime));
         player.movementCooldown.update(deltaTime);
         enemies.values().forEach(e -> {
-            e.cooldowns.forEach(c -> c.update(deltaTime));
-            e.movementCooldown.update(deltaTime);
+            e.getCooldowns().forEach(c -> c.update(deltaTime));
+            e.getMovementCooldown().update(deltaTime);
         });
         disrupt.ifPresent(ab -> ab.timer().update(deltaTime));
         // remove disrupt if timer is done
@@ -229,7 +229,7 @@ public class CombatModel {
         if (!enemies.containsKey(id)) {
             throw new IllegalArgumentException("unknown id, this enemy does not exist");
         }
-        return enemies.get(id).hp > 0;
+        return enemies.get(id).getHp() > 0;
     }
 
     /**
@@ -238,7 +238,7 @@ public class CombatModel {
      * @return amount of killed enemies
      */
     public int getKilledEnemies() {
-        return (int) enemies.values().stream().filter(e -> e.hp == 0).count();
+        return (int) enemies.values().stream().filter(e -> e.getHp() == 0).count();
     }
 
     /**
@@ -248,12 +248,12 @@ public class CombatModel {
         private static final int MOVEMENT_COOLDOWN_TIME = 175;
 
         private final int maxHp;
-        protected final List<Ability> loadout;
-        protected final List<Cooldown> cooldowns;
-        protected final Cooldown movementCooldown;
+        private final List<Ability> loadout;
+        private final List<Cooldown> cooldowns;
+        private final Cooldown movementCooldown;
 
-        protected Vec2D position;
-        protected int hp;
+        private Vec2D position;
+        private int hp;
 
         /**
          * Constructs an Entity with the specified position, health, and abilities.
@@ -261,7 +261,6 @@ public class CombatModel {
          * @param position starting position
          * @param hp default hp 
          * @param loadout starting loadout
-         * @param special ability only for enemies
          */
         Entity(
             final Vec2D position,
@@ -330,6 +329,56 @@ public class CombatModel {
             movementCooldown.begin();
         }
 
+        /**
+         * gets hp.
+         * 
+         * @return entity's current hp
+         */
+        int getHp() {
+            return hp;
+        }
+
+        /**
+         * gets loadout.
+         * 
+         * @return entity's loadout
+         */
+        List<Ability> getLoadout() {
+            return loadout;
+        }
+
+        /**
+         * gets position.
+         * 
+         * @return entity's current position
+         */
+        Vec2D getPosition() {
+            return position;
+        }
+
+        /**
+         * gets cooldowns.
+         * 
+         * @return entity's cooldowns
+         */
+        List<Cooldown> getCooldowns() {
+            return cooldowns;
+        }
+
+        /**
+         * gets movement cooldown.
+         * 
+         * @return entity's movement cooldown
+         */
+        Cooldown getMovementCooldown() {
+            return movementCooldown;
+        }
+
+        /**
+         * converts an Entity to a dto object.
+         * 
+         * @return the dto in question
+         */
         EntityView asView() {
             return new EntityView(
                 maxHp,
@@ -341,14 +390,25 @@ public class CombatModel {
         }
     }
 
+    /**
+     * Represents an enemy in the game with position, health, and abilities.
+     */
     private static final class EnemyEntity extends Entity {
         private final SpecialAbility<?> special;
 
-        public EnemyEntity(
-            Vec2D position,
-            int hp,
-            List<Ability> loadout,
-            SpecialAbility<?> special
+        /**
+         * Constructs an EnemyEntity with the specified position, health, and abilities.
+         * 
+         * @param position starting position
+         * @param hp default hp 
+         * @param loadout starting loadout
+         * @param special ability only for enemies
+         */
+        EnemyEntity(
+            final Vec2D position,
+            final int hp,
+            final List<Ability> loadout,
+            final SpecialAbility<?> special
         ) {
             super(position, hp, loadout);
             this.special = special;
