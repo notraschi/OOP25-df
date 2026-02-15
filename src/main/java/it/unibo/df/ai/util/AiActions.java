@@ -19,6 +19,8 @@ import it.unibo.df.utility.Vec2D;
  */
 public final class AiActions {
 
+    private static final Random RANDOM = new Random();
+
     private AiActions() { }
 
     /**
@@ -133,10 +135,9 @@ public final class AiActions {
     public static Optional<Input> fleeFromTarget(final EntityView me, final EntityView target) {
 
         final var retreatMoves = TacticsUtility.getMovesToRetreat(me.position(), target.position());
-        final Random rand = new Random();
 
         if (!retreatMoves.isEmpty()) {
-            return Optional.of(retreatMoves.get(rand.nextInt(0, retreatMoves.size())));
+            return Optional.of(retreatMoves.get(RANDOM.nextInt(0, retreatMoves.size())));
         }
 
        final List<Move> retreatMovesStepTwo = new ArrayList<>();
@@ -150,7 +151,7 @@ public final class AiActions {
         }
 
         if (!retreatMovesStepTwo.isEmpty()) {
-            return Optional.of(retreatMovesStepTwo.get(rand.nextInt(0, retreatMovesStepTwo.size())));
+            return Optional.of(retreatMovesStepTwo.get(RANDOM.nextInt(0, retreatMovesStepTwo.size())));
         }
 
         return Optional.empty();
@@ -173,8 +174,7 @@ public final class AiActions {
     ) {
         final var moves = TacticsUtility.getMovesToMaintainRange(me.position(), target.position(), minRange, maxRange);
         if (!moves.isEmpty()) {
-            final Random rand = new Random();
-            return Optional.of(moves.get(rand.nextInt(0, moves.size())));
+            return Optional.of(moves.get(RANDOM.nextInt(0, moves.size())));
         }
         return Optional.empty();
     }
