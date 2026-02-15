@@ -41,7 +41,7 @@ final class CombatModelTest {
         );
         model = new CombatModel(defaultLoadout);
     }
-    
+
     void setupWithSpecial(final SpecialAbility<?> sa) {
         model.addEnemy(
             new EnemyDefinition(
