@@ -21,5 +21,5 @@ public record EnemyDefinition(
     int hp, 
     List<Ability> loadout,
     List<AiStrategyType> strategies,
-    SpecialAbility special
+    SpecialAbility<?> special
 ) { }

@@ -63,6 +63,8 @@ public class GameBoard {
         playArea = new Canvas();
         graphicsContext = playArea.getGraphicsContext2D();
         playArea.setManaged(false);
+        playArea.widthProperty().bind(canvasWrapper.widthProperty());
+        playArea.heightProperty().bind(canvasWrapper.heightProperty());
         canvasWrapper.getChildren().add(playArea);
         formatColumns(centerPane, 1, MAX_SIZE_PERC);
         formatRows(centerPane, 1, BOARD_SIZE_PERC);
@@ -135,16 +137,18 @@ public class GameBoard {
     }
 
     private void refreshMap(final CombatState gs) {
-        playArea.setWidth(canvasWrapper.getWidth());
-        playArea.setHeight(canvasWrapper.getHeight());
         final double cellSize = playArea.getHeight() / Constants.BOARD_SIZE;
         graphicsContext.clearRect(0, 0, playArea.getWidth(), playArea.getHeight());
-        graphicsContext.setFill(gs.isDisruptActive() ? Color.PURPLE : Color.GREEN);
-        graphicsContext.fillRect(
-            gs.player().position().x() * cellSize, 
-            gs.player().position().y() * cellSize, 
-            cellSize, 
-            cellSize
+        
+        graphicsContext.setFill(Color.GRAY);
+        gs.enemies().values().stream()
+            .filter(en -> en.hp() == 0)
+            .forEach(e -> graphicsContext.fillRect(
+                e.position().x() * cellSize,
+                e.position().y() * cellSize,
+                cellSize,
+                cellSize
+            )
         );
         graphicsContext.setFill(Color.RED);
         gs.enemies().values().stream()
@@ -156,15 +160,12 @@ public class GameBoard {
                 cellSize
             )
         );
-        graphicsContext.setFill(Color.GRAY);
-        gs.enemies().values().stream()
-            .filter(en -> en.hp() == 0)
-            .forEach(e -> graphicsContext.fillRect(
-                e.position().x() * cellSize,
-                e.position().y() * cellSize,
-                cellSize,
-                cellSize
-            )
+        graphicsContext.setFill(gs.isDisruptActive() ? Color.PURPLE : Color.GREEN);
+        graphicsContext.fillRect(
+            gs.player().position().x() * cellSize, 
+            gs.player().position().y() * cellSize, 
+            cellSize, 
+            cellSize
         );
         graphicsContext.setStroke(Color.BLUE);
         activeEffects.stream()
