@@ -99,28 +99,16 @@ public class PressureStrategy implements AiStrategy {
         if (aimFocus == null) {
             aimFocus = player.position();
         }
-        // Se ho poca vita, la mia voglia di pressare cala.
-        // hp 100% -> 0.98
-        // hp 50%  -> 0.65
-        // hp 20% -> 0.23
+
         final double confidence = 
             CurvesUtility.logistic(me.hpRatio(), CONFIDENCE_SLOPE, CONFIDENCE_MIDPOINT);
 
         final var ammo = TacticsUtility.abilityByType(loadout, AbilityType.ATTACK);
 
-        //mi calcolo i disponibili sui totali 
-        // 0 / 2 -> 0
-        // 1 / 2 -> 0.5
-        // 2 / 2 -> 1
         final double ammoScore = (double) ammo.stream()
             .filter(x -> me.cooldownAbilities().get(x) == 0)
             .count() / (double) ammo.size();
 
-        //meno vita ha il nemico meglio piu voglia di pressare ho
-        //trattiamo hp player
-        // hp 100% -> 0.08
-        // hp 50% -> 0.5
-        // hp 10% -> 0.88
         final double bloodlust =
             CurvesUtility.logistic(player.hpRatio(), BLOODLUST_SLOPE, BLOODLUST_MIDPOINT);
 

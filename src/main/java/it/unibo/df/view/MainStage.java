@@ -16,6 +16,7 @@ import it.unibo.df.input.Unequip;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
@@ -43,7 +44,6 @@ public class MainStage extends Application {
             "→ \nright",
             "↑ \nup",
             "↓ \ndown",
-            "I \ninventory",
             "Z \nability 1",
             "X \nability 2",
             "C \nability 3",
@@ -103,7 +103,7 @@ public class MainStage extends Application {
         alert.setTitle("END of BATTLE");
         alert.setContentText("YOU" + matchResult + "THE GAME");
         alert.getButtonTypes().setAll(ok);
-        alert.show();
+        alert.showAndWait();
     }
 
     private void tick() {
@@ -111,12 +111,18 @@ public class MainStage extends Application {
         board.refresh(cs, TICK);
         switch (cs.matchStatus()) {
             case CombatStatus.WON -> {
-                matchEnd(" WON ");
-                visualChange();
+                timeline.pause();
+                Platform.runLater(() -> {
+                    matchEnd(" WON ");
+                    visualChange();
+                });
             }
             case CombatStatus.LOST -> {
-                matchEnd(" LOST ");
-                visualChange();
+                timeline.pause();
+                Platform.runLater(() -> {
+                    matchEnd(" LOST ");
+                    visualChange();
+                });
             }
             default -> { }
         }
@@ -142,7 +148,6 @@ public class MainStage extends Application {
         stage.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
             switch (event.getCode()) {
                 case KeyCode.Q -> quitAlert();
-                case KeyCode.I -> visualChange();
                 default -> { }
             }
         });
@@ -180,6 +185,7 @@ public class MainStage extends Application {
                             menu.clearCombiner();
                         }
                     }
+                    case KeyCode.I -> visualChange();
                     default -> { }
                 }
             }
@@ -223,6 +229,8 @@ public class MainStage extends Application {
     }
 
     private void visualChange() {
+        final double width = stage.getWidth();
+        final double height = stage.getHeight();
         if (stage.getScene().equals(menu.getScene()) && menu.getEquipped().size() == LOADOUT_SIZE) {
             timeline.play();
             controller.toBattle();
@@ -235,6 +243,8 @@ public class MainStage extends Application {
             menu.refresh((ArsenalState) controller.tick(TICK));
             stage.setScene(menu.getScene());
         }
+        stage.setWidth(width);
+        stage.setHeight(height);
     }
 
     private void quit() {

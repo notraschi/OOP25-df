@@ -49,7 +49,6 @@ public class StabilizeStrategy implements AiStrategy {
 
         final Optional<Input> healInput = AiActions.tryToHeal(me, loadout);
         if (healInput.isPresent() && healResource > 0) {
-            //System.out.println("AI: "+ idEntity + " -> Healing!");
             healResource -= 1;
             return healInput;
         }
@@ -63,14 +62,12 @@ public class StabilizeStrategy implements AiStrategy {
     public double calculateUtility(final CombatState cs, final List<Ability> loadout) {
         final var me = cs.enemies().get(idEntity);
 
-        //CONTROLLARE SE HO CURE
         final boolean hasHeal = !TacticsUtility.abilityByType(loadout, AbilityType.HEAL).isEmpty();
         final boolean hasLifeSteel = !TacticsUtility.abilityByType(loadout, AbilityType.LIFESTEAL).isEmpty();
         if (!hasHeal && !hasLifeSteel) {
             return 0.0;
         }
 
-        //hp alti, non mi curo o cure finite
         if (me.hpRatio() > HP_THRESHOLD_SAFE || healResource <= 0) {
             return 0.0;
         }
@@ -80,7 +77,6 @@ public class StabilizeStrategy implements AiStrategy {
                 ? SCORE_HEAL_READY 
                 : SCORE_HEAL_COOLDOWN;
 
-        //mi curo maggiormente nel renge tra 20% e 40% di vita
         final double panic = CurvesUtility.gaussian(me.hpRatio(), PANIC_TARGET, PANIC_DEVIATION);
         final double utility = panic * healReady;
 

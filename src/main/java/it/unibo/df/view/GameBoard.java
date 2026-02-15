@@ -139,7 +139,6 @@ public class GameBoard {
     private void refreshMap(final CombatState gs) {
         final double cellSize = playArea.getHeight() / Constants.BOARD_SIZE;
         graphicsContext.clearRect(0, 0, playArea.getWidth(), playArea.getHeight());
-        
         graphicsContext.setFill(Color.GRAY);
         gs.enemies().values().stream()
             .filter(en -> en.hp() == 0)
