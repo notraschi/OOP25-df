@@ -7,6 +7,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import it.unibo.df.dto.AbilityView;
 import it.unibo.df.gs.ArsenalState;
 import static it.unibo.df.view.PaneFormatter.formatColumns;
@@ -65,7 +66,7 @@ public class AbilityMenu {
             MAX_SIZE_PERC / MAX_SIZE_PERC
         );
         menu = new Scene(resizer.getBorderPane());
-        menu.getStylesheets().add(getClass().getResource("/css/menuStyle.css").toExternalForm());
+        menu.getStylesheets().add(AbilityMenu.class.getResource("/css/menuStyle.css").toExternalForm());
     }
 
     private GridPane fillUpperArea() {
@@ -110,7 +111,7 @@ public class AbilityMenu {
     private GridPane fillEquipmentArea() {
         equipment = new GridPane();
         formatColumns(equipment, 1, MAX_SIZE_PERC);
-        formatRows(equipment, loadoutSize, MAX_SIZE_PERC / loadoutSize);
+        formatRows(equipment, loadoutSize, (double) MAX_SIZE_PERC / loadoutSize);
         for (int j = 0; j < loadoutSize; j++) {
             final Label lbl = new Label();
             lbl.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
@@ -134,6 +135,10 @@ public class AbilityMenu {
         return descriptionLabel;
     }
 
+    @SuppressFBWarnings(
+        value = "ICAST_INTEGER_DIVISION_CAST_TO_DOUBLE",
+        justification = "the division must necessarily return a whole to me"
+    )
     private GridPane fillKeysArea() {
         final GridPane area = new GridPane();
         final Iterator<String> key = keys.iterator();
@@ -295,6 +300,10 @@ public class AbilityMenu {
     /**
      * @return group of button of Abilities
      */
+    @SuppressFBWarnings(
+        value = "EI_EXPOSE_REP2", 
+        justification = "the gruop must necessarily be this one"
+    )
     public ToggleGroup getGroup() {
         return group;
     }
@@ -309,6 +318,10 @@ public class AbilityMenu {
     /**
      * @return the scene
      */
+    @SuppressFBWarnings(
+        value = "EI_EXPOSE_REP2", 
+        justification = "the scene must necessarily be this one"
+    )
     public Scene getScene() {
         return menu;
     }
