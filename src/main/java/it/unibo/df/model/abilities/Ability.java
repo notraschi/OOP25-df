@@ -41,7 +41,7 @@ public record Ability(
     /**
      * Returns the ability view.
      */
-    public AbilityView asView() { // fix tab
+    public AbilityView asView() {
         return new AbilityView(this.name,
             this.id, this.casterHpDelta,
             this.targetHpDelta,

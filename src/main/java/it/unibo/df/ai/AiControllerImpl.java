@@ -52,7 +52,7 @@ public class AiControllerImpl implements AiController {
     private void updateStrategy(final CombatState gameState) {
 
         AiStrategy bestStrategy = this.currentStrategy;
-        double maxUtility = (Objects.isNull(bestStrategy))
+        double maxUtility = Objects.isNull(bestStrategy)
                         ? Double.NEGATIVE_INFINITY
                         : currentStrategy.calculateUtility(gameState, loadout) + UTILITY_SWITCH_MARGIN;
 
@@ -63,7 +63,7 @@ public class AiControllerImpl implements AiController {
                 bestStrategy = strategy;
             }
         }
-        if (!Objects.isNull(bestStrategy) && bestStrategy != currentStrategy) {
+        if (!Objects.isNull(bestStrategy) && !bestStrategy.equals(currentStrategy)) {
             setStrategy(bestStrategy);
         }
     }
