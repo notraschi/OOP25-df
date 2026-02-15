@@ -62,7 +62,7 @@ public class MainStage extends Application {
             "X \nto unequip",
             "I \nBack to play",
             "1 \nselect in mixer",
-            "2 \nselect in mixer",
+            "2 \nremove from mixer",
             "Q \nquit"
         ),
         LOADOUT_SIZE
