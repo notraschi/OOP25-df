@@ -246,13 +246,13 @@ public class MainStage extends Application {
         final double height = stage.getHeight();
         if (stage.getScene().equals(menu.getScene()) && menu.getEquipped().size() == LOADOUT_SIZE) {
             timeline.play();
-            controller.toBattle();
+            controller.enterBattle();
             board.refreshAbilities(menu.getEquipped());
             stage.setScene(board.getScene());
         } else if (stage.getScene().equals(board.getScene())) {
             menu.clearMenus();
             timeline.pause();
-            controller.toArsenal();
+            controller.enterArsenal();
             menu.refresh((ArsenalState) controller.tick(TICK));
             stage.setScene(menu.getScene());
         }

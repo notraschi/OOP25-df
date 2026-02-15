@@ -9,7 +9,7 @@ import it.unibo.df.input.Input;
  * uses: state pattern, (strategy pattern obv), inversion of control
  */
 public final class Controller {
-    private final Progress progress;
+    // private final Progress progress;
     private final GameConfig config;
     private ControllerState state;
 
@@ -19,9 +19,9 @@ public final class Controller {
      * @param configuration game configuration
      */
     public Controller(final GameConfig configuration) {
-        progress = new Progress();
+        // progress = configuration.progress();
         config = configuration;
-        state = new ArsenalController(progress.unlockedAbilities());
+        state = new ArsenalController(config.progress().unlockedAbilities());
     }
 
     /**
@@ -47,7 +47,7 @@ public final class Controller {
     /**
      * sets up the battle-phase.
      */
-    public void toBattle() {
+    public void enterBattle() {
         if (state instanceof ArsenalController arsenalController) {
             final var loadout = arsenalController.currentLoadout();
             if (loadout.size() != 3) {
@@ -62,10 +62,10 @@ public final class Controller {
     /**
      * sets up the arsenal phase.
      */
-    public void toArsenal() {
+    public void enterArsenal() {
         if (state instanceof CombatController combatController) {
-            progress.update(combatController.killedEnemies());
-            state = new ArsenalController(progress.unlockedAbilities());
+            config.progress().update(combatController.killedEnemies());
+            state = new ArsenalController(config.progress().unlockedAbilities());
         } else {
             throw new IllegalStateException("already in arsenal");
         }
@@ -75,13 +75,13 @@ public final class Controller {
      * resets the player progress.
      */
     public void resetProgress() {
-        progress.reset();
+        config.progress().reset();
     }
 
     /**
      * saves progress on application close.
      */
     public void saveOnClose() {
-        progress.write();
+        config.progress().write();
     }
 }
