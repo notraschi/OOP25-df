@@ -42,7 +42,7 @@ public final class EnemyFactory {
             position,
             BASIC_ENEMY_HP,
             List.of(
-                getByName("Triple Push"),
+                getByName("Wide Smash"),
                 getByName("Cross Cut"),
                 getByName("Medium Heal")
             ),
