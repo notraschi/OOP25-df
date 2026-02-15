@@ -2,6 +2,7 @@ package it.unibo.df.ai.strategy;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Random;
 
 import it.unibo.df.ai.AiStrategy;
 import it.unibo.df.ai.util.AiActions;
@@ -36,6 +37,8 @@ public class PressureStrategy implements AiStrategy {
     private static final double WEIGHT_AMMO_SCORE = 0.15;
     private static final double WEIGHT_AMMO_COUNT = 0.15;
     private static final double ATTACK_READY_BONUS = 0.3;
+
+    private static final Random RANDOM = new Random();
 
     private final int idEntity;
     private int special;
@@ -127,9 +130,9 @@ public class PressureStrategy implements AiStrategy {
     // Helper implemets noise
     private Vec2D applyNoise(final Vec2D realPos) {
         // 20% di chance to get noise
-        if (Math.random() < NOISE_CHANCE) {
-            final int dx = (int) (Math.random() * 3) - 1; 
-            final int dy = (int) (Math.random() * 3) - 1;
+        if (RANDOM.nextDouble() < NOISE_CHANCE) {
+            final int dx = RANDOM.nextInt(3) - 1;
+            final int dy = RANDOM.nextInt(3) - 1;
             return new Vec2D(realPos.x() + dx, realPos.y() + dy);
         }
         return realPos;

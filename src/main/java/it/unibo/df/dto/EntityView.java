@@ -2,6 +2,7 @@ package it.unibo.df.dto;
 
 import java.util.List;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import it.unibo.df.utility.Vec2D;
 
 /**
@@ -13,6 +14,10 @@ import it.unibo.df.utility.Vec2D;
  * @param cooldownAbilities cooldown ability during the match
  * @param cooldownMove cooldown movement during the match
  */
+@SuppressFBWarnings(
+    value = "EI",
+    justification = "cooldownAbilities is an unmodifiable copy"
+)
 public record EntityView(
     int hpMax,
     int hp,

@@ -1,5 +1,6 @@
 package it.unibo.df.configurations;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import it.unibo.df.controller.Progress;
 
 /**
@@ -8,6 +9,10 @@ import it.unibo.df.controller.Progress;
  * @param numberOfEnemies number of enemies for a combat
  * @param progress the games progress
  */
+@SuppressFBWarnings(
+    value = {"EI", "EI_EXPOSE_REP2"},
+    justification = "shares mutable Progress for testing purposes"
+)
 public record GameConfig(
     int numberOfEnemies,
     Progress progress
