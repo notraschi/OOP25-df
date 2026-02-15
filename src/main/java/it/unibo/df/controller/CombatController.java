@@ -36,6 +36,12 @@ public final class CombatController implements ControllerState {
     private final List<Set<Vec2D>> effects;
     private CombatState state;
 
+    /**
+     * creates a combat controller loadout and enemy count.
+     *
+     * @param loadout abilities
+     * @param numberOfEnemies number of enemies
+     */
     public CombatController(final List<Ability> loadout, final int numberOfEnemies) {
         if (numberOfEnemies < 0 || numberOfEnemies > EnemyFactory.AVAILABLE_ENEMY_TYPES) {
             throw new IllegalArgumentException("illegal number of enemies");
@@ -45,9 +51,9 @@ public final class CombatController implements ControllerState {
         final List<Vec2D> availablePoints = generateSpawnPoints(numberOfEnemies);
 
         final List<Integer> enemieIdx = IntStream
-            .range(0, EnemyFactory.AVAILABLE_ENEMY_TYPES)
-            .boxed()
-            .collect(Collectors.toCollection(ArrayList::new));
+                .range(0, EnemyFactory.AVAILABLE_ENEMY_TYPES)
+                .boxed()
+                .collect(Collectors.toCollection(ArrayList::new));
         Collections.shuffle(enemieIdx);
 
         IntStream.range(0, numberOfEnemies).forEach(i -> {
@@ -71,7 +77,7 @@ public final class CombatController implements ControllerState {
 
         while (points.size() < n) {
             points.add(new Vec2D(
-                rand.nextInt(3, Constants.BOARD_SIZE), 
+                    rand.nextInt(3, Constants.BOARD_SIZE),
                 rand.nextInt(3, Constants.BOARD_SIZE))
             );
         }
@@ -84,7 +90,7 @@ public final class CombatController implements ControllerState {
     @Override
     public boolean handle(final Input input) {
         return switch (input) {
-            case CombatInput action -> 
+            case CombatInput action ->
                 switch (action) {
                     case Move moveAction -> handleMove(Optional.empty(), moveAction);
                     case Attack attackAction -> handleAttack(Optional.empty(), attackAction);
@@ -132,9 +138,9 @@ public final class CombatController implements ControllerState {
 
     private CombatState buildState() {
         return new CombatState(
-            model.playerView(),
-            model.enemyView(),
-            List.copyOf(effects),
+                model.playerView(),
+                model.enemyView(),
+                List.copyOf(effects),
             model.isDisruptActive()
         );
     }
@@ -146,19 +152,22 @@ public final class CombatController implements ControllerState {
     public CombatState tick(final long deltaTime) {
         model.tick(deltaTime);
         aiControllers.entrySet().stream()
-            .filter(e -> model.isEnemyAlive(e.getKey()))
-            .forEach(e -> e.getValue().computeNextInput(state).ifPresent(in -> {
-                switch ((CombatInput) in) {
-                    case Move moveAction -> handleMove(Optional.of(e.getKey()), moveAction);
-                    case Attack attackAction -> handleAttack(Optional.of(e.getKey()), attackAction);
-                }
+                .filter(e -> model.isEnemyAlive(e.getKey()))
+                .forEach(e -> e.getValue().computeNextInput(state).ifPresent(in -> {
+                    switch ((CombatInput) in) {
+                        case Move moveAction -> handleMove(Optional.of(e.getKey()), moveAction);
+                        case Attack attackAction -> handleAttack(Optional.of(e.getKey()), attackAction);
+                    }
             }
         ));
-        state = buildState(); 
+        state = buildState();
         effects.clear();
         return state;
     }
 
+    /**
+     * @return number of enemies killed
+     */
     public int killedEnemies() {
         return model.getKilledEnemies();
     }

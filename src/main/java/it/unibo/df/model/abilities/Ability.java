@@ -15,12 +15,13 @@ import it.unibo.df.dto.AbilityView;
  * @param effect        function implementing the ability logic
  */
 public record Ability(
-        int id,
-        String name,
-        int cooldown,
-        int casterHpDelta,
-        int targetHpDelta,
-        AbilityFn effect) {
+    int id,
+    String name,
+    int cooldown,
+    int casterHpDelta,
+    int targetHpDelta,
+    AbilityFn effect
+) {
 
     /**
      * Returns the ability type based on its effects.
@@ -42,9 +43,10 @@ public record Ability(
      */
     public AbilityView asView() { // fix tab
         return new AbilityView(this.name,
-                this.id, this.casterHpDelta,
-                this.targetHpDelta,
-                (int) TimeUnit.SECONDS.toMillis(this.cooldown));
+            this.id, this.casterHpDelta,
+            this.targetHpDelta,
+            (int) TimeUnit.SECONDS.toMillis(this.cooldown)
+        );
     }
 
 }

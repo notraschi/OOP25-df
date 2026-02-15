@@ -23,6 +23,11 @@ public final class ArsenalController implements ControllerState {
     private final ArsenalModel model;
     private ArsenalStateBuilder builder;
 
+    /**
+     * Creates a new arsenal controller.
+     * 
+     * @param arsenal unlocked abilities map
+     */
     public ArsenalController(final Map<Integer, Ability> arsenal) {
         model = new ArsenalModel(arsenal);
         builder = new ArsenalStateBuilder();
@@ -32,7 +37,7 @@ public final class ArsenalController implements ControllerState {
     @Override
     public boolean handle(final Input input) {
         return switch (input) {
-            case ArsenalInput in -> 
+            case ArsenalInput in ->
                 switch (in) {
                     case Equip equip -> handleEquip(equip);
                     case Unequip unequip -> handleUnequip(unequip);
@@ -62,12 +67,15 @@ public final class ArsenalController implements ControllerState {
         final var result = model.combine(input.id1(), input.id2());
         result.ifPresent(unlocked -> {
             builder.addUnlock(unlocked)
-                .addLost(input.id1())
-                .addLost(input.id2());
+                    .addLost(input.id1())
+                    .addLost(input.id2());
         });
         return result.isPresent();
     }
 
+    /**
+     * @return current loadout
+     */
     public List<Ability> currentLoadout() {
         return model.getLoadout();
     }

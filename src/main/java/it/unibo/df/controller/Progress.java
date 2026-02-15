@@ -65,11 +65,11 @@ public final class Progress {
         allAbilities.putAll(lockedAbilitiesById);
 
         unlockedAbilitiesById = allAbilities.values().stream()
-            .filter(ab -> DEFAULT_UNLOCKED_IDS.contains(ab.id()))
-            .collect(Collectors.toMap(ab -> ab.id(), ab -> ab));
+                .filter(ab -> DEFAULT_UNLOCKED_IDS.contains(ab.id()))
+                .collect(Collectors.toMap(ab -> ab.id(), ab -> ab));
         lockedAbilitiesById = allAbilities.values().stream()
-            .filter(ab -> !DEFAULT_UNLOCKED_IDS.contains(ab.id()))
-            .collect(Collectors.toMap(ab -> ab.id(), ab -> ab));
+                .filter(ab -> !DEFAULT_UNLOCKED_IDS.contains(ab.id()))
+                .collect(Collectors.toMap(ab -> ab.id(), ab -> ab));
     }
 
     /**
@@ -105,7 +105,7 @@ public final class Progress {
         final var unlockedIds = unlockedIdsRead.size() < DEFAULT_UNLOCKED_IDS.size() ? DEFAULT_UNLOCKED_IDS : unlockedIdsRead;
         all.values().stream().forEach(
             a -> (unlockedIds.contains(a.id()) ? unlockedAbilitiesById : lockedAbilitiesById).put(a.id(), a)
-        );
+            );
     }
 
     @SuppressWarnings("unchecked")
@@ -180,7 +180,7 @@ public final class Progress {
         final int targetHpDelta = Integer.class.cast(abilityData.get("targetHpDelta"));
 
         final String area = String.valueOf(abilityData.getOrDefault("area", "NONE"))
-            .toUpperCase(Locale.ROOT);
+                .toUpperCase(Locale.ROOT);
 
         final AbilityFn effect = AbilityAreas.fromString(area);
 
@@ -207,14 +207,15 @@ public final class Progress {
     }
 
     /**
-     * custo exception to be more explicit during error handling.
+     * custom exception to be more explicit during error handling.
      */
     public static class AbilityLoadingException extends UncheckedIOException {
 
         /**
+         * creates a new loading exception.
          * 
-         * @param message
-         * @param cause
+         * @param message error message
+         * @param cause cause
          */
         public AbilityLoadingException(final String message, final IOException cause) {
             super(message, cause);

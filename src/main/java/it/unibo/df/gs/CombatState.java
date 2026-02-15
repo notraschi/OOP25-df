@@ -12,6 +12,11 @@ import it.unibo.df.model.abilities.Vec2D;
 
 /**
  * represents the game's state while in combat.
+ * 
+ * @param player player view
+ * @param enemies enemy views by id
+ * @param effects effects
+ * @param isDisruptActive disrupt
  */
 public record CombatState(
     EntityView player,

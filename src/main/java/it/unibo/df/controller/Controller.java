@@ -4,7 +4,7 @@ import it.unibo.df.configurations.GameConfig;
 import it.unibo.df.gs.GameState;
 import it.unibo.df.input.Input;
 
-/** 
+/**
  * this is the sole (and therfore main) controller.
  * uses: state pattern, (strategy pattern obv), inversion of control
  */
@@ -13,6 +13,11 @@ public final class Controller {
     private final GameConfig config;
     private ControllerState state;
 
+    /**
+     * creates the main controller.
+     * 
+     * @param configuration game configuration
+     */
     public Controller(final GameConfig configuration) {
         progress = new Progress();
         config = configuration;
@@ -66,10 +71,16 @@ public final class Controller {
         }
     }
 
+    /**
+     * resets the player progress.
+     */
     public void resetProgress() {
         progress.reset();
     }
 
+    /**
+     * saves progress on application close.
+     */
     public void saveOnClose() {
         progress.write();
     }
