@@ -40,8 +40,6 @@ public class EscapeStrategy implements AiStrategy {
     public Optional<Input> computeNextAction(final CombatState cs, final List<Ability> loadout) {
         final var me = cs.enemies().get(idEntity);
         final var player = cs.player();
-
-        //si ritira
         return AiActions.fleeFromTarget(me, player);
     }
 
@@ -53,24 +51,12 @@ public class EscapeStrategy implements AiStrategy {
         final var me = cs.enemies().get(idEntity);
         final var player = cs.player();
 
-        //all'inizio non scappo tanto, alla fine non scappo tanto do il tutto per tutto, scappo di piu a mid game
         final double fear = CurvesUtility.gaussian(me.hpRatio(), FEAR_TARGET, FEAR_DEVIATION);
 
-        //Rischio immediato ovvero se sono vicino al player
-        //normalizzazion mi da fuori questo
-        // 0 -> 0.0
-        // 1 -> 0.055             danger -> 1
-        // 6 -> 0.333             danger -> 0.70
-        // 9 -> 0.5 (meta mappa)  danger -> 0.25
         final int dist = TacticsUtility.manhattanDist(me.position(), player.position());
         final double dist01 = TacticsUtility.normalizeManhattanDist(dist);
         final double danger = CurvesUtility.logistic(CurvesUtility.inverse(dist01), DANGER_STEEPNESS, DANGER_MIDPOINT);
 
-        //se ho cooldown attivi allora ho paura, SOLO PER ATTACK
-        //mi calcolo i disponibili sui totali
-        // 0 / 2 -> 0
-        // 1 / 2 -> 0.5
-        // 2 / 2 -> 1
         final var ammo = TacticsUtility.abilityByType(loadout, AbilityType.ATTACK);
         final double helplessScore = (double) ammo.stream()
             .filter(x -> me.cooldownAbilities().get(x) > 0)
