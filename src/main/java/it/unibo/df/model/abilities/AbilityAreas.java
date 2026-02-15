@@ -54,7 +54,7 @@ public final class AbilityAreas {
      *
      * @return arrow area
      */
-    public static AbilityFn arrowRight() {
+    public static AbilityFn arrow() {
         return p -> Optional.of(Stream.of(
             new Vec2D(p.x() + 3, p.y()),
             new Vec2D(p.x() + 3, p.y() - 1),
@@ -72,7 +72,7 @@ public final class AbilityAreas {
      *
      * @return wide arrow area
      */
-    public static AbilityFn arrowWideUp() {
+    public static AbilityFn arrowWide() {
         return p -> Optional.of(
             IntStream.rangeClosed(0, 2)
                 .boxed()
@@ -114,7 +114,7 @@ public final class AbilityAreas {
      * 
      * @return pattern area
      */
-    public static AbilityFn p1Right() {
+    public static AbilityFn pattern1() {
         return p -> Optional.of(Stream.of(
             new Vec2D(p.x() + 1, p.y()),
             new Vec2D(p.x() + 1, p.y() - 1),
@@ -134,7 +134,7 @@ public final class AbilityAreas {
      *
      * @return pattern area
      */
-    public static AbilityFn p2Left() {
+    public static AbilityFn pattern2() {
         return p -> Optional.of(Stream.of(
             new Vec2D(p.x(), p.y() - 2),
             new Vec2D(p.x() - 1, p.y() - 1),
@@ -152,7 +152,7 @@ public final class AbilityAreas {
      *
      * @return pattern area
      */
-    public static AbilityFn p3Up() {
+    public static AbilityFn pattern3() {
         return p -> Optional.of(Stream.of(
             new Vec2D(p.x() - 1, p.y() - 1),
             new Vec2D(p.x() + 1, p.y() - 1),
@@ -166,7 +166,7 @@ public final class AbilityAreas {
      *
      * @return pattern area
      */
-    public static AbilityFn p4Down() {
+    public static AbilityFn pattern4() {
         return p -> Optional.of(Stream.of(
             new Vec2D(p.x() - 2, p.y() + 1),
             new Vec2D(p.x() - 2, p.y() + 2),
@@ -186,7 +186,7 @@ public final class AbilityAreas {
      *
      * @return line area
      */
-    public static AbilityFn lineRight() {
+    public static AbilityFn lineHorizontal() {
         return p -> Optional.of(
             IntStream.rangeClosed(1, LINE_RANGE)
                 .boxed()
@@ -220,7 +220,7 @@ public final class AbilityAreas {
      *
      * @return columns area
      */
-    public static AbilityFn columns3Down() {
+    public static AbilityFn columns3() {
         return p -> Optional.of(
             IntStream.rangeClosed(1, 2)
                 .boxed()
@@ -245,16 +245,16 @@ public final class AbilityAreas {
             case "NONE" -> none();
             case "SELF" -> self();
             case "ADJ4" -> adjacent4();
-            case "ARROW_R" -> arrowRight();
-            case "ARROWWIDE_U" -> arrowWideUp();
+            case "ARROW" -> arrow();
+            case "ARROWWIDE" -> arrowWide();
             case "DIAGX" -> diagX();
-            case "P1_R" -> p1Right();
-            case "P2_L" -> p2Left();
-            case "P3_U" -> p3Up();
-            case "P4_D" -> p4Down();
-            case "LINE_R" -> lineRight();
+            case "P1" -> pattern1();
+            case "P2" -> pattern2();
+            case "P3" -> pattern3();
+            case "P4" -> pattern4();
+            case "LINE_H" -> lineHorizontal();
             case "LINE_V" -> lineVertical();
-            case "COLUMNS3_D" -> columns3Down();
+            case "COLUMNS3" -> columns3();
             default -> throw new IllegalArgumentException("Unknown area: " + areaName);
         };
     }
