@@ -21,17 +21,16 @@ import it.unibo.df.utility.Vec2D;
  * Test class for AbilityRegistry.
  */
 final class ControllerTest {
-    private Controller controller;
 
     @Test
     void completeTest() {
-        controller = new Controller(GameConfig.testingConfig());
+        final Controller controller = new Controller(GameConfig.testingConfig());
 
         // a valid move id is 1 for example.
         assertTrue(controller.handle(new Equip(1)));
         assertTrue(controller.handle(new Equip(2)));
         // cannot go to battle right now, loadout isn't full yet!
-        final var ex = assertThrows(IllegalStateException.class, () -> controller.toBattle());
+        final var ex = assertThrows(IllegalStateException.class, controller::toBattle);
         assertNotNull(ex);
 
         assertTrue(controller.handle(new Equip(3)));

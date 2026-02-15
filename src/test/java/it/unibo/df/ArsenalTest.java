@@ -13,7 +13,6 @@ import org.junit.jupiter.api.Test;
 import it.unibo.df.controller.ArsenalController;
 import it.unibo.df.controller.Progress;
 import it.unibo.df.dto.AbilityView;
-import it.unibo.df.gs.ArsenalState;
 import it.unibo.df.input.Combine;
 import it.unibo.df.input.Equip;
 import it.unibo.df.input.Unequip;
@@ -33,21 +32,21 @@ class ArsenalTest {
 
     @Test
     void setupTest() {
-        var gs = (ArsenalState) controller.tick(0);
+        var gs = controller.tick(0);
         assertEquals(arsenal.size(), gs.unlocked().size());
         assertTrue(controller.handle(new Equip(1)));
-        gs = (ArsenalState) controller.tick(0);
+        gs = controller.tick(0);
         assertEquals(0, gs.unlocked().size());
     }
 
     @Test
     void equipTest() {
         assertTrue(controller.handle(new Equip(1)));
-        var gs = (ArsenalState) controller.tick(0);
+        var gs = controller.tick(0);
         assertEquals(1, gs.equipped().get());
         // equipping it again should not work
         assertFalse(controller.handle(new Equip(1)));
-        gs = (ArsenalState) controller.tick(0);
+        gs = controller.tick(0);
         assertEquals(Optional.empty(), gs.equipped());
         // equipping weird stuff should not work
         assertFalse(controller.handle(new Equip(-1)));
@@ -55,11 +54,11 @@ class ArsenalTest {
 
     @Test
     void combineTest() {
-        var gs = (ArsenalState) controller.tick(0);
+        var gs = controller.tick(0);
         assertEquals(arsenal.size(), gs.unlocked().size());
         // lets combine two abilities
         assertTrue(controller.handle(new Combine(1, 2)));
-        gs = (ArsenalState) controller.tick(0);
+        gs = controller.tick(0);
         assertEquals(List.of(1, 2), gs.lost());
         assertEquals(List.of(100), gs.unlocked().stream().map(AbilityView::id).toList());
         // both lost abilities shouldnt be equippable
@@ -86,7 +85,7 @@ class ArsenalTest {
         assertTrue(controller.handle(new Equip(100)));
         controller.tick(0); // flush
         assertTrue(controller.handle(new Unequip(100)));
-        final var gs = (ArsenalState) controller.tick(0);
+        final var gs = controller.tick(0);
         assertEquals(100, gs.unequipped().get());
     }
 }

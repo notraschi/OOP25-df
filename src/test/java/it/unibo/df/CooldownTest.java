@@ -13,7 +13,7 @@ import it.unibo.df.input.Equip;
 /**
  * simple and dumb test to show cooldowns work.
  */
-public class CooldownTest {
+final class CooldownTest {
     private static final int WAIT_MS = 2000;
 
     @Test

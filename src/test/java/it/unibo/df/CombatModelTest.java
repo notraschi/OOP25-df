@@ -46,7 +46,7 @@ final class CombatModelTest {
                 new Vec2D(EDGE_POS, EDGE_POS), 100, defaultLoadout, List.of(), sa
             )
         );
-        assertTrue(model.enemyView().size() == 1);
+        assertEquals(1, model.enemyView().size());
     }
 
     @Test
@@ -97,11 +97,11 @@ final class CombatModelTest {
     void specialAbiltyDenyAttackTest() throws NoSuchFieldException, IllegalAccessException {
         setup(SpecialAbilityFactory.denyAttack());
         final var playerField = model.getClass().getDeclaredField("player");
-        playerField.setAccessible(true);
+        playerField.setAccessible(true); // NOPMD: entity is a private nested class
         final var player = playerField.get(model);
 
         final var hpField = player.getClass().getDeclaredField("hp");
-        hpField.setAccessible(true);
+        hpField.setAccessible(true); // NOPMD: entity is a private nested class
         hpField.setInt(player, START_HP);
         // dont mind the reflection to have the player start with 50 hp
 
