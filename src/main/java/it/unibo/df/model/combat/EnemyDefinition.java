@@ -4,8 +4,8 @@ import java.util.List;
 
 import it.unibo.df.ai.AiStrategyType;
 import it.unibo.df.model.abilities.Ability;
-import it.unibo.df.model.abilities.Vec2D;
 import it.unibo.df.model.special.SpecialAbility;
+import it.unibo.df.utility.Vec2D;
 
 /**
  * Represent enemies to spawn.

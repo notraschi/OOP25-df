@@ -1,4 +1,4 @@
-package it.unibo.df.model.abilities;
+package it.unibo.df.utility;
 
 /**
  * Represents a 2D position in the game grid.

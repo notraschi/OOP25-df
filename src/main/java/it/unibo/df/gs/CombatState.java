@@ -8,7 +8,7 @@ import java.util.stream.Collectors;
 import it.unibo.df.configurations.Constants;
 import it.unibo.df.dto.CombatStatus;
 import it.unibo.df.dto.EntityView;
-import it.unibo.df.model.abilities.Vec2D;
+import it.unibo.df.utility.Vec2D;
 
 /**
  * represents the game's state while in combat.

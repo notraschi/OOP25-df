@@ -4,7 +4,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 
-import it.unibo.df.model.combat.Cooldown;
+import it.unibo.df.utility.Cooldown;
 
 /**
  * represents a SpecialAbility.

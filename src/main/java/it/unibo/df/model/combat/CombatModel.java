@@ -11,8 +11,9 @@ import java.util.stream.Stream;
 import it.unibo.df.configurations.Constants;
 import it.unibo.df.dto.EntityView;
 import it.unibo.df.model.abilities.Ability;
-import it.unibo.df.model.abilities.Vec2D;
 import it.unibo.df.model.special.SpecialAbility;
+import it.unibo.df.utility.Cooldown;
+import it.unibo.df.utility.Vec2D;
 
 /**
  * gamemodel.

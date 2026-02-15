@@ -3,8 +3,8 @@ package it.unibo.df.model.special;
 import java.util.Optional;
 import java.util.Set;
 
-import it.unibo.df.model.abilities.Vec2D;
-import it.unibo.df.model.combat.Cooldown;
+import it.unibo.df.utility.Cooldown;
+import it.unibo.df.utility.Vec2D;
 
 /**
  * factory for special abilities.

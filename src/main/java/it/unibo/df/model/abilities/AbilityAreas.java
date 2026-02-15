@@ -4,6 +4,8 @@ import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
+import it.unibo.df.utility.Vec2D;
+
 /**
  * Represents areas affected by abilities.
  */
