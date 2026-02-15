@@ -19,7 +19,7 @@ import it.unibo.df.model.special.SpecialAbility;
  */
 public class CombatModel {
 
-    private static final int PLAYER_HP = 650;
+    private static final int PLAYER_HP = 500;
 
     private final Entity player;
     private final Map<Integer, Entity> enemies;

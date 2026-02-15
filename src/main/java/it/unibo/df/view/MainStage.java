@@ -16,6 +16,7 @@ import it.unibo.df.input.Unequip;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
@@ -103,7 +104,7 @@ public class MainStage extends Application {
         alert.setTitle("END of BATTLE");
         alert.setContentText("YOU" + matchResult + "THE GAME");
         alert.getButtonTypes().setAll(ok);
-        alert.show();
+        alert.showAndWait();
     }
 
     private void tick() {
@@ -111,12 +112,18 @@ public class MainStage extends Application {
         board.refresh(cs, TICK);
         switch (cs.matchStatus()) {
             case CombatStatus.WON -> {
-                matchEnd(" WON ");
-                visualChange();
+                timeline.pause();
+                Platform.runLater(() -> {
+                    matchEnd(" WON ");
+                    visualChange();
+                });
             }
             case CombatStatus.LOST -> {
-                matchEnd(" LOST ");
-                visualChange();
+                timeline.pause();
+                Platform.runLater(() -> {
+                    matchEnd(" LOST ");
+                    visualChange();
+                });
             }
             default -> { }
         }
