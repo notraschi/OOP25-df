@@ -220,7 +220,7 @@ public final class TacticsUtility {
     public static List<Integer> abilityByType(final List<Ability> loadout, final AbilityType type) {
         return Stream.iterate(0, x -> x + 1)
             .limit(loadout.size())
-            .filter(idx -> loadout.get(idx).type().equals(type))
+            .filter(idx -> loadout.get(idx).type() == type)
             .toList();
     }
 }

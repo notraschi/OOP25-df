@@ -67,7 +67,7 @@ public final class CombatController implements ControllerState {
     private void spawnEnemy(final EnemyDefinition enemy) {
         final int id = model.addEnemy(enemy);
         final var aiBuilder = new AiControllerBuilder(id).setLoadout(enemy.loadout());
-        enemy.strategies().stream().forEach(s -> aiBuilder.add(s));
+        enemy.strategies().forEach(aiBuilder::add);
         aiControllers.put(id, aiBuilder.build());
     }
 
@@ -107,16 +107,15 @@ public final class CombatController implements ControllerState {
      * @return true if input was handled
      */
     private boolean handleMove(final Optional<Integer> entityId, final Move direction) {
-        final Vec2D delta;
-        switch (direction) {
-            case Move.UP -> delta = new Vec2D(0, -1);
-            case Move.DOWN -> delta = new Vec2D(0, 1);
-            case Move.LEFT -> delta = new Vec2D(-1, 0);
-            case Move.RIGHT -> delta = new Vec2D(1, 0);
-            default -> delta = new Vec2D(0, 0);
-        }
+        final Vec2D delta = switch (direction) {
+            case Move.UP -> new Vec2D(0, -1);
+            case Move.DOWN -> new Vec2D(0, 1);
+            case Move.LEFT -> new Vec2D(-1, 0);
+            case Move.RIGHT -> new Vec2D(1, 0);
+        };
         return model.move(entityId, delta);
     }
+    
 
     /**
      * handles attack-related input.
@@ -126,12 +125,12 @@ public final class CombatController implements ControllerState {
      * @return true if input was handled
      */
     private boolean handleAttack(final Optional<Integer> entityId, final Attack ability) {
-        if (ability.equals(Attack.SPECIAL)) {
+        if (ability == Attack.SPECIAL) {
             model.castSpecial(
                 entityId.orElseThrow(() -> new IllegalArgumentException("player cant special"))
             );
         } else {
-            model.cast(entityId, ability.ordinal()).ifPresent(affected -> effects.add(affected));
+            model.cast(entityId, ability.ordinal()).ifPresent(effects::add);
         }
         return true;
     }

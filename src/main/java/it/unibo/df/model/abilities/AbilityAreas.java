@@ -109,7 +109,7 @@ public final class AbilityAreas {
 
     /**
      * Pattern 1 to the right/left of the caster.
-     *
+     * 
      * @return pattern area
      */
     public static AbilityFn p1Right() {

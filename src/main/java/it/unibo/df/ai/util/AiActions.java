@@ -30,10 +30,9 @@ public final class AiActions {
      */
     public static Optional<Input> tryBestAttack(final EntityView me, final Vec2D target, final List<Ability> loadout) {
         for (int i = 0; i < loadout.size(); i++) {
-            if (me.cooldownAbilities().get(i) == 0) {
-                if (TacticsUtility.canHit(me.position(), target, loadout.get(i))) {
-                    return Optional.of(Attack.values()[i]);
-                }
+            if (me.cooldownAbilities().get(i) == 0
+                && TacticsUtility.canHit(me.position(), target, loadout.get(i))) {
+                return Optional.of(Attack.values()[i]);
             }
         }
         return Optional.empty();
