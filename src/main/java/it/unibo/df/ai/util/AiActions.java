@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
+import java.util.stream.IntStream;
 
 import it.unibo.df.dto.EntityView;
 import it.unibo.df.input.Attack;
@@ -29,13 +30,11 @@ public final class AiActions {
      * @return input
      */
     public static Optional<Input> tryBestAttack(final EntityView me, final Vec2D target, final List<Ability> loadout) {
-        for (int i = 0; i < loadout.size(); i++) {
-            if (me.cooldownAbilities().get(i) == 0
-                && TacticsUtility.canHit(me.position(), target, loadout.get(i))) {
-                return Optional.of(Attack.values()[i]);
-            }
-        }
-        return Optional.empty();
+        return IntStream.range(0, loadout.size())
+            .filter(i -> me.cooldownAbilities().get(i) == 0)
+            .filter(i -> TacticsUtility.canHit(me.position(), target, loadout.get(i)))
+            .mapToObj(i -> (Input) Attack.values()[i])
+            .findFirst();
     }
 
     /**
@@ -49,23 +48,24 @@ public final class AiActions {
      */
     public static Optional<Input> moveForBestAim(final EntityView me, final Vec2D target, final List<Ability> loadout) {
 
-        final var readyAttacks = loadout.stream()
-            .filter(a -> a.type() == AbilityType.ATTACK)
-            .filter(a -> me.cooldownAbilities().get(loadout.indexOf(a)) == 0)
+        final var readyAttacks = IntStream.range(0, loadout.size())
+            .filter(i -> loadout.get(i).type() == AbilityType.ATTACK)
+            .filter(i -> me.cooldownAbilities().get(i) == 0)
+            .mapToObj(loadout::get)
             .toList();
 
         if (!readyAttacks.isEmpty()) {
-            final Move bestMove = moveForBestAimfromLoadout(me, target, readyAttacks);
-            return Optional.ofNullable(bestMove);
+            return Optional.ofNullable(moveForBestAimfromLoadout(me, target, readyAttacks));
         }
 
-        for (final Ability ab : loadout) {
-            if (TacticsUtility.canHit(me.position(), target, ab)) {
-                return Optional.empty();
-            }
+        final boolean canHitNow = loadout.stream()
+            .anyMatch(ab -> TacticsUtility.canHit(me.position(), target, ab));
+
+        if (canHitNow) {
+            return Optional.empty();
         }
-        final Move bestMove = moveForBestAimfromLoadout(me, target, loadout);
-        return Optional.ofNullable(bestMove);
+
+        return Optional.ofNullable(moveForBestAimfromLoadout(me, target, loadout));
     }
 
     private static Move moveForBestAimfromLoadout(final EntityView me, final Vec2D target, final List<Ability> subsetLoadout) {
@@ -116,16 +116,11 @@ public final class AiActions {
      */
     public static Optional<Input> tryToHeal(final EntityView me, final List<Ability> loadout) {
 
-        for (final Ability ab: loadout) {
-            if (ab.type() == AbilityType.ATTACK) {
-                continue;
-            }
-            final int idx = loadout.indexOf(ab);
-            if (me.cooldownAbilities().get(idx) == 0) {
-                return Optional.of(Attack.values()[idx]);
-            }
-        }
-        return Optional.empty();
+        return IntStream.range(0, loadout.size())
+            .filter(i -> loadout.get(i).type() != AbilityType.ATTACK)
+            .filter(i -> me.cooldownAbilities().get(i) == 0)
+            .mapToObj(i -> (Input) Attack.values()[i])
+            .findFirst();
     }
 
     /**
