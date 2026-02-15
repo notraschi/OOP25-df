@@ -24,7 +24,7 @@ public class CombatModel {
     private final Entity player;
     private final Map<Integer, Entity> enemies;
     private int nextEnemyId;
-    private Optional<SpecialAbility> disrupt;
+    private Optional<SpecialAbility<?>> disrupt;
 
     /**
      * Constructor.
@@ -252,7 +252,7 @@ public class CombatModel {
         private final List<Ability> loadout;
         private final List<Cooldown> cooldowns;
         private final Cooldown movementCooldown;
-        private final Optional<SpecialAbility> special;
+        private final Optional<SpecialAbility<?>> special;
 
         private Vec2D position;
         private int hp;
@@ -269,7 +269,7 @@ public class CombatModel {
             final Vec2D position,
             final int hp,
             final List<Ability> loadout,
-            final Optional<SpecialAbility> special
+            final Optional<SpecialAbility<?>> special
         ) {
             this.position = position;
             this.hp = hp;

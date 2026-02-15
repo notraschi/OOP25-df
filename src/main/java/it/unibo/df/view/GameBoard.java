@@ -140,9 +140,9 @@ public class GameBoard {
         final double cellSize = playArea.getHeight() / Constants.BOARD_SIZE;
         graphicsContext.clearRect(0, 0, playArea.getWidth(), playArea.getHeight());
         
-        graphicsContext.setFill(Color.RED);
+        graphicsContext.setFill(Color.GRAY);
         gs.enemies().values().stream()
-            .filter(en -> en.hp() != 0)
+            .filter(en -> en.hp() == 0)
             .forEach(e -> graphicsContext.fillRect(
                 e.position().x() * cellSize,
                 e.position().y() * cellSize,
@@ -150,9 +150,9 @@ public class GameBoard {
                 cellSize
             )
         );
-        graphicsContext.setFill(Color.GRAY);
+        graphicsContext.setFill(Color.RED);
         gs.enemies().values().stream()
-            .filter(en -> en.hp() == 0)
+            .filter(en -> en.hp() != 0)
             .forEach(e -> graphicsContext.fillRect(
                 e.position().x() * cellSize,
                 e.position().y() * cellSize,

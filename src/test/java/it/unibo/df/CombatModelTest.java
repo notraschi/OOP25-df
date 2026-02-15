@@ -20,7 +20,7 @@ import it.unibo.df.model.special.SpecialAbilityFactory;
 final class CombatModelTest {
     private CombatModel model;
 
-    void setup(SpecialAbility sa) {
+    void setup(SpecialAbility<?> sa) {
         var defaultLoadout = List.of(
                 new Ability(1, "", 1, 5, 0, pos -> Optional.empty()),
                 new Ability(2, "", 1, 5, 0, pos -> Optional.empty()),
