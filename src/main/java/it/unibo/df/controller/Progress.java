@@ -49,7 +49,7 @@ public final class Progress {
         final Random random = new Random();
         for (int i = 0; i < killedEnemies; i++) {
             final List<Integer> keys = List.copyOf(lockedAbilitiesById.keySet());
-            if (keys.size() > 0) {
+            if (!keys.isEmpty()) {
                 final int index = random.nextInt(0, keys.size());
                 unlockedAbilitiesById.put(keys.get(index), lockedAbilitiesById.get(keys.get(index)));
                 lockedAbilitiesById.remove(keys.get(index));
@@ -66,10 +66,10 @@ public final class Progress {
 
         unlockedAbilitiesById = allAbilities.values().stream()
                 .filter(ab -> DEFAULT_UNLOCKED_IDS.contains(ab.id()))
-                .collect(Collectors.toMap(ab -> ab.id(), ab -> ab));
+                .collect(Collectors.toMap(Ability::id, ab -> ab));
         lockedAbilitiesById = allAbilities.values().stream()
                 .filter(ab -> !DEFAULT_UNLOCKED_IDS.contains(ab.id()))
-                .collect(Collectors.toMap(ab -> ab.id(), ab -> ab));
+                .collect(Collectors.toMap(Ability::id, ab -> ab));
     }
 
     /**
@@ -156,7 +156,7 @@ public final class Progress {
             throw new IllegalStateException("Missing abilities list");
         }
 
-        return list.stream().map(entry -> getAbility(entry));
+        return list.stream().map(Progress::getAbility);
     }
 
     /**
@@ -201,7 +201,7 @@ public final class Progress {
      */
     public static Map<Integer, Ability> allRegisteredAbilities() {
         return loadGeneric().collect(Collectors.toMap(
-            a -> a.id(),
+            Ability::id,
             a -> a)
         );
     }
@@ -210,7 +210,6 @@ public final class Progress {
      * custom exception to be more explicit during error handling.
      */
     public static class AbilityLoadingException extends UncheckedIOException {
-
         /**
          * creates a new loading exception.
          * 

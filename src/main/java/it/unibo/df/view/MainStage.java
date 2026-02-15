@@ -33,10 +33,10 @@ import javafx.util.Duration;
 public class MainStage extends Application {
     private static final int TICK = 7;
     private static final int LOADOUT_SIZE = 3;
-    private final double minScreenSize = (Double.min(
+    private final double minScreenSize = Double.min(
         Screen.getPrimary().getBounds().getHeight(),
         Screen.getPrimary().getBounds().getWidth()
-    )) / 2;
+    ) / 2;
 
     private final GameBoard board = new GameBoard(
         List.of(
@@ -201,9 +201,9 @@ public class MainStage extends Application {
         alert.getButtonTypes().setAll(resume, quit);
         timeline.pause();
         final Optional<ButtonType> result = alert.showAndWait();
-        if (result.isPresent() && result.get() == resume) {
+        if (result.isPresent() && result.get().equals(resume)) {
             timeline.play();
-        } else if (result.isPresent() && result.get() == quit) {
+        } else if (result.isPresent() && result.get().equals(quit)) {
             quit();
         }
     }
@@ -218,12 +218,12 @@ public class MainStage extends Application {
         alert.getButtonTypes().setAll(resume, reset, quit);
         timeline.pause();
         final Optional<ButtonType> result = alert.showAndWait();
-        if (result.isPresent() && result.get() == resume && stage.getScene().equals(board.getScene())) {
+        if (result.isPresent() && result.get().equals(resume) && stage.getScene().equals(board.getScene())) {
             timeline.play();
-        } else if (result.isPresent() && result.get() == reset) {
+        } else if (result.isPresent() && result.get().equals(reset)) {
             controller.resetProgress();
             quit();
-        } else if (result.isPresent() && result.get() == quit) {
+        } else if (result.isPresent() && result.get().equals(quit)) {
             quit();
         }
     }

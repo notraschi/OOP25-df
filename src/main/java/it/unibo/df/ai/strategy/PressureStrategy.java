@@ -107,7 +107,7 @@ public class PressureStrategy implements AiStrategy {
 
         final double ammoScore = (double) ammo.stream()
             .filter(x -> me.cooldownAbilities().get(x) == 0)
-            .count() / (double) ammo.size();
+            .count() / ammo.size();
 
         final double bloodlust =
             CurvesUtility.logistic(player.hpRatio(), BLOODLUST_SLOPE, BLOODLUST_MIDPOINT);

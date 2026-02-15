@@ -60,7 +60,7 @@ public class EscapeStrategy implements AiStrategy {
         final var ammo = TacticsUtility.abilityByType(loadout, AbilityType.ATTACK);
         final double helplessScore = (double) ammo.stream()
             .filter(x -> me.cooldownAbilities().get(x) > 0)
-            .count() / (double) ammo.size();
+            .count() / ammo.size();
 
         final double score = helplessScore * danger * fear;
         return CurvesUtility.clamp(score);

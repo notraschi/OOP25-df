@@ -34,7 +34,6 @@ public class GameBoard {
     private final int loadoutSize;
     private GraphicsContext graphicsContext;
     private Canvas playArea;
-    private StackPane canvasWrapper;
     private GridPane abilityArea;
     private final List<String> keys;
     private ProgressBar lifeBar;
@@ -58,7 +57,7 @@ public class GameBoard {
     private void setupBoardScene() {
         final GridPane centerPane = new GridPane();
         centerPane.getStyleClass().add("board");
-        canvasWrapper = new StackPane();
+        final StackPane canvasWrapper = new StackPane();
         canvasWrapper.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
         playArea = new Canvas();
         graphicsContext = playArea.getGraphicsContext2D();
@@ -73,7 +72,7 @@ public class GameBoard {
         centerPane.add(fillLowBarArea(), 0, 1);
         final SceneResizer resizer = new SceneResizer(
             centerPane,
-            Double.valueOf(BOARD_SIZE_PERC) / Double.valueOf(MAX_SIZE_PERC),
+            (double)BOARD_SIZE_PERC / MAX_SIZE_PERC,
             MAX_SIZE_PERC / MAX_SIZE_PERC
         );
         board = new Scene(resizer.getBorderPane());
@@ -192,7 +191,7 @@ public class GameBoard {
         final Iterator<AbilityView> abIt = equipped.iterator();
         for (final var ab : abilityArea.getChildren()) {
             if (ab instanceof Label lbl && abColIt.hasNext()) {
-                final double ratio = ((double) abColIt.next()) / (abIt.next().cooldown());
+                final double ratio = (double) abColIt.next() / abIt.next().cooldown();
                 lbl.setStyle(
                     "-fx-background-color: linear-gradient(to top, " 
                     + "gray " + (ratio * 100) + "%, "
