@@ -16,10 +16,13 @@ import it.unibo.df.model.abilities.Vec2D;
  */
 class AbilityTest {
 
+    private static final int HEAL_DELTA = 5;
+    private static final int LIFESTEAL_DAMAGE = -8;
+
     @Test
     void abilityAndEffectAreCreated() {
-        AbilityFn fn = (caster) -> Optional.empty();
-        Ability a = new Ability(1, "BasicHeal", 3, 5, 0, fn);
+        final AbilityFn fn = caster -> Optional.empty();
+        final Ability a = new Ability(1, "BasicHeal", 3, HEAL_DELTA, 0, fn);
 
         assertEquals(1, a.id());
         assertNotNull(a.effect());
@@ -27,15 +30,15 @@ class AbilityTest {
 
     @Test
     void lifestealProducesDamageAndHeal() {
-        Ability a = new Ability(
+        final Ability a = new Ability(
                 2,
                 "BasicLifeSteal",
                 10,
                 4,
-                -8,
-                (caster) -> Optional.of(Set.of(new Vec2D(1, 1))));
+                LIFESTEAL_DAMAGE,
+                caster -> Optional.of(Set.of(new Vec2D(1, 1))));
 
-        assertEquals(-8, a.targetHpDelta());
+        assertEquals(LIFESTEAL_DAMAGE, a.targetHpDelta());
         assertEquals(4, a.casterHpDelta());
     }
 }

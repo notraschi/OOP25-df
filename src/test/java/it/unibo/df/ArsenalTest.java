@@ -86,9 +86,7 @@ class ArsenalTest {
         assertTrue(controller.handle(new Equip(100)));
         controller.tick(0); // flush
         assertTrue(controller.handle(new Unequip(100)));
-        var gs = (ArsenalState) controller.tick(0);
+        final var gs = (ArsenalState) controller.tick(0);
         assertEquals(100, gs.unequipped().get());
     }
 }
-
-    

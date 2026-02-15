@@ -18,13 +18,23 @@ import it.unibo.df.model.special.SpecialAbilityFactory;
  * Test class for AbilityRegistry.
  */
 final class CombatModelTest {
+    private static final int HEAL_DELTA = 5;
+    private static final int EDGE_POS = 9;
+    private static final int DENY_MOVEMENT_MS = 2000;
+    private static final int MOVE_COOLDOWN_MS = 175;
+    private static final int INVERT_DURATION_MS = 6000;
+    private static final int DENY_ATTACK_MS = 5000;
+    private static final int START_HP = 50;
+    private static final int HP_AFTER_FIRST_HEAL = 55;
+    private static final int HP_AFTER_SECOND_HEAL = 60;
+
     private CombatModel model;
 
-    void setup(SpecialAbility sa) {
-        var defaultLoadout = List.of(
-                new Ability(1, "", 1, 5, 0, pos -> Optional.empty()),
-                new Ability(2, "", 1, 5, 0, pos -> Optional.empty()),
-                new Ability(3, "", 1, 5, 0, pos -> Optional.empty()));
+    void setup(final SpecialAbility sa) {
+        final var defaultLoadout = List.of(
+                new Ability(1, "", 1, HEAL_DELTA, 0, pos -> Optional.empty()),
+                new Ability(2, "", 1, HEAL_DELTA, 0, pos -> Optional.empty()),
+                new Ability(3, "", 1, HEAL_DELTA, 0, pos -> Optional.empty()));
         // filling the loadout with garbage
         model = new CombatModel(defaultLoadout);
         // basic test
@@ -33,7 +43,7 @@ final class CombatModelTest {
         // adding an enemy that can deny the movement
         model.addEnemy(
             new EnemyDefinition(
-                new Vec2D(9, 9), 100, defaultLoadout, List.of(), sa
+                new Vec2D(EDGE_POS, EDGE_POS), 100, defaultLoadout, List.of(), sa
             )
         );
         assertTrue(model.enemyView().size() == 1);
@@ -55,7 +65,7 @@ final class CombatModelTest {
         assertEquals(new Vec2D(1, 0), model.playerView().position()); // old location
 
         // let have some time pass
-        model.tick(2000);
+        model.tick(DENY_MOVEMENT_MS);
         model.move(Optional.empty(), new Vec2D(0, 1));
         assertEquals(new Vec2D(1, 1), model.playerView().position()); // now he can move
     }
@@ -73,12 +83,12 @@ final class CombatModelTest {
         assertTrue(model.isDisruptActive());
 
         // now movement should be inverted
-        model.tick(175); // expire movement cooldown
+        model.tick(MOVE_COOLDOWN_MS); // expire movement cooldown
         model.move(Optional.empty(), new Vec2D(1, 0));
         assertEquals(new Vec2D(0, 0), model.playerView().position()); // old location
 
         // let have some time pass
-        model.tick(6000);
+        model.tick(INVERT_DURATION_MS);
         model.move(Optional.empty(), new Vec2D(0, 1));
         assertEquals(new Vec2D(0, 1), model.playerView().position()); // now he can move
     }
@@ -86,18 +96,18 @@ final class CombatModelTest {
     @Test
     void specialAbiltyDenyAttackTest() throws NoSuchFieldException, IllegalAccessException {
         setup(SpecialAbilityFactory.denyAttack());
-        var playerField = model.getClass().getDeclaredField("player");
+        final var playerField = model.getClass().getDeclaredField("player");
         playerField.setAccessible(true);
-        var player = playerField.get(model);
+        final var player = playerField.get(model);
 
-        var hpField = player.getClass().getDeclaredField("hp");
+        final var hpField = player.getClass().getDeclaredField("hp");
         hpField.setAccessible(true);
-        hpField.setInt(player, 50);
+        hpField.setInt(player, START_HP);
         // dont mind the reflection to have the player start with 50 hp
 
         // player casts a heal
         model.cast(Optional.empty(), 1);
-        assertEquals(55, model.playerView().hp());
+        assertEquals(HP_AFTER_FIRST_HEAL, model.playerView().hp());
 
         // artificially casting the special ability
         model.castSpecial(1);
@@ -105,11 +115,11 @@ final class CombatModelTest {
 
         // now attack shouldnt work
         model.cast(Optional.empty(), 1);
-        assertEquals(55, model.playerView().hp());
+        assertEquals(HP_AFTER_FIRST_HEAL, model.playerView().hp());
 
         // let have some time pass
-        model.tick(5000);
+        model.tick(DENY_ATTACK_MS);
         model.cast(Optional.empty(), 1);
-        assertEquals(60, model.playerView().hp());
+        assertEquals(HP_AFTER_SECOND_HEAL, model.playerView().hp());
     }
 }

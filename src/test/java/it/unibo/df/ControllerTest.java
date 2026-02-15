@@ -31,7 +31,7 @@ final class ControllerTest {
         assertTrue(controller.handle(new Equip(1)));
         assertTrue(controller.handle(new Equip(2)));
         // cannot go to battle right now, loadout isn't full yet!
-        var ex = assertThrows(IllegalStateException.class, () -> controller.toBattle());
+        final var ex = assertThrows(IllegalStateException.class, () -> controller.toBattle());
         assertNotNull(ex);
 
         assertTrue(controller.handle(new Equip(3)));
@@ -50,7 +50,8 @@ final class ControllerTest {
         assertEquals(new Vec2D(0, 0), gs.player().position());
         assertEquals(1, gs.effects().size());
         assertEquals(4, gs.effects().get(0).size());
-        assertEquals( // the effect i cased is supposed to hit these four positions
+        // the effect i cased is supposed to hit these four positions
+        assertEquals(
             Set.of(
                 new Vec2D(+1, 0),
                 new Vec2D(-1, 0), // some are out of bounds but its ok
