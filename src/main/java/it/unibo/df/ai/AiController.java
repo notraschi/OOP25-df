@@ -8,6 +8,7 @@ import it.unibo.df.input.Input;
 /**
  * AI controller for enemies.
  */
+@FunctionalInterface
 public interface AiController {
 
     /**

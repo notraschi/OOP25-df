@@ -48,7 +48,6 @@ public final class AiControllerBuilder {
             case PRESSURE -> new PressureStrategy(idEntity);
             case STABILIZE -> new StabilizeStrategy(idEntity);
             case ESCAPE -> new EscapeStrategy(idEntity);
-            default -> throw new IllegalArgumentException("Strategy not implemented: " + type);
         };
         this.strategies.add(strategy);
         return this;

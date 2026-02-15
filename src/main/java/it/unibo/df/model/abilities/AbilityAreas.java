@@ -1,8 +1,10 @@
 package it.unibo.df.model.abilities;
 
-import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import it.unibo.df.utility.Vec2D;
 
@@ -39,14 +41,12 @@ public final class AbilityAreas {
      * @return function with adjacent area
      */
     public static AbilityFn adjacent4() {
-        return p -> {
-            final Set<Vec2D> area = new HashSet<>();
-            area.add(new Vec2D(p.x() + 1, p.y()));
-            area.add(new Vec2D(p.x() - 1, p.y()));
-            area.add(new Vec2D(p.x(), p.y() + 1));
-            area.add(new Vec2D(p.x(), p.y() - 1));
-            return Optional.of(area);
-        };
+        return p -> Optional.of(Stream.of(
+            new Vec2D(p.x() + 1, p.y()),
+            new Vec2D(p.x() - 1, p.y()),
+            new Vec2D(p.x(), p.y() + 1),
+            new Vec2D(p.x(), p.y() - 1)
+        ).collect(Collectors.toSet()));
     }
 
     /**
@@ -55,20 +55,16 @@ public final class AbilityAreas {
      * @return arrow area
      */
     public static AbilityFn arrowRight() {
-        return p -> {
-            final Set<Vec2D> area = new HashSet<>();
-            // right arrow
-            area.add(new Vec2D(p.x() + 3, p.y()));
-            area.add(new Vec2D(p.x() + 3, p.y() - 1));
-            area.add(new Vec2D(p.x() + 3, p.y() + 1));
-            area.add(new Vec2D(p.x() + 4, p.y()));
-            // left arrow
-            area.add(new Vec2D(p.x() - 3, p.y()));
-            area.add(new Vec2D(p.x() - 3, p.y() - 1));
-            area.add(new Vec2D(p.x() - 3, p.y() + 1));
-            area.add(new Vec2D(p.x() - 4, p.y()));
-            return Optional.of(area);
-        };
+        return p -> Optional.of(Stream.of(
+            new Vec2D(p.x() + 3, p.y()),
+            new Vec2D(p.x() + 3, p.y() - 1),
+            new Vec2D(p.x() + 3, p.y() + 1),
+            new Vec2D(p.x() + 4, p.y()),
+            new Vec2D(p.x() - 3, p.y()),
+            new Vec2D(p.x() - 3, p.y() - 1),
+            new Vec2D(p.x() - 3, p.y() + 1),
+            new Vec2D(p.x() - 4, p.y())
+        ).collect(Collectors.toSet()));
     }
 
     /**
@@ -77,22 +73,21 @@ public final class AbilityAreas {
      * @return wide arrow area
      */
     public static AbilityFn arrowWideUp() {
-        return p -> {
-            final Set<Vec2D> area = new HashSet<>();
-            for (int fwd = 0; fwd <= 2; fwd++) {
-                final int maxLat = 2 - fwd;
-                for (int lat = -maxLat; lat <= maxLat; lat++) {
-                    if (fwd == 0 && lat == 0) {
-                        continue;
-                    }
-                    // right fan
-                    area.add(new Vec2D(p.x() + fwd, p.y() + lat));
-                    // left fan
-                    area.add(new Vec2D(p.x() - fwd, p.y() + lat));
-                }
-            }
-            return Optional.of(area);
-        };
+        return p -> Optional.of(
+            IntStream.rangeClosed(0, 2)
+                .boxed()
+                .flatMap(fwd -> {
+                    final int maxLat = 2 - fwd;
+                    return IntStream.rangeClosed(-maxLat, maxLat)
+                        .filter(lat -> !(fwd == 0 && lat == 0))
+                        .boxed()
+                        .flatMap(lat -> Stream.of(
+                            new Vec2D(p.x() + fwd, p.y() + lat),
+                            new Vec2D(p.x() - fwd, p.y() + lat)
+                        ));
+                })
+                .collect(Collectors.toSet())
+        );
     }
 
     /**
@@ -101,16 +96,17 @@ public final class AbilityAreas {
      * @return diagonal cross area
      */
     public static AbilityFn diagX() {
-        return p -> {
-            final Set<Vec2D> area = new HashSet<>();
-            for (int i = 1; i <= 3; i++) {
-                area.add(new Vec2D(p.x() + i, p.y() + i));
-                area.add(new Vec2D(p.x() - i, p.y() + i));
-                area.add(new Vec2D(p.x() + i, p.y() - i));
-                area.add(new Vec2D(p.x() - i, p.y() - i));
-            }
-            return Optional.of(area);
-        };
+        return p -> Optional.of(
+            IntStream.rangeClosed(1, 3)
+                .boxed()
+                .flatMap(i -> Stream.of(
+                    new Vec2D(p.x() + i, p.y() + i),
+                    new Vec2D(p.x() - i, p.y() + i),
+                    new Vec2D(p.x() + i, p.y() - i),
+                    new Vec2D(p.x() - i, p.y() - i)
+                ))
+                .collect(Collectors.toSet())
+        );
     }
 
     /**
@@ -119,22 +115,18 @@ public final class AbilityAreas {
      * @return pattern area
      */
     public static AbilityFn p1Right() {
-        return p -> {
-            final Set<Vec2D> area = new HashSet<>();
-            // right
-            area.add(new Vec2D(p.x() + 1, p.y()));
-            area.add(new Vec2D(p.x() + 1, p.y() - 1));
-            area.add(new Vec2D(p.x() + 1, p.y() + 1));
-            area.add(new Vec2D(p.x() + 2, p.y() - 2));
-            area.add(new Vec2D(p.x() + 2, p.y() + 2));
-            // left
-            area.add(new Vec2D(p.x() - 1, p.y()));
-            area.add(new Vec2D(p.x() - 1, p.y() - 1));
-            area.add(new Vec2D(p.x() - 1, p.y() + 1));
-            area.add(new Vec2D(p.x() - 2, p.y() - 2));
-            area.add(new Vec2D(p.x() - 2, p.y() + 2));
-            return Optional.of(area);
-        };
+        return p -> Optional.of(Stream.of(
+            new Vec2D(p.x() + 1, p.y()),
+            new Vec2D(p.x() + 1, p.y() - 1),
+            new Vec2D(p.x() + 1, p.y() + 1),
+            new Vec2D(p.x() + 2, p.y() - 2),
+            new Vec2D(p.x() + 2, p.y() + 2),
+            new Vec2D(p.x() - 1, p.y()),
+            new Vec2D(p.x() - 1, p.y() - 1),
+            new Vec2D(p.x() - 1, p.y() + 1),
+            new Vec2D(p.x() - 2, p.y() - 2),
+            new Vec2D(p.x() - 2, p.y() + 2)
+        ).collect(Collectors.toSet()));
     }
 
     /**
@@ -143,18 +135,16 @@ public final class AbilityAreas {
      * @return pattern area
      */
     public static AbilityFn p2Left() {
-        return p -> {
-            final Set<Vec2D> area = new HashSet<>();
-            area.add(new Vec2D(p.x(), p.y() - 2));
-            area.add(new Vec2D(p.x() - 1, p.y() - 1));
-            area.add(new Vec2D(p.x() + 1, p.y() - 1));
-            area.add(new Vec2D(p.x() - 2, p.y()));
-            area.add(new Vec2D(p.x() + 2, p.y()));
-            area.add(new Vec2D(p.x() - 1, p.y() + 1));
-            area.add(new Vec2D(p.x() + 1, p.y() + 1));
-            area.add(new Vec2D(p.x(), p.y() + 2));
-            return Optional.of(area);
-        };
+        return p -> Optional.of(Stream.of(
+            new Vec2D(p.x(), p.y() - 2),
+            new Vec2D(p.x() - 1, p.y() - 1),
+            new Vec2D(p.x() + 1, p.y() - 1),
+            new Vec2D(p.x() - 2, p.y()),
+            new Vec2D(p.x() + 2, p.y()),
+            new Vec2D(p.x() - 1, p.y() + 1),
+            new Vec2D(p.x() + 1, p.y() + 1),
+            new Vec2D(p.x(), p.y() + 2)
+        ).collect(Collectors.toSet()));
     }
 
     /**
@@ -163,14 +153,12 @@ public final class AbilityAreas {
      * @return pattern area
      */
     public static AbilityFn p3Up() {
-        return p -> {
-            final Set<Vec2D> area = new HashSet<>();
-            area.add(new Vec2D(p.x() - 1, p.y() - 1));
-            area.add(new Vec2D(p.x() + 1, p.y() - 1));
-            area.add(new Vec2D(p.x() - 1, p.y() + 1));
-            area.add(new Vec2D(p.x() + 1, p.y() + 1));
-            return Optional.of(area);
-        };
+        return p -> Optional.of(Stream.of(
+            new Vec2D(p.x() - 1, p.y() - 1),
+            new Vec2D(p.x() + 1, p.y() - 1),
+            new Vec2D(p.x() - 1, p.y() + 1),
+            new Vec2D(p.x() + 1, p.y() + 1)
+        ).collect(Collectors.toSet()));
     }
 
     /**
@@ -179,20 +167,18 @@ public final class AbilityAreas {
      * @return pattern area
      */
     public static AbilityFn p4Down() {
-        return p -> {
-            final Set<Vec2D> area = new HashSet<>();
-            area.add(new Vec2D(p.x() - 2, p.y() + 1));
-            area.add(new Vec2D(p.x() - 2, p.y() + 2));
-            area.add(new Vec2D(p.x() - 1, p.y()));
-            area.add(new Vec2D(p.x() - 1, p.y() + 3));
-            area.add(new Vec2D(p.x(), p.y() - 1));
-            area.add(new Vec2D(p.x(), p.y() + 3));
-            area.add(new Vec2D(p.x() + 1, p.y()));
-            area.add(new Vec2D(p.x() + 1, p.y() + 3));
-            area.add(new Vec2D(p.x() + 2, p.y() + 1));
-            area.add(new Vec2D(p.x() + 2, p.y() + 2));
-            return Optional.of(area);
-        };
+        return p -> Optional.of(Stream.of(
+            new Vec2D(p.x() - 2, p.y() + 1),
+            new Vec2D(p.x() - 2, p.y() + 2),
+            new Vec2D(p.x() - 1, p.y()),
+            new Vec2D(p.x() - 1, p.y() + 3),
+            new Vec2D(p.x(), p.y() - 1),
+            new Vec2D(p.x(), p.y() + 3),
+            new Vec2D(p.x() + 1, p.y()),
+            new Vec2D(p.x() + 1, p.y() + 3),
+            new Vec2D(p.x() + 2, p.y() + 1),
+            new Vec2D(p.x() + 2, p.y() + 2)
+        ).collect(Collectors.toSet()));
     }
 
     /**
@@ -201,14 +187,15 @@ public final class AbilityAreas {
      * @return line area
      */
     public static AbilityFn lineRight() {
-        return p -> {
-            final Set<Vec2D> area = new HashSet<>();
-            for (int i = 1; i <= LINE_RANGE; i++) {
-                area.add(new Vec2D(p.x() + i, p.y()));
-                area.add(new Vec2D(p.x() - i, p.y()));
-            }
-            return Optional.of(area);
-        };
+        return p -> Optional.of(
+            IntStream.rangeClosed(1, LINE_RANGE)
+                .boxed()
+                .flatMap(i -> Stream.of(
+                    new Vec2D(p.x() + i, p.y()),
+                    new Vec2D(p.x() - i, p.y())
+                ))
+                .collect(Collectors.toSet())
+        );
     }
 
     /**
@@ -217,14 +204,15 @@ public final class AbilityAreas {
      * @return line area
      */
     public static AbilityFn lineVertical() {
-        return p -> {
-            final Set<Vec2D> area = new HashSet<>();
-            for (int i = 1; i <= LINE_RANGE; i++) {
-                area.add(new Vec2D(p.x(), p.y() + i));
-                area.add(new Vec2D(p.x(), p.y() - i));
-            }
-            return Optional.of(area);
-        };
+        return p -> Optional.of(
+            IntStream.rangeClosed(1, LINE_RANGE)
+                .boxed()
+                .flatMap(i -> Stream.of(
+                    new Vec2D(p.x(), p.y() + i),
+                    new Vec2D(p.x(), p.y() - i)
+                ))
+                .collect(Collectors.toSet())
+        );
     }
 
     /**
@@ -233,16 +221,17 @@ public final class AbilityAreas {
      * @return columns area
      */
     public static AbilityFn columns3Down() {
-        return p -> {
-            final Set<Vec2D> area = new HashSet<>();
-            for (int fwd = 1; fwd <= 2; fwd++) {
-                for (int lat = -1; lat <= 1; lat++) {
-                    area.add(new Vec2D(p.x() + fwd, p.y() + lat));
-                    area.add(new Vec2D(p.x() - fwd, p.y() + lat));
-                }
-            }
-            return Optional.of(area);
-        };
+        return p -> Optional.of(
+            IntStream.rangeClosed(1, 2)
+                .boxed()
+                .flatMap(fwd -> IntStream.rangeClosed(-1, 1)
+                    .boxed()
+                    .flatMap(lat -> Stream.of(
+                        new Vec2D(p.x() + fwd, p.y() + lat),
+                        new Vec2D(p.x() - fwd, p.y() + lat)
+                    )))
+                .collect(Collectors.toSet())
+        );
     }
 
     /**
