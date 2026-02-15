@@ -14,10 +14,13 @@ import it.unibo.df.model.combat.Cooldown;
 import static it.unibo.df.view.PaneFormatter.formatColumns;
 import static it.unibo.df.view.PaneFormatter.formatRows;
 import javafx.scene.Scene;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
+import javafx.scene.paint.Color;
 
 /**
  * The Scene of the area where the user play.
@@ -29,8 +32,9 @@ public class GameBoard {
     private static final int ENEMY_NUMBER = 2;
     private static final int EFFECT_DISPLAY_DURATION = 200;
     private final int loadoutSize;
-    private final StackPane[][] playAreaMat;
-    private GridPane playArea;
+    private GraphicsContext graphicsContext;
+    private Canvas playArea;
+    private StackPane canvasWrapper;
     private GridPane abilityArea;
     private final List<String> keys;
     private ProgressBar lifeBar;
@@ -46,7 +50,6 @@ public class GameBoard {
      * @param loadoutSize size of ability can be equipped
      */
     public GameBoard(final List<String> keys, final int loadoutSize) {
-        playAreaMat = new StackPane[Constants.BOARD_SIZE][Constants.BOARD_SIZE];
         this.loadoutSize = loadoutSize;
         this.keys = List.copyOf(keys);
         setupBoardScene();
@@ -55,14 +58,16 @@ public class GameBoard {
     private void setupBoardScene() {
         final GridPane centerPane = new GridPane();
         centerPane.getStyleClass().add("board");
-        playArea = new GridPane();
-        playArea.getStyleClass().add("board");
+        canvasWrapper = new StackPane();
+        canvasWrapper.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
+        playArea = new Canvas();
+        graphicsContext = playArea.getGraphicsContext2D();
+        playArea.setManaged(false);
+        canvasWrapper.getChildren().add(playArea);
         formatColumns(centerPane, 1, MAX_SIZE_PERC);
         formatRows(centerPane, 1, BOARD_SIZE_PERC);
         formatRows(centerPane, 1, MAX_SIZE_PERC - BOARD_SIZE_PERC);
-        formatColumns(playArea, Constants.BOARD_SIZE, MAX_SIZE_PERC / Constants.BOARD_SIZE);
-        formatRows(playArea, Constants.BOARD_SIZE, MAX_SIZE_PERC / Constants.BOARD_SIZE);
-        centerPane.add(fillPlayArea(playArea), 0, 0); 
+        centerPane.add(canvasWrapper, 0, 0); 
         centerPane.add(fillLowBarArea(), 0, 1);
         final SceneResizer resizer = new SceneResizer(
             centerPane,
@@ -71,18 +76,6 @@ public class GameBoard {
         );
         board = new Scene(resizer.getBorderPane());
         board.getStylesheets().add(getClass().getResource("/css/boardStyle.css").toExternalForm());
-    }
-
-    private GridPane fillPlayArea(final GridPane grid) {
-        for (int i = 0; i < grid.getColumnCount(); i++) {
-            for (int j = 0; j < grid.getRowCount(); j++) {
-                final StackPane cell = new StackPane();
-                cell.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
-                grid.add(cell, i, j);
-                playAreaMat[i][j] = cell;
-            }
-        }
-        return grid;
     }
 
     private GridPane fillAbilityArea() {
@@ -142,25 +135,48 @@ public class GameBoard {
     }
 
     private void refreshMap(final CombatState gs) {
-        final List<Vec2D> enemyPosition = gs.enemies().values().stream()
-            .map(enemy -> enemy.position())
-            .toList();
-
-        for (int i = 0; i < Constants.BOARD_SIZE; i++) {
-            for (int j = 0; j < Constants.BOARD_SIZE; j++) {
-                playAreaMat[i][j].getStyleClass().removeAll("player", "playerSpecial", "enemy", "move");
-            }
-        }
-        playAreaMat[gs.player().position().x()][gs.player().position().y()].getStyleClass().add(
-            gs.isDisruptActive()
-            ? "playerSpecial"
-            : "player"
+        playArea.setWidth(canvasWrapper.getWidth());
+        playArea.setHeight(canvasWrapper.getHeight());
+        final double cellSize = playArea.getHeight() / Constants.BOARD_SIZE;
+        graphicsContext.clearRect(0, 0, playArea.getWidth(), playArea.getHeight());
+        graphicsContext.setFill(gs.isDisruptActive() ? Color.PURPLE : Color.GREEN);
+        graphicsContext.fillRect(
+            gs.player().position().x() * cellSize, 
+            gs.player().position().y() * cellSize, 
+            cellSize, 
+            cellSize
         );
-        for (final var e : enemyPosition) {
-            playAreaMat[e.x()][e.y()].getStyleClass().add("enemy");
-        }
-        activeEffects.stream().map(ActiveEffect::effect)
-            .forEach(set -> set.forEach(cell -> playAreaMat[cell.x()][cell.y()].getStyleClass().add("move")));
+        graphicsContext.setFill(Color.RED);
+        gs.enemies().values().stream()
+            .filter(en -> en.hp() != 0)
+            .forEach(e -> graphicsContext.fillRect(
+                e.position().x() * cellSize,
+                e.position().y() * cellSize,
+                cellSize,
+                cellSize
+            )
+        );
+        graphicsContext.setFill(Color.GRAY);
+        gs.enemies().values().stream()
+            .filter(en -> en.hp() == 0)
+            .forEach(e -> graphicsContext.fillRect(
+                e.position().x() * cellSize,
+                e.position().y() * cellSize,
+                cellSize,
+                cellSize
+            )
+        );
+        graphicsContext.setStroke(Color.BLUE);
+        activeEffects.stream()
+            .map(ActiveEffect::effect)
+            .forEach(e -> e.forEach(cell -> graphicsContext.strokeRect(
+                cell.x() * cellSize,
+                cell.y() * cellSize,
+                cellSize,
+                cellSize
+            ))
+        );
+
     }
  
     private void refreshLife(final CombatState gs) {
