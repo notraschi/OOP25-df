@@ -26,6 +26,6 @@ public record EntityView(
      * @return hp value between 0.0 to 1.0
      */
     public double hpRatio() {
-        return hpMax <= 0 ? 0.0 : (double) hp / (double) hpMax;
+        return hpMax <= 0 ? 0.0 : (double) hp / hpMax;
     }
 }

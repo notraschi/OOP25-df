@@ -1,5 +1,6 @@
 package it.unibo.df.model.combat;
 
+import java.util.Map.Entry;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -189,7 +190,7 @@ public class CombatModel {
     public Map<Integer, EntityView> enemyView() {
         return enemies.entrySet()
             .stream()
-            .collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue().asView()));
+            .collect(Collectors.toMap(Entry::getKey, e -> e.getValue().asView()));
     }
 
     /**

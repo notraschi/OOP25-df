@@ -1,10 +1,12 @@
 package it.unibo.df.model.arsenal;
 
+
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 
 import it.unibo.df.dto.AbilityView;
@@ -99,6 +101,6 @@ public class ArsenalModel {
      * @return the arsenal
      */
     public List<Ability> getArsenal() {
-        return Collections.unmodifiableList(arsenal.entrySet().stream().map(e -> e.getValue()).toList());
+        return Collections.unmodifiableList(arsenal.entrySet().stream().map(Entry::getValue).toList());
     }
 }
