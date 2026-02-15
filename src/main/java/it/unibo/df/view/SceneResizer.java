@@ -41,7 +41,7 @@ public class SceneResizer {
      * @return BorderPane, the external container
      */
     @SuppressFBWarnings(
-        value = "EI_EXPOSE_REP2", 
+        value = "EI", 
         justification = "the pane must necessarily be this one"
     )
     public BorderPane getBorderPane() {

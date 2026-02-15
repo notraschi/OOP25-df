@@ -136,7 +136,7 @@ public class AbilityMenu {
     }
 
     @SuppressFBWarnings(
-        value = "ICAST_INTEGER_DIVISION_CAST_TO_DOUBLE",
+        value = "ICAST",
         justification = "the division must necessarily return a whole to me"
     )
     private GridPane fillKeysArea() {
@@ -301,7 +301,7 @@ public class AbilityMenu {
      * @return group of button of Abilities
      */
     @SuppressFBWarnings(
-        value = "EI_EXPOSE_REP2", 
+        value = "EI", 
         justification = "the gruop must necessarily be this one"
     )
     public ToggleGroup getGroup() {
@@ -319,7 +319,7 @@ public class AbilityMenu {
      * @return the scene
      */
     @SuppressFBWarnings(
-        value = "EI_EXPOSE_REP2", 
+        value = "EI", 
         justification = "the scene must necessarily be this one"
     )
     public Scene getScene() {

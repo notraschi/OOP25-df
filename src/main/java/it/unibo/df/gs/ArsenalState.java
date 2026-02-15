@@ -15,7 +15,7 @@ import it.unibo.df.dto.AbilityView;
  * @param unequipped id of the last unequipped ability
  */
 @SuppressFBWarnings(
-    value = {"EI", "EI_EXPOSE_REP2"},
+    value = "EI",
     justification = "defensive copies are created using List.of()"
 )
 public record ArsenalState(

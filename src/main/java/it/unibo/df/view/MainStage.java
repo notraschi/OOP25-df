@@ -77,7 +77,7 @@ public class MainStage extends Application {
      * @param s the stage to show
      */
     @SuppressFBWarnings(
-        value = "EI_EXPOSE_REP2", 
+        value = "EI", 
         justification = "the stage must necessarily be this one"
     )
     @Override

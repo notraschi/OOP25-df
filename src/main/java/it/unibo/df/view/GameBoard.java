@@ -112,7 +112,7 @@ public class GameBoard {
     }
 
     @SuppressFBWarnings(
-        value = "ICAST_INTEGER_DIVISION_CAST_TO_DOUBLE",
+        value = "ICAST",
         justification = "the division must necessarily return a whole to me"
     )
     private GridPane fillKeysArea() {
@@ -247,7 +247,7 @@ public class GameBoard {
      * @return a scene of the board
      */
     @SuppressFBWarnings(
-        value = "EI_EXPOSE_REP2", 
+        value = "EI", 
         justification = "the scene must necessarily be this one"
     )
     public Scene getScene() {
