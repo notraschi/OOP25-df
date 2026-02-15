@@ -1,9 +1,9 @@
 package it.unibo.df.model.combat;
 
-import java.util.Map.Entry;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -278,7 +278,7 @@ public class CombatModel {
             this.maxHp = hp;
             this.loadout = loadout;
             this.cooldowns = loadout.stream()
-                .map(a -> new Cooldown(a.cooldown() * 1000))
+                .map(a -> new Cooldown((long) a.cooldown() * 1000L))
                 .toList();
             this.movementCooldown = new Cooldown(MOVEMENT_COOLDOWN_TIME);
             this.special = special;

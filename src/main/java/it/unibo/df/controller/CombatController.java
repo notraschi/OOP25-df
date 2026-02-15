@@ -136,9 +136,9 @@ public final class CombatController implements ControllerState {
 
     private CombatState buildState() {
         return new CombatState(
-                model.playerView(),
-                model.enemyView(),
-                List.copyOf(effects),
+            model.playerView(),
+            Map.copyOf(model.enemyView()),
+            List.copyOf(effects),
             model.isDisruptActive()
         );
     }

@@ -33,7 +33,7 @@ public final class AiControllerBuilder {
      * @return builder
      */
     public AiControllerBuilder setLoadout(final List<Ability> loadoutToSet) {
-        this.loadout = loadoutToSet;
+        this.loadout = List.copyOf(loadoutToSet);
         return this;
     }
 

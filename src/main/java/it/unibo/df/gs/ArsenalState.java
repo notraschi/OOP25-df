@@ -3,6 +3,7 @@ package it.unibo.df.gs;
 import java.util.List;
 import java.util.Optional;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import it.unibo.df.dto.AbilityView;
 
 /**
@@ -13,6 +14,10 @@ import it.unibo.df.dto.AbilityView;
  * @param equipped id of the last equipped ability
  * @param unequipped id of the last unequipped ability
  */
+@SuppressFBWarnings(
+    value = {"EI", "EI_EXPOSE_REP2"},
+    justification = "defensive copies are created using List.of()"
+)
 public record ArsenalState(
     // hold abilities loaded in or gained via combine
     List<AbilityView> unlocked,

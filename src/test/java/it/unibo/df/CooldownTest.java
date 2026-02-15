@@ -13,7 +13,7 @@ import it.unibo.df.input.Equip;
 /**
  * simple and dumb test to show cooldowns work.
  */
-public class CooldownTest {
+final class CooldownTest {
     private static final int WAIT_MS = 2000;
 
     @Test
@@ -24,7 +24,7 @@ public class CooldownTest {
         assertTrue(controller.handle(new Equip(3)));
         assertTrue(controller.handle(new Equip(2)));
 
-        controller.toBattle();
+        controller.enterBattle();
         assertTrue(controller.handle(Attack.ABILITY1));
         var gs = (CombatState) controller.tick(1000); // timer starts
         assertEquals(1, gs.effects().size());
