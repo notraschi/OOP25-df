@@ -44,7 +44,6 @@ public class MainStage extends Application {
             "→ \nright",
             "↑ \nup",
             "↓ \ndown",
-            "I \ninventory",
             "Z \nability 1",
             "X \nability 2",
             "C \nability 3",
@@ -149,7 +148,6 @@ public class MainStage extends Application {
         stage.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
             switch (event.getCode()) {
                 case KeyCode.Q -> quitAlert();
-                case KeyCode.I -> visualChange();
                 default -> { }
             }
         });
@@ -187,6 +185,7 @@ public class MainStage extends Application {
                             menu.clearCombiner();
                         }
                     }
+                    case KeyCode.I -> visualChange();
                     default -> { }
                 }
             }
