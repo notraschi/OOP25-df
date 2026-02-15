@@ -44,7 +44,6 @@ public final class Progress {
      * @param killedEnemies amount of enemies killed in battle, unlocks one new
      *                      ability for each.
      */
-
     public void update(final int killedEnemies) {
         final Random random = new Random();
         for (int i = 0; i < killedEnemies; i++) {
@@ -210,6 +209,8 @@ public final class Progress {
      * custom exception to be more explicit during error handling.
      */
     public static class AbilityLoadingException extends UncheckedIOException {
+        private static final long serialVersionUID = 1L;
+
         /**
          * creates a new loading exception.
          * 
