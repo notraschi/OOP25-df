@@ -9,8 +9,9 @@ import java.util.stream.Collectors;
 import it.unibo.df.configurations.Constants;
 import it.unibo.df.dto.AbilityView;
 import it.unibo.df.gs.CombatState;
-import it.unibo.df.model.abilities.Vec2D;
-import it.unibo.df.model.combat.Cooldown;
+import it.unibo.df.utility.Cooldown;
+import it.unibo.df.utility.Vec2D;
+
 import static it.unibo.df.view.PaneFormatter.formatColumns;
 import static it.unibo.df.view.PaneFormatter.formatRows;
 import javafx.scene.Scene;
@@ -30,7 +31,7 @@ public class GameBoard {
     private static final int BOARD_SIZE_PERC = 80;
     private static final int KEYS_AREA_ROWS = 2;
     private static final int ENEMY_NUMBER = 2;
-    private static final int EFFECT_DISPLAY_DURATION = 200;
+    private static final int EFFECT_DISPLAY_DURATION = 300;
     private final int loadoutSize;
     private GraphicsContext graphicsContext;
     private Canvas playArea;

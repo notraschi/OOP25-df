@@ -15,7 +15,7 @@ import it.unibo.df.gs.CombatState;
 import it.unibo.df.input.Attack;
 import it.unibo.df.input.Equip;
 import it.unibo.df.input.Move;
-import it.unibo.df.model.abilities.Vec2D;
+import it.unibo.df.utility.Vec2D;
 
 /**
  * Test class for AbilityRegistry.

@@ -1,4 +1,4 @@
-package it.unibo.df.model.combat;
+package it.unibo.df.utility;
 
 /**
  * Handles cooldowns, uses milliseconds as unit.

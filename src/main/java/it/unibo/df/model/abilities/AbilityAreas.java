@@ -6,6 +6,8 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+import it.unibo.df.utility.Vec2D;
+
 /**
  * Represents areas affected by abilities.
  */

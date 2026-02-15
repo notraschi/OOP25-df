@@ -53,7 +53,6 @@ public final class CurvesUtility {
 
     /**
      * Gaussian curve.
-     * Returns 1.0 when x == target, and drops to 0.0 as x moves away.
      *
      * @param x the input value
      * @param target the optimal value where utility is 1.0 (peak of the bell)

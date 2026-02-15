@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 
 import it.unibo.df.model.abilities.Ability;
 import it.unibo.df.model.abilities.AbilityFn;
-import it.unibo.df.model.abilities.Vec2D;
+import it.unibo.df.utility.Vec2D;
 
 /**
  * Small tests to ensure the abilities model works.

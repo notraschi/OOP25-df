@@ -2,7 +2,7 @@ package it.unibo.df.dto;
 
 import java.util.List;
 
-import it.unibo.df.model.abilities.Vec2D;
+import it.unibo.df.utility.Vec2D;
 
 /**
  * Contains information on the entities in game.

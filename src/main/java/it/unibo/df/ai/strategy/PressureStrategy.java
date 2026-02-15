@@ -12,7 +12,7 @@ import it.unibo.df.input.Attack;
 import it.unibo.df.input.Input;
 import it.unibo.df.model.abilities.Ability;
 import it.unibo.df.model.abilities.AbilityType;
-import it.unibo.df.model.abilities.Vec2D;
+import it.unibo.df.utility.Vec2D;
 
 /**
  * Its objective is to put pressure on the player, get closer and attack him.
