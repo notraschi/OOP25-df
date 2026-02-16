@@ -59,3 +59,15 @@ val main: String by project
 application {
     mainClass.set(main)
 }
+
+tasks.withType<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar> {
+    archiveClassifier.set("all")
+
+    mergeServiceFiles()
+
+    manifest {
+        attributes(
+            "Main-Class" to main
+        )
+    }
+}
